@@ -6,14 +6,10 @@ public class Memory extends Bot{
 	// we can have at most 19 orders, 490 allies, 490 enemies
 
 	public static int read(int location) throws GameActionException{
-		System.out.println("Checking if its in mirrored memory");
 		if (Mirror.containsKey(location)) {
-			System.out.println("Found it in mirroed memory");
 			return Mirror.get(location);
 		}
-		System.out.println("Reading memory");
 		int value = rc.readBroadcast(location);
-		System.out.println("Storing result");
 		Mirror.put(location, value);
 		return value;
 	}
@@ -30,7 +26,6 @@ public class Memory extends Bot{
 	}
 	
 	public static int getNumOrders() throws GameActionException{
-		System.out.println("Getting number of orders");
 		return Tools.bitInterval(read(0), 29, 32);
 	}
 	
@@ -70,7 +65,7 @@ public class Memory extends Bot{
 		return new EnemyData(read(index + 20 + 490));
 	}
 	
-	public static void defragAllies() throws GameActionException{
+	/**public static void defragAllies() throws GameActionException{
 		AllyData[] allies = new AllyData[490];
 		int alliesPointer = 0;
 		
@@ -82,7 +77,7 @@ public class Memory extends Bot{
 			}
 			
 				
-			AllyData current = new AllyData(read(i));
+			AllyData current = new AllyData(value);
 			
 			// if their alive value is equal to the current turn % 2 then they didn't update it last turn
 			if (current.alive == ((rc.getRoundNum() % 2) == 1)) {
@@ -113,6 +108,9 @@ public class Memory extends Bot{
 			if (i < alliesPointer) {
 				write(i + 20, allies[i].toInt());
 			}
+			else {
+				write(i + 20, 0);
+			}
 		}
 		
 	}
@@ -142,4 +140,5 @@ public class Memory extends Bot{
 		}
 		
 	}
+	**/
 }

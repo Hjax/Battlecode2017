@@ -11,10 +11,12 @@ public class Bot {
     protected static Team enemy;
 	public static HashMap<Integer, Integer> Mirror = new HashMap<Integer, Integer>();
 	public static HashSet<Integer> Updated = new HashSet<Integer>();
+	public static MapLocation archonStart;
     protected static void Init(RobotController RobCon){
     	rc = RobCon;
     	ally = rc.getTeam();
     	enemy = ally.opponent();
+    	archonStart = rc.getInitialArchonLocations(ally)[0];
     }
     public static Direction neo()
     {

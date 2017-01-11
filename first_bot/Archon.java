@@ -11,6 +11,7 @@ public class Archon extends Bot{
 			debug_memory();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
+			e1.printStackTrace();
 			System.out.println("We crashed");
 		}
 
@@ -47,7 +48,7 @@ public class Archon extends Bot{
             }
         }
 	}
-	public static void debug_memory() throws GameActionException{
+	public static void debug_memory_counts() throws GameActionException{
 		System.out.println("Running Memory Debug");
 		System.out.println("Number of Orders: " + Memory.getNumOrders());
 		System.out.println("Number of Allies: " + Memory.getNumAllies());
@@ -59,5 +60,8 @@ public class Archon extends Bot{
 		System.out.println("Number of Orders: " + Memory.getNumOrders());
 		System.out.println("Number of Allies: " + Memory.getNumAllies());
 		System.out.println("Number of Enemies: " + Memory.getNumEnemies());
+	}
+	public static void debug_memory_storage() {
+		
 	}
 }
