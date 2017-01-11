@@ -5,8 +5,6 @@ import battlecode.common.*;
 public class Soldier extends Bot{
 	public static void Start(RobotController RobCon){
 		Bot.Init(RobCon);
-		
-		System.out.println("I'm an soldier!");
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
