@@ -5,13 +5,14 @@ import battlecode.common.*;
 public class Soldier extends Bot{
 	public static void Start(RobotController RobCon){
 		Bot.Init(RobCon);
+		
+		System.out.println("I'm an soldier!");
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
-            	
             	startTurn();
             	
                 MapLocation myLocation = rc.getLocation();
@@ -28,10 +29,9 @@ public class Soldier extends Bot{
                     }
                 }
 
-                // Move randomly
-                Utilities.tryMove(Utilities.randomDirection());
+                // dodge
+                Utilities.tryMove(neo());
 
-                // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 endTurn();
 
             } catch (Exception e) {

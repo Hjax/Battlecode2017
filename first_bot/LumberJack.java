@@ -3,16 +3,18 @@ package first_bot;
 import battlecode.common.*;
 
 public class LumberJack extends Bot {
-	public static void Start(RobotController RobCon){
+	public static void Start(RobotController RobCon) throws Exception{
 		Bot.Init(RobCon);
+		
+	    System.out.println("I'm a lumberjack!");
 
 	    // The code you want your robot to perform every round should be in this loop
 	    while (true) {
 
+	    	startTurn();
+	    	
 	        // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        try {
-		    	
-		    	startTurn();
 
 	            // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
 	            RobotInfo[] robots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
@@ -32,13 +34,12 @@ public class LumberJack extends Bot {
 
 	                    Utilities.tryMove(toEnemy);
 	                } else {
-	                    // Move Randomly
-	                	Utilities.tryMove(Utilities.randomDirection());
+	                	// dodge
+	                    Utilities.tryMove(neo());
 	                }
 	            }
 
-	            // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-                endTurn();
+	            endTurn();
 
 	        } catch (Exception e) {
 	            System.out.println("Lumberjack Exception");
