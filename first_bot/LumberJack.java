@@ -11,6 +11,8 @@ public class LumberJack extends Bot {
 
 	        // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        try {
+		    	
+		    	startTurn();
 
 	            // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
 	            RobotInfo[] robots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
@@ -36,7 +38,7 @@ public class LumberJack extends Bot {
 	            }
 
 	            // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-	            Clock.yield();
+                endTurn();
 
 	        } catch (Exception e) {
 	            System.out.println("Lumberjack Exception");

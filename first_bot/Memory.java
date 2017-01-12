@@ -1,8 +1,14 @@
 package first_bot;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import battlecode.common.GameActionException;
 
 public class Memory extends Bot{
+	
+	public static HashMap<Integer, Integer> Mirror = new HashMap<Integer, Integer>();
+	public static HashSet<Integer> Updated = new HashSet<Integer>();
 	// we can have at most 19 orders, 490 allies, 490 enemies
 
 	public static int read(int location) throws GameActionException{
@@ -26,15 +32,15 @@ public class Memory extends Bot{
 	}
 	
 	public static int getNumOrders() throws GameActionException{
-		return Tools.bitInterval(read(0), 29, 32);
+		return Utilities.bitInterval(read(0), 29, 32);
 	}
 	
 	public static int getNumAllies() throws GameActionException{
-		return Tools.bitInterval(read(0), 20, 28);
+		return Utilities.bitInterval(read(0), 20, 28);
 	}
 	
 	public static int getNumEnemies() throws GameActionException{
-		return Tools.bitInterval(read(0), 11, 19);
+		return Utilities.bitInterval(read(0), 11, 19);
 	}
 	
 	public static void setPointers(int numorders, int numallies, int numenemies) throws GameActionException {

@@ -1,23 +1,42 @@
 package first_bot;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import battlecode.common.*;
 
 public class Bot {
 	public static RobotController rc;
     protected static Team ally;
     protected static Team enemy;
-	public static HashMap<Integer, Integer> Mirror = new HashMap<Integer, Integer>();
-	public static HashSet<Integer> Updated = new HashSet<Integer>();
 	public static MapLocation archonStart;
+	
     protected static void Init(RobotController RobCon){
     	rc = RobCon;
     	ally = rc.getTeam();
     	enemy = ally.opponent();
     	archonStart = rc.getInitialArchonLocations(ally)[0];
+    	// this should put a new bot into memory
+    	try {
+    		
+			Memory.write(Memory.getNumAllies() + 20, new AllyData(Utilities.typeToNumber(rc.getType()), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 1).toInt());
+			Memory.setNumAllies(Memory.getNumAllies() + 1);
+			System.out.print("Set number of allies to: ");
+			System.out.println(Memory.getNumAllies());
+			Memory.commit();
+		} catch (Exception e) {
+			System.out.println("Weird error while updating our location in memory");
+		}
     }
+    
+    protected static void startTurn() throws GameActionException {
+    	// reset the mirror and the updated arrays
+    	Memory.Mirror.clear();
+    	Memory.Updated.clear();
+    }
+    
+    protected static void endTurn() throws GameActionException{
+    	Memory.commit();
+    	Clock.yield();
+    }
+    
     public static Direction neo()
     {
     	BulletInfo[] bullets = rc.senseNearbyBullets();

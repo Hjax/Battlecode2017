@@ -1,9 +1,10 @@
 package first_bot;
 
-import battlecode.common.BulletInfo;
+import battlecode.common.*;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
+import battlecode.common.RobotType;
 
 public class Utilities extends Bot{
 
@@ -98,4 +99,72 @@ public class Utilities extends Bot{
 
         return (perpendicularDist <= rc.getType().bodyRadius);
     }
+    
+	public static MapLocation intToTarget(int location){
+		// so we have 32 bits in a java int 
+		// the high 10 bits are the x, we can get them by dividing
+		// the low  10 bits are the y, we can get them by mod
+		//return new MapLocation(location / 1024, location % 1024); 
+		int x = location / 1024;
+		int y = location % 1024;
+		x = ((x / 2) - 100) + Math.round(archonStart.x);
+		y = ((y / 2) - 100) + Math.round(archonStart.y);
+		return new MapLocation(x, y);
+	}
+	public static int targetToInt(MapLocation target) {
+		int x = ((Math.round(target.x) - Math.round(archonStart.x)) + 100) * 2;
+		int y = ((Math.round(target.y) - Math.round(archonStart.y)) + 100) * 2;
+		return x * 1024 + y;
+	}
+	
+	public static int bitInterval(int input, int start, int end) {
+		// found this equation on stackoverflow
+		return (input >> start) & ~(~0 << (end-start+1));
+	}
+	
+	public static int typeToNumber(RobotType input) throws Exception {
+		// 0 tree
+		// 1 soldier
+		// 2 tank
+		// 3 scout
+		// 4 lumberjack
+		// 5 gardener
+		// 6 archon
+		// 7 neural tree
+        switch (input) {
+        	case ARCHON:
+        		return 6;
+        	case GARDENER:
+        		return 5;
+        	case SOLDIER:
+        		return 1;
+        	case LUMBERJACK:
+        		return 4;
+        	case TANK:
+        		return 2;
+        	case SCOUT:
+        		return 3;
+        	default:
+        		throw new Exception("Unexpected Robot Type: " + rc.getType());
+        	
+        }
+	}
+	public static RobotType numberToType(int input) throws Exception {
+		switch (input) {
+	    	case 6:
+	    		return RobotType.ARCHON;
+	    	case 5:
+	    		return RobotType.GARDENER;
+	    	case 1:
+	    		return RobotType.SOLDIER;
+	    	case 4:
+	    		return RobotType.LUMBERJACK;
+	    	case 2:
+	    		return RobotType.TANK;
+	    	case 3:
+	    		return RobotType.SCOUT;
+	    	default:
+	    		throw new Exception("Unexpected Robot Type: " + rc.getType());
+		}
+	}
 }

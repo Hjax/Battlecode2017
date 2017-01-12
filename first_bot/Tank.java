@@ -11,6 +11,9 @@ public class Tank extends Bot {
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
+            	
+            	startTurn();
+            	
                 MapLocation myLocation = rc.getLocation();
 
                 // See if there are any nearby enemy robots
@@ -29,7 +32,7 @@ public class Tank extends Bot {
                 Utilities.tryMove(Utilities.randomDirection());
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-                Clock.yield();
+                endTurn();
 
             } catch (Exception e) {
                 System.out.println("Soldier Exception");
