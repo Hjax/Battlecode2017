@@ -117,6 +117,31 @@ public class Utilities extends Bot{
 		return x * 1024 + y;
 	}
 	
+	
+	// returns the closest edge in a given direction, -1 otherwise 
+	public static float edgeInDirection(Direction dir) throws GameActionException {
+		float max_dist = rc.getType().sensorRadius;
+		if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
+			return -1;
+		}
+		float resolution = rc.getType().sensorRadius / 2;
+		max_dist -= resolution;
+		while (resolution > 0.125) {
+			resolution /= 2;
+			if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
+				max_dist += resolution;
+			} else {
+				max_dist -= resolution;
+			}
+		}
+		if (Math.round(dir.getAngleDegrees()) == Math.round(Direction.getNorth().getAngleDegrees()) ||
+				Math.round(dir.getAngleDegrees()) == Math.round(Direction.getSouth().getAngleDegrees())) {
+			System.out.println(max_dist);
+			return rc.getLocation().add(dir, max_dist).y;
+		}
+		return rc.getLocation().add(dir, max_dist).x;
+	}
+	
 	public static int bitInterval(int input, int start, int end) {
 		// found this equation on stackoverflow
 		return (input >> start) & ~(~0 << (end-start+1));

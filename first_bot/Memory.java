@@ -1,6 +1,6 @@
 package first_bot;
 
-import battlecode.common.GameActionException;
+import battlecode.common.*;
 
 public class Memory extends Bot{
 	// we can have at most 19 orders, 490 allies, 490 enemies
@@ -24,6 +24,66 @@ public class Memory extends Bot{
 	public static int getNumEnemies() throws GameActionException{
 		return Utilities.bitInterval(read(0), 11, 19);
 	}
+	
+	// the top right corner is stored in 1
+	// the bottom left corner is stored in 2
+	
+	public static void initEdges() throws GameActionException {
+		setTopEdge(-1);
+		setBottomEdge(-1);
+		setLeftEdge(-1);
+		setRightEdge(-1);
+	}
+	
+	public static void updateEdges() throws GameActionException {
+		if (getTopEdge() == -1){
+			setTopEdge(Utilities.edgeInDirection(Direction.getNorth()));
+		}
+		if (getBottomEdge() == -1){
+			setBottomEdge(Utilities.edgeInDirection(Direction.getSouth()));
+		}
+		if (getRightEdge() == -1){
+			setRightEdge(Utilities.edgeInDirection(Direction.getEast()));
+		}
+		if (getLeftEdge() == -1){
+			setLeftEdge(Utilities.edgeInDirection(Direction.getWest()));
+		}
+	}
+
+
+	
+	public static float getTopEdge() throws GameActionException {
+		return read(1);
+	}
+	
+	public static float getBottomEdge() throws GameActionException {
+		return read(2);
+	}
+	
+	public static float getRightEdge() throws GameActionException {
+		return read(3);
+	}
+	
+	public static float getLeftEdge() throws GameActionException {
+		return read(4);
+	}
+	
+	public static void setTopEdge(float y) throws GameActionException {
+		write(1, Math.round(y));
+	}
+	
+	public static void setBottomEdge(float y) throws GameActionException {
+		write(2, Math.round(y));
+	}
+	
+	public static void setRightEdge(float x) throws GameActionException {
+		write(3, Math.round(x));
+	}
+	
+	public static void setLeftEdge(float x) throws GameActionException {
+		write(4, Math.round(x));
+	}
+	
 	
 	public static void setPointers(int numorders, int numallies, int numenemies) throws GameActionException {
 		write(0, numorders * (int) Math.pow(2, 29) + numallies * (int) Math.pow(2, 20) + numenemies * (int) Math.pow(2, 11));

@@ -58,7 +58,8 @@ public class Bot {
     	AllyData me = new AllyData(Memory.read(memory_loc));
     	me.location = rc.getLocation();
     	me.alive = rc.getRoundNum() % 2 == 0;
-    	rc.broadcast(memory_loc, me.toInt());
+    	// TODO uncomment this when we fix memory
+    	//rc.broadcast(memory_loc, me.toInt());
     	Clock.yield();
     }
     
