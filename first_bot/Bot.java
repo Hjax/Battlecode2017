@@ -8,6 +8,7 @@ public class Bot {
     protected static Team enemy;
     protected static int memory_loc = -1;
 	public static MapLocation archonStart;
+	public static int behaviorType = 0;
 	
     protected static void Init(RobotController RobCon){
     	rc = RobCon;
@@ -21,6 +22,13 @@ public class Bot {
 			Memory.setNumAllies(Memory.getNumAllies() + 1);
 		} catch (Exception e) {
 			System.out.println("Weird error while updating our location in memory");
+			e.printStackTrace();
+		}
+    	
+    	try {
+			Memory.updateEdges();
+		} catch (GameActionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -63,7 +71,7 @@ public class Bot {
     	Clock.yield();
     }
     
-    public static Direction neo()
+    public static Direction neo() throws GameActionException
     {
     	BulletInfo[] bullets = rc.senseNearbyBullets();
     	double xPressure = (float) (Math.random() - 0.5) * 40;
@@ -100,19 +108,22 @@ public class Bot {
     	}
     	
     	//stay near other bots
-    	
-    	RobotInfo[] engageBots = rc.senseNearbyRobots(7);
-    	for (int botCount = 0; botCount < engageBots.length; botCount++)
+    	if (rc.getType() != RobotType.ARCHON && rc.getType() != RobotType.GARDENER)
     	{
-    		if (engageBots[botCount].team != rc.getTeam())
-    		{
-    			relativeX = engageBots[botCount].getLocation().x - rc.getLocation().x;
-    			relativeY = engageBots[botCount].getLocation().y - rc.getLocation().y;
-    		
-    			xPressure += relativeX / 40;
-    			yPressure += relativeY / 40;
-    		}
+    		RobotInfo[] engageBots = rc.senseNearbyRobots(7);
+        	for (int botCount = 0; botCount < engageBots.length; botCount++)
+        	{
+        		if (engageBots[botCount].team != rc.getTeam())
+        		{
+        			relativeX = engageBots[botCount].getLocation().x - rc.getLocation().x;
+        			relativeY = engageBots[botCount].getLocation().y - rc.getLocation().y;
+        		
+        			xPressure += relativeX / 40;
+        			yPressure += relativeY / 40;
+        		}
+        	}
     	}
+    
     	
     	
     	//don't get too close to other bots
@@ -120,7 +131,7 @@ public class Bot {
     	RobotInfo[] avoidBots = rc.senseNearbyRobots(5);
     	for (int botCount = 0; botCount < avoidBots.length; botCount++)
     	{
-    		if (avoidBots[botCount].team != rc.getTeam() || true)
+    		if (avoidBots[botCount].getType() != RobotType.LUMBERJACK && (avoidBots[botCount].team != rc.getTeam() || true))
     		{
     			relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
@@ -143,6 +154,44 @@ public class Bot {
     				xPressure += -500 / relativeX;
     				yPressure += -500 / relativeY;
     			}
+    		}
+    	}
+    	
+    	//if gardener, move toward nearest edge
+    	if (rc.getType() == RobotType.GARDENER && behaviorType == 0)
+    	{
+    		if (Memory.getTopEdge() != -1)
+    		{
+    			relativeY = Memory.getTopEdge() - rc.getLocation().y;
+    			if (relativeY < 2)
+    				{yPressure += -10;}
+    			else if (relativeY > 5)
+    				{yPressure += 30;}	
+    		}
+    		if (Memory.getBottomEdge() != -1)
+    		{
+    			relativeY = rc.getLocation().y - Memory.getTopEdge();
+    			if (relativeY < 2)
+    				{yPressure += 10;}
+    			else if (relativeY > 5)
+    				{yPressure += -30;}	
+    		}
+    		
+    		if (Memory.getRightEdge() != -1)
+    		{
+    			relativeY = Memory.getRightEdge() - rc.getLocation().x;
+    			if (relativeX < 2)
+    				{xPressure += -10;}
+    			else if (relativeX > 5)
+    				{xPressure += 30;}	
+    		}
+    		if (Memory.getLeftEdge() != -1)
+    		{
+    			relativeY = rc.getLocation().y - Memory.getLeftEdge();
+    			if (relativeX < 2)
+    				{xPressure += 10;}
+    			else if (relativeX > 5)
+    				{xPressure += -30;}	
     		}
     	}
     	 	

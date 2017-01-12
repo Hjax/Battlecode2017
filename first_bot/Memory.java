@@ -5,7 +5,8 @@ import battlecode.common.*;
 public class Memory extends Bot{
 	// we can have at most 19 orders, 490 allies, 490 enemies
 
-	public static int read(int location) throws GameActionException{
+	public static int read(int location) throws GameActionException
+	{
 		return rc.readBroadcast(location);
 	}
 	

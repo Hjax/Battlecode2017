@@ -25,14 +25,15 @@ public class Gardener extends Bot{
 		// 7 = neutral tree
 		int build[] = new int[5];
 		build[0] = 0;
-		build[1] = 1;
+		build[1] = 0;
 		build[2] = 0;
 		build[3] = 0;
-		build[4] = 1;
+		build[4] = 0;
 		
 		int buildLength = 4;
 		
 		int buildIndex = 0;
+		
 
         // The code you want your robot to perform every round should be in this loop
         while (true) 
@@ -40,14 +41,16 @@ public class Gardener extends Bot{
         	
         	startTurn();
         	
-        	if (rc.getRoundNum() - builtOn < 8)
+        	if (rc.getRoundNum() - builtOn < 18)
         	{
+        		System.out.println(rc.getRoundNum());
         		try {
 					Utilities.tryMove(neo());
 				} catch (GameActionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+        		
         	}
         	else
         	{
@@ -67,7 +70,7 @@ public class Gardener extends Bot{
             					plantTree();
             					buildIndex++;
             					if (buildIndex > buildLength)
-            					{buildIndex = 0;}
+            						{buildIndex = 0;}
             				}
             				else 
             					{waterTrees();}
@@ -80,7 +83,7 @@ public class Gardener extends Bot{
             					trainUnit(RobotType.SOLDIER);
             					buildIndex++;
             					if (buildIndex > buildLength)
-            					{buildIndex = 0;}
+            						{buildIndex = 0;}
             				}
             				else waterTrees();
             				break;
@@ -92,7 +95,7 @@ public class Gardener extends Bot{
             					trainUnit(RobotType.TANK);
             					buildIndex++;
             					if (buildIndex > buildLength)
-            					{buildIndex = 0;}
+            						{buildIndex = 0;}
             				}
             				else waterTrees();
             				break;
@@ -104,14 +107,13 @@ public class Gardener extends Bot{
             					trainUnit(RobotType.SCOUT);
             					buildIndex++;
             					if (buildIndex > buildLength)
-            					{buildIndex = 0;}
+            						{buildIndex = 0;}
             				}
             				else waterTrees();
             				break;
             			}
         			}
 
-        			endTurn();
         		}
 
         		catch (Exception e) {
@@ -119,6 +121,7 @@ public class Gardener extends Bot{
         			e.printStackTrace();
         		}
         	}
+        	endTurn();
         }
 	}
 	
@@ -126,12 +129,16 @@ public class Gardener extends Bot{
 	{
 		Direction angle = new Direction(0);
 		int turnCount = 0;
-		while (!rc.canPlantTree(angle) && turnCount++ < 250)
+		while (!rc.canPlantTree(angle) && turnCount++ < 360)
 		{
 			angle = angle.rotateLeftDegrees(1);
 		}
 		try {
-			rc.plantTree(angle);
+			if (rc.canPlantTree(angle))
+			{
+				rc.plantTree(angle);
+			}
+			else waterTrees();
 		} catch (GameActionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -174,12 +181,6 @@ public class Gardener extends Bot{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private static void settle()
-	{
-		double xPressure = 0;
-    	double yPressure = 0;
 	}
  
 	
