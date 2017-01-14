@@ -1,7 +1,6 @@
 package standardBot;
 
 import battlecode.common.*;
-import first_bot.Utilities;
 
 public class Memory extends Bot{
 	// memory TODO
@@ -57,6 +56,10 @@ public class Memory extends Bot{
 		throw new Exception("Out of Memory");
 	}
 	
+	public static AllyData readAlly(int index) throws GameActionException {
+		return new AllyData(rc.readBroadcast(index + min_ally));
+	}
+	
 	public static void reserveAllyIndex(int index) throws Exception {
 		if (index > 495) {
 			throw new Exception("Out of Memory");
@@ -90,4 +93,6 @@ public class Memory extends Bot{
 			}
 		}
 	}
+	
+	
 }

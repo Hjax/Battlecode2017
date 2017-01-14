@@ -2,7 +2,6 @@ package standardBot;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import first_bot.Utilities;
 
 public class Globals extends Bot{
 	public static void initEdges() throws Exception {

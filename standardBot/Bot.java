@@ -1,9 +1,6 @@
 package standardBot;
 
 import battlecode.common.*;
-import first_bot.AllyData;
-import first_bot.Memory;
-import first_bot.Utilities;
 
 public class Bot {
 	public static RobotController rc;
@@ -54,7 +51,7 @@ public class Bot {
     }
     
     protected static void endTurn() throws GameActionException{
-    	AllyData me = new AllyData(rc.readBroadcast(memory_loc));
+    	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
     	me.alive = rc.getRoundNum() % 2 == 0;
     	rc.broadcast(memory_loc, me.toInt());
