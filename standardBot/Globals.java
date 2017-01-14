@@ -27,32 +27,49 @@ public class Globals extends Bot{
 	}
 	
 	public static float getTopEdge() throws GameActionException {
-		return rc.readBroadcast(0);
+		return Memory.readGlobal(0);
 	}
 	
 	public static float getBottomEdge() throws GameActionException {
-		return rc.readBroadcast(1);
+		return Memory.readGlobal(1);
 	}
 	
 	public static float getRightEdge() throws GameActionException {
-		return rc.readBroadcast(2);
+		return Memory.readGlobal(2);
 	}
 	
 	public static float getLeftEdge() throws GameActionException {
-		return rc.readBroadcast(3);
+		return Memory.readGlobal(3);
 	}
 	
 	public static int getArchonCount() throws GameActionException{
-		return rc.readBroadcast(4);
+		return Memory.readGlobal(4);
 	}
 	
 	public static int getGardenerCount() throws GameActionException{
-		return rc.readBroadcast(5);
+		return Memory.readGlobal(5);
 	}
 	
 	public static int getTrainerCount() throws GameActionException{
-		return rc.readBroadcast(6);
+		return Memory.readGlobal(6);
 	}
+	
+	public static int getSoldierCount() throws GameActionException{
+		return Memory.readGlobal(7);
+	}
+	
+	public static int getLumberjackCount() throws GameActionException{
+		return Memory.readGlobal(8);
+	}
+	
+	public static int getScoutCount() throws GameActionException{
+		return Memory.readGlobal(9);
+	}
+	
+	public static int getTankCount() throws GameActionException{
+		return Memory.readGlobal(10);
+	}
+	
 
 	public static void setTopEdge(float y) throws Exception {
 		Memory.writeGlobal(0, Math.round(y));
@@ -68,6 +85,34 @@ public class Globals extends Bot{
 	
 	public static void setLeftEdge(float x) throws Exception {
 		Memory.writeGlobal(3, Math.round(x));
+	}
+	
+	public static void setArchonCount(int n) throws Exception{
+		Memory.writeGlobal(4, n);
+	}
+	
+	public static void setGardenerCount(int n) throws Exception{
+		Memory.writeGlobal(5, n);
+	}
+	
+	public static void setTrainerCount(int n) throws Exception{
+		Memory.writeGlobal(6, n);
+	}
+	
+	public static void setSoldierCount(int n) throws Exception{
+		Memory.writeGlobal(7, n);
+	}
+	
+	public static void setLumberjackCount(int n) throws Exception{
+		Memory.writeGlobal(8, n);
+	}
+	
+	public static void setScoutCount(int n) throws Exception{
+		Memory.writeGlobal(9, n);
+	}
+	
+	public static void setTankCount(int n) throws Exception{
+		Memory.writeGlobal(10, n);
 	}
 	
 	
