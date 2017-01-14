@@ -37,11 +37,12 @@ public class Memory extends Bot{
 		}
 	}
 	
-	public static int first_free_ally() throws Exception{
+	public static int first_free_ally() throws Exception {
 		int index = 0;
 		for (int i = min_address; i <= max_address; i++){
 			int current_cell = rc.readBroadcast(i);
 			if (current_cell == 2147483647){
+				index += 31;
 				continue;
 			}
 			int value = 1;
@@ -93,6 +94,38 @@ public class Memory extends Bot{
 			}
 		}
 	}
+	// TODO store orders in memory so we dont make the array too big
+	public static void pruneOrders() throws GameActionException {
+		int[] Orders = new int[(max_order - min_order) + 1];
+		int order_count = 0;
+		int total_orders = 0;
+		for (int i = min_order; i <= max_order; i++){
+			total_orders++;
+			int current = rc.readBroadcast(i);
+			if (current == 0){
+				break;
+			}
+			Order current_order = new Order(current);
+			if (current_order.count <= 0) {
+				continue;
+			}
+			Orders[order_count++] = current;
+		}
+		for (int i = 0; i < total_orders; i++){
+			if (i < order_count){
+				rc.broadcast(i + min_order, Orders[i]);
+			} else {
+				rc.broadcast(i + min_order, 0);
+			}
+		}
+	}
 	
+	public static Order getOrder(int index) throws GameActionException{
+		return new Order(rc.readBroadcast(min_order + index));
+	}
+	
+	public static void addOrder(Order o){
+		
+	}
 	
 }
