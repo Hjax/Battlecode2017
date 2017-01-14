@@ -69,7 +69,6 @@ public class Globals extends Bot{
 	public static int getTankCount() throws GameActionException{
 		return Memory.readGlobal(10);
 	}
-	
 
 	public static void setTopEdge(float y) throws Exception {
 		Memory.writeGlobal(0, Math.round(y));
@@ -113,6 +112,14 @@ public class Globals extends Bot{
 	
 	public static void setTankCount(int n) throws Exception{
 		Memory.writeGlobal(10, n);
+	}
+	
+	public static int getOrderCount() throws GameActionException{
+		return Memory.readGlobal(11);
+	}
+	
+	public static void setOrderCount(int n) throws Exception {
+		Memory.writeGlobal(11, n);
 	}
 	
 	

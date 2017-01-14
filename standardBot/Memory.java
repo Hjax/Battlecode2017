@@ -95,8 +95,12 @@ public class Memory extends Bot{
 		}
 	}
 	// TODO store orders in memory so we dont make the array too big
-	public static void pruneOrders() throws GameActionException {
-		int[] Orders = new int[(max_order - min_order) + 1];
+	public static void pruneOrders() throws Exception {
+		int old_orders = Globals.getOrderCount();
+		if (old_orders == 0){
+			return;
+		}
+		int[] Orders = new int[old_orders];
 		int order_count = 0;
 		int total_orders = 0;
 		for (int i = min_order; i <= max_order; i++){
@@ -118,14 +122,16 @@ public class Memory extends Bot{
 				rc.broadcast(i + min_order, 0);
 			}
 		}
+		Globals.setOrderCount(order_count);
 	}
 	
 	public static Order getOrder(int index) throws GameActionException{
 		return new Order(rc.readBroadcast(min_order + index));
 	}
 	
-	public static void addOrder(Order o){
-		
+	public static void addOrder(Order o) throws Exception{
+		rc.broadcast(min_order + Globals.getOrderCount(), o.toInt());
+		Globals.setOrderCount(Globals.getOrderCount() + 1);
 	}
 	
 }
