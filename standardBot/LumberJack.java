@@ -21,31 +21,13 @@ public class LumberJack extends Bot {
 	        	
 	        	if (enemyTrees.length > 0)
 	        	{
-	        		// find closest enemy tree
-	        		bestTree = enemyTrees[0];
-	        		for (int treeCount = 0; treeCount < enemyTrees.length; treeCount++)
-	        		{
-	        			if (rc.getLocation().distanceTo(enemyTrees[treeCount].getLocation()) < rc.getLocation().distanceTo(bestTree.getLocation()))
-	        				{bestTree = enemyTrees[treeCount];}
-	        		}
-	        		rc.setIndicatorDot(bestTree.getLocation(), 0, 250, 0);
-	        		Utilities.moveTo(Utilities.melee(bestTree.getLocation(), 1 + bestTree.radius));
-	        		if (rc.canChop(bestTree.ID))
-	        			{rc.chop(bestTree.ID);}
+	        		if (rc.canChop(enemyTrees[0].ID))
+	        			{rc.chop(enemyTrees[0].ID);}
 	        	}
 	        	else if (neutralTrees.length > 0)
 	        	{
-	        		// find closest neutral tree
-	        		bestTree = neutralTrees[0];
-	        		for (int treeCount = 0; treeCount < neutralTrees.length; treeCount++)
-	        		{
-	        			if (rc.getLocation().distanceTo(neutralTrees[treeCount].getLocation()) < rc.getLocation().distanceTo(bestTree.getLocation()))
-	        				{bestTree = neutralTrees[treeCount];}
-	        		}
-	        		rc.setIndicatorDot(bestTree.getLocation(), 0, 250, 0);
-	        		Utilities.moveTo(Utilities.melee(bestTree.getLocation(), 1 + bestTree.radius));
-	        		if (rc.canChop(bestTree.ID))
-        			{rc.chop(bestTree.ID);}
+	        		if (rc.canChop(neutralTrees[0].ID))
+        			{rc.chop(neutralTrees[0].ID);}
 	        	}
 	        	else Utilities.tryMove(neo());
 
