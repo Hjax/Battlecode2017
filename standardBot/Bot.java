@@ -51,17 +51,25 @@ public class Bot {
     	}
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		Globals.setRoundNumber(rc.getRoundNum());
+    		Memory.pruneAllyMemory();
+    		Memory.pruneOrders();
     		isFirst = true;
     	} else {
     		isFirst = false;
     	}
     }
     
-    protected static void endTurn() throws GameActionException{
+    protected static void endTurn() throws GameActionException {
     	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
     	me.alive = rc.getRoundNum() % 2 == 0;
     	rc.broadcast(memory_loc, me.toInt());
+		try {
+			Globals.updateEdges();
+		} catch (Exception e) {
+			System.out.println("Error while updating edges");
+		}
+        Utilities.tryShake();
     	Clock.yield();
     }
     

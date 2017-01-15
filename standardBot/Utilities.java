@@ -42,8 +42,6 @@ public class Utilities extends Bot{
         // First, try intended direction
         if (rc.canMove(dir)) {
             rc.move(dir);
-            Globals.updateEdges();
-            tryShake();
             return true;
         }
 
@@ -60,19 +58,15 @@ public class Utilities extends Bot{
         		// Try the offset of the left side
         		if(rc.canMove(dir.rotateLeftDegrees(degreeOffset*currentCheck))) {
         			rc.move(dir.rotateLeftDegrees(degreeOffset*currentCheck));
-        			Globals.updateEdges();
         			bytes = Clock.getBytecodeNum() - bytes;
         			System.out.println("moving used " + bytes);
-        			tryShake();
         			return true;
         		}
         		// Try the offset on the right side
         		if(rc.canMove(dir.rotateRightDegrees(degreeOffset*currentCheck))) {
         			rc.move(dir.rotateRightDegrees(degreeOffset*currentCheck));
-        			Globals.updateEdges();
         			bytes = Clock.getBytecodeNum() - bytes;
         			System.out.println("moving used " + bytes);
-        			tryShake();
         			return true;
         		}
         		// No move performed, try slightly further
@@ -85,7 +79,6 @@ public class Utilities extends Bot{
         // A move never happened, so return false.
         bytes = Clock.getBytecodeNum() - bytes;
 		System.out.println("moving used " + bytes);
-		tryShake();
         return false;
     }
 
@@ -223,8 +216,6 @@ public class Utilities extends Bot{
 			if (distance < speed && rc.canMove(destination))
 			{
 				rc.move(rc.getLocation().directionTo(destination), distance);
-				Globals.updateEdges();
-				tryShake();
 			}
 			else tryMove(rc.getLocation().directionTo(destination));
 		}
