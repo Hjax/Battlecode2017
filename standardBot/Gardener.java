@@ -23,8 +23,8 @@ public class Gardener extends Bot{
 		// 5 = gardener
 		// 6 = archon
 		// 7 = neutral tree
-		int build[] = new int[8];
-		build[0] = 0;
+		int build[] = new int[7];
+		build[0] = 1;
 		build[1] = 0;
 		build[2] = 0;
 		build[3] = 0;
@@ -46,6 +46,7 @@ public class Gardener extends Bot{
         	
         	
         	startTurn();
+        	System.out.println("start turn");
         	
         	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
     		try 
@@ -103,6 +104,7 @@ public class Gardener extends Bot{
     			{
 
         			// execute build order if possible
+    				System.out.println("build order");
         			switch(build[buildIndex])
         			{
             			case 0:
@@ -167,6 +169,18 @@ public class Gardener extends Bot{
             				else waterTrees();
             				break;
             			}
+            			case 4:
+            			{
+            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+            				{
+            					trainUnit(RobotType.LUMBERJACK);
+            					buildIndex++;
+            					if (buildIndex > buildLength)
+            						{buildIndex = 0;}
+            				}
+            				else waterTrees();
+            				break;
+            			}
         			}
 
         		}
@@ -176,6 +190,7 @@ public class Gardener extends Bot{
         		System.out.println("Gardener Exception");
         		e.printStackTrace();
         	}
+    		System.out.println("end turn");
         	endTurn();
         }
 	}

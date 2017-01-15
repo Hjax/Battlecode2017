@@ -24,7 +24,7 @@ public class Gardener extends Bot{
 		// 6 = archon
 		// 7 = neutral tree
 		int build[] = new int[8];
-		build[0] = 1;
+		build[0] = 4;
 		build[1] = 0;
 		build[2] = 0;
 		build[3] = 0;

@@ -48,7 +48,6 @@ public class Scout extends Bot{
             			break;
             		}
             	}
-            	System.out.println("QQQQQQQQ");
             	System.out.println(goal.getAngleDegrees());
             	System.out.println(rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false);
             	
@@ -72,10 +71,8 @@ public class Scout extends Bot{
             	
             	if (rc.onTheMap(rc.getLocation().add(goal, 4.0f)) == false)
             	{
-            		System.out.println("THIS SHOULDN'T BE RUNNING");
             		goal = goal.rotateLeftRads((float) (Math.random() * 2 * Math.PI));
             	}
-            	System.out.println("AGALSIDGAKLSDHG");
             	System.out.println(goal.getAngleDegrees());
             	
             	

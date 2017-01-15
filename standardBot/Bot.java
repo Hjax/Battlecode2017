@@ -200,8 +200,8 @@ public class Bot {
         		relativeX = avoidTrees[treeCount].getLocation().x - rc.getLocation().x;
         		relativeY = avoidTrees[treeCount].getLocation().y - rc.getLocation().y;
         			
-        		xPressure += -60 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
-        		yPressure += -60 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        		xPressure += -90 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+        		yPressure += -90 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
         		
         		System.out.println("treeX: " + xPressure);
         		System.out.println("treeY: " + yPressure);
@@ -230,7 +230,7 @@ public class Bot {
     			if (distFromHighBound < 2)
     				{yPressure += -30;}
     			else if (distFromHighBound > 5)
-    				{yPressure += 60;}	
+    				{yPressure += 100;}	
     			System.out.println("D1Y: " + yPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
@@ -238,13 +238,13 @@ public class Bot {
     			if (distFromLowBound < 2)
     				{yPressure += 30;}
     			else if (distFromLowBound > 5)
-    				{yPressure += -60;}	
+    				{yPressure += -100;}	
     			System.out.println("D2Y: " + yPressure);
     		}
     		
     		distFromLowBound = 1000;
     		if (Globals.getLeftEdge() != -1)
-				{distFromLowBound = rc.getLocation().y - Globals.getLeftEdge();}
+				{distFromLowBound = rc.getLocation().x - Globals.getLeftEdge();}
     		distFromHighBound = 1000;
     		if (Globals.getRightEdge() != -1)
 				{distFromHighBound = Globals.getRightEdge() - rc.getLocation().x;}
@@ -254,16 +254,17 @@ public class Bot {
     			if (distFromHighBound < 2)
     				{xPressure += -30;}
     			else if (distFromHighBound > 5)
-    				{xPressure += 60;}	
+    				{xPressure += 100;}	
     			System.out.println("D1X: " + xPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
+    			System.out.println("left edge at " + Globals.getLeftEdge());
     			System.out.println("D2startX: " + xPressure);
     			if (distFromLowBound < 2)
     				{xPressure += 30;}
     			else if (distFromLowBound > 5)
-    				{xPressure += -60;}	
+    				{xPressure += -100;}	
     			System.out.println("D2X: " + xPressure);
     		}
     	}

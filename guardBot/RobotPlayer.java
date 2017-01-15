@@ -42,10 +42,10 @@ public strictfp class RobotPlayer {
             		{Trainer.Start(rc);}
                 break;
             case SOLDIER:
-                Guard.Start(rc);
+                Soldier.Start(rc);
                 break;
             case LUMBERJACK:
-                LumberJack.Start(rc);
+                Guard.Start(rc);
                 break;
             case TANK:
             	Soldier.Start(rc);
