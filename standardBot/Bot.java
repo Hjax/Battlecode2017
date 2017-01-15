@@ -9,6 +9,7 @@ public class Bot {
     protected static int memory_loc = -1;
 	public static MapLocation archonStart, enemyStarts[], enemyPing;
 	public static int behaviorType = 0;
+	public static boolean isFirst = false;
 	
     protected static void Init(RobotController RobCon){
     	rc = RobCon;
@@ -47,6 +48,12 @@ public class Bot {
     	if (rc.getRoundLimit() - rc.getRoundNum() < 100)
     	{
     		rc.donate(rc.getTeamBullets() - rc.getTeamBullets() % 10);
+    	}
+    	if (Globals.getRoundNumber() != rc.getRoundNum()){
+    		Globals.setRoundNumber(rc.getRoundNum());
+    		isFirst = true;
+    	} else {
+    		isFirst = false;
     	}
     }
     

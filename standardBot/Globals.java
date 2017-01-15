@@ -122,5 +122,12 @@ public class Globals extends Bot{
 		Memory.writeGlobal(11, n);
 	}
 	
+	public static int getRoundNumber() throws GameActionException {
+		return Memory.readGlobal(12);
+	}
+	
+	public static void setRoundNumber(int n) throws Exception {
+		Memory.writeGlobal(12, n);
+	}
 	
 }

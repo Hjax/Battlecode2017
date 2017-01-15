@@ -94,7 +94,7 @@ public class Memory extends Bot{
 			}
 		}
 	}
-	// TODO store orders in memory so we dont make the array too big
+	
 	public static void pruneOrders() throws Exception {
 		int old_orders = Globals.getOrderCount();
 		if (old_orders == 0){

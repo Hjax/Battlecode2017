@@ -37,16 +37,6 @@ public class Archon extends Bot{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-     	int archonNum = 0;
-     	MapLocation archonStarts[] = rc.getInitialArchonLocations(ally);
-     	for (int archonCount = 0; archonCount < archonStarts.length; archonCount++)
-     	{
-     		if (rc.getLocation().equals(archonStarts[archonCount]))
-     			{archonNum = archonCount;}
-     	}
-     	
-     	
-     	
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
@@ -55,6 +45,8 @@ public class Archon extends Bot{
             try 
             {
             	startTurn();
+            	
+            	
             	
                 // dodge
             	// pause for one turn after building
@@ -67,7 +59,7 @@ public class Archon extends Bot{
 
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
-                if ((round == 1 && archonNum == 0) || round == 100 || (round > 100 && round % 60 == 0))
+                if ((round == 1 && isFirst) || round == 100 || (round > 100 && round % 60 == 0))
                 	{tryBuild = true;}
              
                 if (tryBuild && rc.getTeamBullets() > 120) 
