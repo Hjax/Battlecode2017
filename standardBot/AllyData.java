@@ -8,10 +8,10 @@ public class AllyData {
 	public int hp;
 	public boolean alive;
 	public AllyData(int memoryData) {
-		type = Utilities.bitInterval(memoryData, 29, 31);
-		location = Utilities.intToTarget(Utilities.bitInterval(memoryData, 11, 28));
-		hp = Utilities.bitInterval(memoryData, 2, 10);
-		alive = Utilities.bitInterval(memoryData, 1, 1) == 1;
+		type = Utilities.bitInterval(memoryData, 28, 30);
+		location = Utilities.intToTarget(Utilities.bitInterval(memoryData, 10, 27));
+		hp = Utilities.bitInterval(memoryData, 1, 9);
+		alive = Utilities.bitInterval(memoryData, 0, 0) == 1;
 	}
 	public AllyData(int t, MapLocation loc, int health, boolean is_alive){
 		type = t;
@@ -20,6 +20,6 @@ public class AllyData {
 		alive = is_alive;
 	}
 	public int toInt(){
-		return type * (int) Math.pow(2, 29) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 11) + hp * (int) Math.pow(2, 2) + ((alive) ? 1 : 0) * 2;
+		return type * (int) Math.pow(2, 28) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 10) + hp * 2 + ((alive) ? 1 : 0);
 	}
 }
