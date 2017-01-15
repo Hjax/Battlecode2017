@@ -8,33 +8,22 @@ public class Memory extends Bot{
 	
 	
 	private static int min_global = 0;
-	private static int max_global = 24;
-	private static int min_address = 25;
-	private static int max_address = 40;
-	private static int min_ally = 41;
-	private static int max_ally = 536;
-	private static int min_order = 537;
-	private static int max_order = 636;
-	private static int min_map_data = 637;
+	private static int max_global = 49;
+	private static int min_address = 50;
+	private static int max_address = 65;
+	private static int min_ally = 66;
+	private static int max_ally = 561;
+	private static int min_order = 562;
+	private static int max_order = 661;
+	private static int min_map_data = 662;
 	private static int max_map_data = 999;
 	
 	public static int readGlobal(int index) throws GameActionException {
-		if (index % 2 == 0){
-			return Utilities.bitInterval(rc.readBroadcast(index / 2), 0, 14);
-		} else {
-			return Utilities.bitInterval(rc.readBroadcast((int) Math.floor(index / 2.0)), 15, 30);
-		}
+		return rc.readBroadcast(min_global + index);
 	}
 	
 	public static void writeGlobal(int index, int value) throws Exception {
-		if (value > 32767) {
-			throw new Exception("Value too large to write global");
-		}
-		if (index % 2 == 0) {
-			rc.broadcast(index / 2, value + 32768 * readGlobal(index + 1));
-		} else {
-			rc.broadcast((int) Math.floor(index / 2.0), readGlobal(index - 1) + 32768 * value);
-		}
+		rc.broadcast(min_global + index, value);
 	}
 	
 	public static int first_free_ally() throws Exception {
