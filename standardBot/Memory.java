@@ -82,6 +82,10 @@ public class Memory extends Bot{
 	
 	public static void pruneAllyMemory() throws GameActionException{
 		for (int i = min_ally; i <= max_ally; i++){
+			if (rc.readBroadcast(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
+				i += 30;
+				continue;
+			}
 			int current_int = rc.readBroadcast(i);
 			if (current_int != 0){
 				AllyData current = new AllyData(current_int);
