@@ -23,16 +23,21 @@ public class Gardener extends Bot{
 		// 5 = gardener
 		// 6 = archon
 		// 7 = neutral tree
-		int build[] = new int[5];
+		int build[] = new int[8];
 		build[0] = 0;
 		build[1] = 0;
 		build[2] = 0;
 		build[3] = 0;
 		build[4] = 0;
+		build[5] = 0;
+		build[6] = 0;
 		
-		int buildLength = 4;
+		int buildLength = 6;
 		
 		int buildIndex = 0;
+		
+		MapLocation roost = rc.getLocation();
+		boolean settled = false;
 		
 
         // The code you want your robot to perform every round should be in this loop
@@ -42,29 +47,60 @@ public class Gardener extends Bot{
         	
         	startTurn();
         	
-        	if (rc.getRoundNum() < 10)
-				{trainUnit(RobotType.SCOUT);}
-        	else if (rc.getRoundNum() < 25)
-				{trainUnit(RobotType.LUMBERJACK);}
+        	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
+    		try 
+    		{
         	
-        	if (rc.getRoundNum() - builtOn < 18)
-        	{
-        		try {
-					Utilities.tryMove(neo());
-				} catch (GameActionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		
-        	}
-        	else
-        	{
+    			//dodge bullets if needed
+    			BulletInfo bullets[] = rc.senseNearbyBullets(4);
+    			MapLocation dodgeTo = rc.getLocation();
+    			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+    			{
+    				dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
+    				if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
+    				{
+    					System.out.println("dodge bullet");
+    					Utilities.moveTo(dodgeTo);
+    				}
+    			}
         	
-
-        		// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
-        		try 
-        		{
-        			
+    			if (rc.hasMoved() == false)
+    			{
+    				//run from enemies if near
+    				RobotInfo enemies[] = rc.senseNearbyRobots(5, enemy);
+    				dodgeTo = rc.getLocation();
+            		if (enemies.length > 0)
+            		{
+            			System.out.println("run from enemy");
+            			dodgeTo = rc.getLocation().add(enemies[0].getLocation().directionTo(rc.getLocation()), 1.0f);
+            		}
+    			}
+        	
+        	
+    			//open with a scout
+    			if (rc.getRoundNum() < 5)
+					{trainUnit(RobotType.SCOUT);}
+        	
+    			//find a place to settle
+    			if (rc.getRoundNum() - builtOn < 18 && rc.hasMoved() == false)
+    			{
+    				try {
+    					System.out.println("find a place to roost");
+    					Utilities.tryMove(neo());
+    				} catch (GameActionException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}	
+    			}	
+    			else if (settled == true && rc.getLocation().equals(roost) == false && rc.hasMoved() == false)
+    			{
+    				//return to roost if scared away
+    				System.out.println("return to roost");
+    				System.out.println("(" + roost.x + ", " + roost.y + ")");
+    				Utilities.moveTo(roost);
+    			}
+    			else
+    			{
 
         			// execute build order if possible
         			switch(build[buildIndex])
@@ -73,10 +109,23 @@ public class Gardener extends Bot{
             			{
             				if (rc.isBuildReady() && rc.getTeamBullets() > 50)
             				{
-            					plantTree();
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            						{buildIndex = 0;}
+            					if (rc.senseNearbyBullets().length == 0)
+            					{
+            						if (plantTree())
+            						{
+            							settled = true;
+            							roost = rc.getLocation();
+            						}
+            						
+                					buildIndex++;
+                					if (buildIndex > buildLength)
+                						{buildIndex = 0;}
+            					}
+            					else if (rc.getTeamBullets() >= 80)
+            					{
+            						trainUnit(RobotType.SCOUT);
+            					}
+            					
             				}
             				else 
             					{waterTrees();}
@@ -121,17 +170,17 @@ public class Gardener extends Bot{
         			}
 
         		}
+    		}
 
-        		catch (Exception e) {
-        			System.out.println("Gardener Exception");
-        			e.printStackTrace();
-        		}
+        	catch (Exception e) {
+        		System.out.println("Gardener Exception");
+        		e.printStackTrace();
         	}
         	endTurn();
         }
 	}
 	
-	private static void plantTree()
+	private static boolean plantTree()
 	{
 		int bytes = Clock.getBytecodeNum();
 		Direction angle = new Direction(0);
@@ -144,6 +193,7 @@ public class Gardener extends Bot{
 			if (rc.canPlantTree(angle))
 			{
 				rc.plantTree(angle);
+				return true;
 			}
 			else waterTrees();
 		} catch (GameActionException e) {
@@ -151,6 +201,7 @@ public class Gardener extends Bot{
 			e.printStackTrace();
 		}
 		System.out.println("watering takes: " + (Clock.getBytecodeNum() - bytes));
+		return false;
 	}
 	
 	private static void waterTrees()

@@ -21,9 +21,9 @@ public class Utilities extends Bot{
      *
      * @param dir The intended direction of movement
      * @return true if a move was performed
-     * @throws Exception 
+     * @throws GameActionException
      */
-    static boolean tryMove(Direction dir) throws Exception 
+    static boolean tryMove(Direction dir) throws GameActionException 
     {    	
         return tryMove(dir,10,10);
     }
@@ -37,10 +37,11 @@ public class Utilities extends Bot{
      * @return true if a move was performed
      * @throws GameActionException
      */
-    static boolean tryMove(Direction dir, float degreeOffset, int checksPerSide) throws Exception {
+    static boolean tryMove(Direction dir, float degreeOffset, int checksPerSide) throws GameActionException {
     	int bytes = Clock.getBytecodeNum();
+    	float distance = rc.getType().strideRadius;
         // First, try intended direction
-        if (rc.canMove(dir)) {
+        if (rc.canMove(dir) && rc.senseNearbyBullets(rc.getLocation().add(dir, distance), rc.getType().bodyRadius).length == 0) {
             rc.move(dir);
             return true;
         }
@@ -48,7 +49,8 @@ public class Utilities extends Bot{
         // Now try a bunch of similar angles
         boolean moved = false;
         int currentCheck = 1;
-        float distance = rc.getType().strideRadius;
+        Direction tryLeft = dir;
+        Direction tryRight = dir;
         
         while (distance >= 0.1f)
         {
@@ -56,15 +58,17 @@ public class Utilities extends Bot{
         	while(currentCheck<=checksPerSide) 
         	{
         		// Try the offset of the left side
-        		if(rc.canMove(dir.rotateLeftDegrees(degreeOffset*currentCheck))) {
-        			rc.move(dir.rotateLeftDegrees(degreeOffset*currentCheck));
+        		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
+        		if(rc.canMove(tryLeft) && rc.senseNearbyBullets(rc.getLocation().add(tryLeft, distance), rc.getType().bodyRadius).length == 0) {
+        			rc.move(tryLeft);
         			bytes = Clock.getBytecodeNum() - bytes;
         			System.out.println("moving used " + bytes);
         			return true;
         		}
         		// Try the offset on the right side
-        		if(rc.canMove(dir.rotateRightDegrees(degreeOffset*currentCheck))) {
-        			rc.move(dir.rotateRightDegrees(degreeOffset*currentCheck));
+        		tryRight = tryRight.rotateRightDegrees(degreeOffset);
+        		if(rc.canMove(tryRight) && rc.senseNearbyBullets(rc.getLocation().add(tryRight, distance), rc.getType().bodyRadius).length == 0) {
+        			rc.move(tryRight);
         			bytes = Clock.getBytecodeNum() - bytes;
         			System.out.println("moving used " + bytes);
         			return true;
@@ -79,6 +83,7 @@ public class Utilities extends Bot{
         // A move never happened, so return false.
         bytes = Clock.getBytecodeNum() - bytes;
 		System.out.println("moving used " + bytes);
+		tryShake();
         return false;
     }
 
@@ -206,7 +211,7 @@ public class Utilities extends Bot{
 		}
 	}
 	
-	public static void moveTo(MapLocation destination) throws Exception
+	public static void moveTo(MapLocation destination) throws GameActionException
 	{
 		if (rc.getLocation().equals(destination) == false)
 		{
@@ -221,7 +226,7 @@ public class Utilities extends Bot{
 		}
 	}
 	
-	public static MapLocation melee(MapLocation targetPoint, float radius) throws GameActionException //radius should be the sum of the radius of the target and of self
+	public static MapLocation melee(MapLocation targetPoint, float radius) throws GameActionException //radius should be the sum of the radii of the target and of self
 	{
 		Direction angle = rc.getLocation().directionTo(targetPoint);
 		float distance = rc.getLocation().distanceTo(targetPoint);
@@ -240,6 +245,24 @@ public class Utilities extends Bot{
 				rc.shake(trees[countTree].ID);
 			}
 		}
+	}
+	
+	public static MapLocation dodgeBullet(BulletInfo bullet)
+	{
+		double bulletXVel = bullet.getSpeed() * Math.cos(bullet.getDir().radians);
+		double bulletYVel = bullet.getSpeed() * Math.sin(bullet.getDir().radians);
+		
+		double relativeX = bullet.getLocation().x - rc.getLocation().x;
+		double relativeY = bullet.getLocation().y - rc.getLocation().y;
+		
+		double pathOffset = relativeY - (bulletYVel * relativeX/bulletXVel)/(-1/bulletYVel - bulletYVel);
+		double pathDistance = relativeX/bulletXVel - pathOffset;
+		
+		if (pathDistance - bullet.getSpeed() - rc.getType().bodyRadius <= 0 && pathOffset <= rc.getType().bodyRadius && pathDistance > 0)
+		{
+			return rc.getLocation().add(new Direction((float)bulletXVel, (float)bulletYVel).rotateRightDegrees((float)Math.copySign(90, pathOffset)), (float)pathOffset + 1.0f);
+		}
+		return rc.getLocation();
 	}
 	
 }

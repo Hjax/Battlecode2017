@@ -100,7 +100,7 @@ public class Bot {
     		relativeX = bullets[bulletCount].getLocation().x - rc.getLocation().x;
     		relativeY = bullets[bulletCount].getLocation().y - rc.getLocation().y;
     		
-    		pathOffset = (relativeY - bulletYVel * relativeX/bulletXVel)/(-1/bulletYVel - bulletYVel);
+    		pathOffset = relativeY - (bulletYVel * relativeX/bulletXVel)/(-1/bulletYVel - bulletYVel);
     		pathDistance = relativeX/bulletXVel - pathOffset;
     		
     		if (pathDistance > -0.2)
@@ -200,8 +200,8 @@ public class Bot {
         		relativeX = avoidTrees[treeCount].getLocation().x - rc.getLocation().x;
         		relativeY = avoidTrees[treeCount].getLocation().y - rc.getLocation().y;
         			
-        		xPressure += -30 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
-        		yPressure += -30 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        		xPressure += -60 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+        		yPressure += -60 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
         		
         		System.out.println("treeX: " + xPressure);
         		System.out.println("treeY: " + yPressure);
