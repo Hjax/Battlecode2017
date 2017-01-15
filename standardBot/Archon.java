@@ -5,6 +5,8 @@ import battlecode.common.*;
 public class Archon extends Bot{
 	public static void Start(RobotController RobCon) throws GameActionException{
 		Bot.Init(RobCon);
+		
+		
         System.out.println("I'm an archon!");
         boolean tryBuild = false;
         
