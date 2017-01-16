@@ -26,6 +26,32 @@ public class Globals extends Bot{
 		}
 	}
 	
+	public static void incrementUnitCount(int type, int amount) throws Exception{
+		switch (type){
+			case UnitType.TRAINER:
+				Globals.setTrainerCount(Globals.getTrainerCount() + amount);
+				break;
+			case UnitType.ARCHON:
+				Globals.setArchonCount(Globals.getArchonCount() + amount);
+				break;
+			case UnitType.GARDENER:
+				Globals.setGardenerCount(Globals.getGardenerCount() + amount);
+				break;
+			case UnitType.SOLDIER:
+				Globals.setSoldierCount(Globals.getSoldierCount() + amount);
+				break;
+			case UnitType.LUMBERJACK:
+				Globals.setLumberjackCount(Globals.getLumberjackCount() + amount);
+				break;
+			case UnitType.SCOUT:
+				Globals.setScoutCount(Globals.getScoutCount() + amount);
+				break;
+			case UnitType.TANK:
+				Globals.setTankCount(Globals.getTankCount() + amount);
+				break;							
+	}
+	}
+	
 	public static float getTopEdge() throws GameActionException {
 		return Memory.readGlobal(0);
 	}

@@ -69,7 +69,7 @@ public class Memory extends Bot{
 		rc.broadcast(min_ally + index, value);
 	}
 	
-	public static void pruneAllyMemory() throws GameActionException{
+	public static void pruneAllyMemory() throws Exception{
 		for (int i = min_ally; i <= max_ally; i++){
 			if (rc.readBroadcast(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
 				i += 30;
@@ -82,6 +82,8 @@ public class Memory extends Bot{
 				// then it wasnt updated last turn
 				// NOTE freeing memory does not write zeroes to the old location
 				if (current.alive == ((rc.getRoundNum() % 2) == 1)){
+					AllyData current_value = new AllyData(rc.readBroadcast(i - min_ally));
+					Globals.incrementUnitCount(current_value.type, -1);
 					freeAllyMemory(i - min_ally);
 				}
 			}

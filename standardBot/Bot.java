@@ -25,7 +25,9 @@ public class Bot {
     	try {
     		memory_loc = Memory.first_free_ally();
     		Memory.reserveAllyIndex(memory_loc);
-			Memory.writeAllyData(memory_loc, new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 0).toInt());
+    		AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 0);
+			Memory.writeAllyData(memory_loc, me.toInt());
+			Globals.incrementUnitCount(me.type, 1);
 		} catch (Exception e) {
 			System.out.println("Weird error while updating our location in memory");
 			e.printStackTrace();
