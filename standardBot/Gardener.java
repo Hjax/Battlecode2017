@@ -46,6 +46,7 @@ public class Gardener extends Bot{
         	
         	startTurn();
         	System.out.println("start turn");
+        	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
         	
         	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
     		try 

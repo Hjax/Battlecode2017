@@ -62,26 +62,7 @@ public class Archon extends Bot{
              
                 if (tryBuild && rc.getTeamBullets() > 120) 
                 {
-                	switch(build[buildIndex++])
-                	{
-                		case 0:
-                		{
-                			if (buildIndex > buildLength)
-        						{buildIndex = 0;}
-                			trainGardener();
-                			pause = true;
-                			break;
-                		}
-                		case 1:
-                		{
-                			if (buildIndex > buildLength)
-        						{buildIndex = 0;}
-                			System.out.println("trainTrainer");
-                			trainTrainer();
-                			pause = true;
-                			break;
-                		}
-                	}
+                	trainGardener();
                     tryBuild = false;
                 }
                 

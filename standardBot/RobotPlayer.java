@@ -21,19 +21,7 @@ public strictfp class RobotPlayer {
                 Archon.Start(rc);
                 break;
             case GARDENER:
-            	boolean garden = true;
-            	RobotInfo nearby[] = rc.senseNearbyRobots(2.0f);
-            	for (int bot = 0; bot < nearby.length; bot++)
-            	{
-            		if (nearby[bot].type == RobotType.ARCHON && Math.abs(new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees() % 4) >= 1.25f && Math.abs(new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees() % 4) <= 2.75)
-            		{
-            			garden = false;
-            			
-            		}
-            		System.out.println(new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees() % 4);
-        			System.out.println("(" + nearby[bot].getLocation().x + ", " + nearby[bot].getLocation().y + ")");
-            	}
-            	if (garden)
+            	if (Bot.behaviorType == 0)
             		{Gardener.Start(rc);}
             	else 
             		{Trainer.Start(rc);}

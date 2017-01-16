@@ -11,7 +11,7 @@ public class Bot {
 	public static int behaviorType = 0;
 	public static boolean isFirst = false;
 	
-    protected static void Init(RobotController RobCon){
+    protected static void Init(RobotController RobCon) throws GameActionException{
     	rc = RobCon;
     	ally = rc.getTeam();
     	enemy = ally.opponent();
@@ -20,6 +20,11 @@ public class Bot {
     	int enemyPingIndex = rc.getID() % enemyStarts.length;
     	enemyPing = enemyStarts[enemyPingIndex];
     	System.out.println("Attacking enemy archon number " + enemyPingIndex + " of " + enemyStarts.length);
+    	
+    	if (Globals.getTrainerCount() < (rc.getRoundNum() - 100) / 100 - Globals.getGardenerCount())
+    	{
+    		behaviorType = 1;
+    	}
     	
     	// this should put a new bot into memory
     	try {

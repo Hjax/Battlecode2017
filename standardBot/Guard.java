@@ -1,6 +1,7 @@
 package standardBot;
 
 import battlecode.common.*;
+import standardBot.Utilities;
 
 public class Guard extends Bot{
 	public static void Start(RobotController RobCon) throws GameActionException{
@@ -57,10 +58,12 @@ public class Guard extends Bot{
                 	// if no enemies, stay near gardener
                 	if (enemies.length == 0)
                 	{
-                		Utilities.moveTo(Utilities.melee(gardenerToGuard.getLocation(), 4.01f));
+                		Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(rc.getLocation()).rotateLeftDegrees((float) (Math.random() - 0.5) * 20), 4.01f));
+                		
                 	}
                 	else
                 	{
+                		
                 		Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(enemies[0].getLocation()), 4.01f));
                 	}
             	}
