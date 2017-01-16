@@ -4,8 +4,6 @@ import battlecode.common.*;
 
 public class Tank extends Bot {
 	public static void Start(RobotController RobCon) throws GameActionException{
-		Bot.Init(RobCon);
-		
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {

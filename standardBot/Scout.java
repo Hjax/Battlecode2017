@@ -4,7 +4,6 @@ import battlecode.common.*;
 
 public class Scout extends Bot{
 	public static void Start(RobotController RobCon) throws GameActionException{
-		Bot.Init(RobCon);
 		
 		System.out.println("I'm a scout!");
 		

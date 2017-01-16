@@ -1,11 +1,9 @@
 package standardBot;
 
 import battlecode.common.*;
-import standardBot.Utilities;
 
 public class Guard extends Bot{
 	public static void Start(RobotController RobCon) throws GameActionException{
-		Bot.Init(RobCon);
 		
 		System.out.println("I'm an guard!");
 		RobotInfo gardenerToGuard = rc.senseRobot(rc.getID());

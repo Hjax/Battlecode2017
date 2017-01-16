@@ -4,7 +4,6 @@ import battlecode.common.*;
 
 public class LumberJack extends Bot {
 	public static void Start(RobotController RobCon) throws Exception{
-		Bot.Init(RobCon);
 		
 	    System.out.println("I'm a lumberjack!");
 
