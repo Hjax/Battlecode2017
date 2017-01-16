@@ -78,12 +78,20 @@ public class Gardener extends Bot{
     			}
         	
         	
-    			//open with a scout
+    			//if start of game, settle immediately.open with a scout
     			if (rc.getRoundNum() < 5)
-					{trainUnit(RobotType.SCOUT);}
+					{
+    					settled = true;
+    					roost = rc.getLocation();
+    					plantTree();
+    				}
+    			if (rc.getRoundNum() > 5 && rc.getRoundNum()< 15)
+				{
+					trainUnit(RobotType.SCOUT);
+				}
         	
     			//find a place to settle
-    			if (rc.getRoundNum() - builtOn < 23 && rc.hasMoved() == false)
+    			if (rc.getRoundNum() - builtOn < 23 && rc.hasMoved() == false && settled == false)
     			{
     				try {
     					System.out.println("find a place to roost");
@@ -127,6 +135,7 @@ public class Gardener extends Bot{
             					{
             						trainUnit(RobotType.SCOUT);
             					}
+            					else {waterTrees();}
             					
             				}
             				else 
@@ -202,7 +211,7 @@ public class Gardener extends Bot{
 		int turnCount = 0;
 		while (!rc.canPlantTree(angle) && turnCount++ < 60)
 		{
-			angle = angle.rotateLeftDegrees(60);
+			angle = angle.rotateLeftDegrees(30);
 		}
 		try {
 			if (rc.canPlantTree(angle))

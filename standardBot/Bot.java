@@ -21,8 +21,10 @@ public class Bot {
     	enemyPing = enemyStarts[enemyPingIndex];
     	System.out.println("Attacking enemy archon number " + enemyPingIndex + " of " + enemyStarts.length);
     	
-    	if (Globals.getTrainerCount() < (rc.getRoundNum() - 100) / 100 - Globals.getGardenerCount())
+    	if (Globals.getTrainerCount() < Globals.getGardenerCount() - (rc.getRoundNum() - 100) / 150)
     	{
+    		System.out.println(Globals.getTrainerCount());
+    		System.out.println(Globals.getGardenerCount());
     		behaviorType = 1;
     	}
     	
@@ -201,15 +203,15 @@ public class Bot {
     			
     		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
     		{
-    			xPressure += -700 / (relativeX + Math.copySign(10,  relativeX));
-    			yPressure += -700 / (relativeY + Math.copySign(10, relativeY));
+    			xPressure += -1400 / (relativeX + Math.copySign(10,  relativeX));
+    			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
     		}
     	}
     	System.out.println("DX: " + xPressure);
     	System.out.println("DY: " + yPressure);
     	
-    	//if gardener, avoid trees
-    	if (rc.getType() == RobotType.GARDENER && behaviorType == 0)
+    	//if gardener or archon, avoid trees
+    	if (rc.getType() == RobotType.GARDENER && behaviorType == 0 || rc.getType() == RobotType.ARCHON)
     	{
     		int treeCost = Clock.getBytecodeNum();
     		TreeInfo[] avoidTrees = rc.senseNearbyTrees(5);
@@ -294,26 +296,26 @@ public class Bot {
     		if (Globals.getTopEdge() != -1)
     		{
     			relativeY = Globals.getTopEdge() - rc.getLocation().y;
-    			yPressure += -1000/(relativeY * relativeY);
+    			yPressure += -2000/(relativeY * relativeY);
     			System.out.println("D1Y: " + yPressure);
     		}
     		if (Globals.getBottomEdge() != -1)
     		{
     			relativeY = rc.getLocation().y - Globals.getBottomEdge();
-    			yPressure += 1000/(relativeY * relativeY);
+    			yPressure += 2000/(relativeY * relativeY);
     			System.out.println("D2Y: " + yPressure);
     		}
     		
     		if (Globals.getRightEdge() != -1)
     		{
     			relativeX = Globals.getRightEdge() - rc.getLocation().x;
-    			xPressure += -1000/(relativeX * relativeX);	
+    			xPressure += -2000/(relativeX * relativeX);	
     			System.out.println("D1X: " + xPressure);
     		}
     		if (Globals.getLeftEdge() != -1)
     		{
     			relativeX = rc.getLocation().x - Globals.getLeftEdge();
-    			xPressure += 1000/(relativeX * relativeX);
+    			xPressure += 2000/(relativeX * relativeX);
     			System.out.println("D2X: " + xPressure);
     		}
     	}

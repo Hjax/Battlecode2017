@@ -5,6 +5,7 @@ import battlecode.common.GameActionException;
 
 public class Globals extends Bot{
 	public static void initEdges() throws Exception {
+		System.out.println("Initializing edges");
 		setTopEdge(-1);
 		setBottomEdge(-1);
 		setLeftEdge(-1);
@@ -12,6 +13,7 @@ public class Globals extends Bot{
 	}
 	
 	public static void updateEdges() throws Exception {
+		System.out.println("Updating edges");
 		if (getTopEdge() == -1){
 			setTopEdge(Utilities.edgeInDirection(Direction.getNorth()));
 		}
