@@ -1,4 +1,4 @@
-package standardBot;
+package gardenBot;
 
 import battlecode.common.*;
 
@@ -45,6 +45,7 @@ public class Gardener extends Bot{
         	
         	
         	startTurn();
+        	rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
         	System.out.println("start turn");
         	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
         	
@@ -80,7 +81,7 @@ public class Gardener extends Bot{
         	
         	
     			//if start of game, settle immediately.open with a scout
-    			if (rc.getRoundNum() < 5)
+    			if (rc.getRoundNum() < 5 && rc.hasMoved() == false && rc.isBuildReady())
 					{
     					settled = true;
     					roost = rc.getLocation();
@@ -109,92 +110,92 @@ public class Gardener extends Bot{
     				System.out.println("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
     			}
-    			else
-    			{
 
-        			// execute build order if possible
-    				System.out.println("build order");
-        			switch(build[buildIndex])
-        			{
-            			case 0:
+
+        		// execute build order if possible
+    			System.out.println("build order");
+        		switch(build[buildIndex])
+        		{
+            		case 0:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 50)
             			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 50)
+            				if (rc.senseNearbyBullets().length == 0 || true)
             				{
-            					if (rc.senseNearbyBullets().length == 0)
+            					if (!settled)
+            						{roost = rc.getLocation();}
+            					if (plantTree())
             					{
-            						if (plantTree())
-            						{
-            							settled = true;
-            							roost = rc.getLocation();
-            						}
+            						settled = true;
+            							
+            					}
             						
-                					buildIndex++;
-                					if (buildIndex > buildLength)
-                						{buildIndex = 0;}
-            					}
-            					else if (rc.getTeamBullets() >= 80)
-            					{
-            						trainUnit(RobotType.SCOUT);
-            					}
-            					else {waterTrees();}
-            					
+            					buildIndex++;
+                				if (buildIndex > buildLength)
+                					{buildIndex = 1;}
             				}
-            				else 
-            					{waterTrees();}
-            				break;
-            			}
-            			case 1:
-            			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+            				else if (rc.getTeamBullets() >= 100)
             				{
             					trainUnit(RobotType.SOLDIER);
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            						{buildIndex = 0;}
             				}
-            				else waterTrees();
-            				break;
+            				else {waterTrees();}
+            					
             			}
-            			case 2:
+            			else 
+            				{waterTrees();}
+            			break;
+            		}
+            		case 1:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
             			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
-            				{
-            					trainUnit(RobotType.TANK);
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            						{buildIndex = 0;}
-            				}
-            				else waterTrees();
-            				break;
+            				trainUnit(RobotType.SOLDIER);
+            				buildIndex++;
+            				if (buildIndex > buildLength)
+            					{buildIndex = 0;}
             			}
-            			case 3:
+            			else waterTrees();
+            			break;
+            		}
+            		case 2:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
             			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 80)
-            				{
-            					trainUnit(RobotType.SCOUT);
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            						{buildIndex = 0;}
-            				}
-            				else waterTrees();
-            				break;
+            				trainUnit(RobotType.TANK);
+            				buildIndex++;
+            				if (buildIndex > buildLength)
+            					{buildIndex = 0;}
             			}
-            			case 4:
+            			else waterTrees();
+            			break;
+            		}
+            		case 3:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
             			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
-            				{
-            					trainUnit(RobotType.LUMBERJACK);
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            						{buildIndex = 0;}
-            				}
-            				else waterTrees();
-            				break;
+            				trainUnit(RobotType.SCOUT);
+            				buildIndex++;
+            				if (buildIndex > buildLength)
+            					{buildIndex = 0;}
             			}
-        			}
-
+            			else waterTrees();
+            			break;
+            		}
+            		case 4:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+            			{
+            				trainUnit(RobotType.LUMBERJACK);
+            				buildIndex++;
+            				if (buildIndex > buildLength)
+            					{buildIndex = 0;}
+            			}
+            			else waterTrees();
+            			break;
+            		}
         		}
-    		}
+
+        	}
 
         	catch (Exception e) {
         		System.out.println("Gardener Exception");
@@ -205,18 +206,30 @@ public class Gardener extends Bot{
         }
 	}
 	
-	private static boolean plantTree()
+	private static boolean plantTree() throws GameActionException
 	{
 		int bytes = Clock.getBytecodeNum();
 		Direction angle = new Direction(0);
 		int turnCount = 0;
-		while (!rc.canPlantTree(angle) && turnCount++ < 60)
+		int adjustCount = 0;
+		System.out.println("trying to plant");
+		while ((rc.isCircleOccupied(rc.getLocation().add(angle, 2.99f), 1.0f) || !rc.onTheMap(rc.getLocation().add(angle, 2.99f), 1.0f)) && turnCount++ < 4)
 		{
-			angle = angle.rotateLeftDegrees(30);
-		}
-		try {
-			if (rc.canPlantTree(angle))
+			angle = angle.rotateLeftDegrees(90 - 2 * adjustCount);
+			adjustCount = 0;
+			while ((rc.isCircleOccupied(rc.getLocation().add(angle, 2.99f), 1.0f) || !rc.onTheMap(rc.getLocation().add(angle, 2.99f), 1.0f)) && adjustCount++ < 15)
 			{
+				rc.setIndicatorDot(rc.getLocation().add(angle, 2.99f), 0, 0, 0);
+				angle = angle.rotateLeftDegrees(2);
+			}
+		}
+		rc.setIndicatorDot(rc.getLocation().add(angle, 2.99f), 255, 255, 255);
+		System.out.println(rc.hasMoved());
+		System.out.println(!rc.isCircleOccupied(rc.getLocation().add(angle, 1.99f), 1.0f));
+		try {
+			if (!rc.isCircleOccupied(rc.getLocation().add(angle, 2.99f), 1.0f) && rc.hasMoved() == false && rc.onTheMap(rc.getLocation().add(angle, 2.99f), 1.0f))
+			{
+				Utilities.moveTo(Utilities.melee(rc.getLocation().add(angle, 2.99f), 2.0f));
 				rc.plantTree(angle);
 				return true;
 			}

@@ -1,11 +1,10 @@
-package testBot;
+package gardenBot;
 
 import battlecode.common.*;
 
 public class Trainer extends Bot{
 	public static void Start(RobotController RobCon) throws Exception
 	{
-		Bot.Init(RobCon);
 		
 		System.out.println("I'm a trainer!");
 		
@@ -24,14 +23,25 @@ public class Trainer extends Bot{
 		// 5 = gardener
 		// 6 = archon
 		// 7 = neutral tree
-		int build[] = new int[5];
-		build[0] = 1;
+		int build[] = new int[14];
+		build[0] = 4;
 		build[1] = 1;
 		build[2] = 1;
 		build[3] = 1;
 		build[4] = 1;
+		build[5] = 4;
+		build[6] = 1;
+		build[7] = 1;
+		build[8] = 1;
+		build[9] = 1;
+		build[10] = 1;
+		build[11] = 1;
+		build[12] = 1;
+		build[13] = 1;
 		
-		int buildLength = 4;
+		
+		
+		int buildLength = 13;
 		
 		int buildIndex = 0;
 		
@@ -43,6 +53,7 @@ public class Trainer extends Bot{
         {
         	
         	startTurn();
+        	rc.setIndicatorDot(rc.getLocation(), 0, 100, 100);
         	
 			Utilities.tryMove(neo());
 
@@ -56,12 +67,25 @@ public class Trainer extends Bot{
         		{
             		case 1:
             		{
-            			if (rc.isBuildReady() && rc.getTeamBullets() > 120)
+            			if (rc.getRoundNum() < 1)
             			{
-            				trainUnit(RobotType.SOLDIER);
-            				buildIndex++;
-            				if (buildIndex > buildLength)
-            				{buildIndex = 0;}
+            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+            				{
+            					trainUnit(RobotType.SOLDIER);
+            					buildIndex++;
+            					if (buildIndex > buildLength)
+            					{buildIndex = 0;}
+            				}
+            			}
+            			else 
+            			{
+            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
+                			{
+                				trainUnit(RobotType.TANK);
+                				buildIndex++;
+                				if (buildIndex > buildLength)
+                				{buildIndex = 0;}
+                			}
             			}
             			break;
             		}
@@ -78,9 +102,20 @@ public class Trainer extends Bot{
             		}
             		case 3:
             		{
-            			if (rc.isBuildReady() && rc.getTeamBullets() > 120)
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
             			{
             				trainUnit(RobotType.SCOUT);
+            				buildIndex++;
+            				if (buildIndex > buildLength)
+            				{buildIndex = 0;}
+            			}
+            			break;
+            		}
+            		case 4:
+            		{
+            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+            			{
+            				trainUnit(RobotType.LUMBERJACK);
             				buildIndex++;
             				if (buildIndex > buildLength)
             				{buildIndex = 0;}
@@ -103,9 +138,9 @@ public class Trainer extends Bot{
 	{
 		Direction angle = new Direction(0);
 		int turnCount = 0;
-		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 361)
+		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
 		{
-			angle = angle.rotateRightDegrees(1);
+			angle = angle.rotateRightDegrees(6);
 		}
 		try {
 			if (rc.canBuildRobot(unit,  angle))

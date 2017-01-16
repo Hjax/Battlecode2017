@@ -1,11 +1,9 @@
-package testBot;
+package gardenBot;
 
 import battlecode.common.*;
 
 public class Tank extends Bot {
-	public static void Start(RobotController RobCon){
-		Bot.Init(RobCon);
-		
+	public static void Start(RobotController RobCon) throws GameActionException{
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
@@ -33,12 +31,12 @@ public class Tank extends Bot {
                 Utilities.tryMove(Utilities.randomDirection());
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-                endTurn();
 
             } catch (Exception e) {
                 System.out.println("Soldier Exception");
                 e.printStackTrace();
             }
+            endTurn();
         }
     }
 }

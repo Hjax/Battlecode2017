@@ -1,4 +1,4 @@
-package standardBot;
+package gardenBot;
 
 import battlecode.common.*;
 import standardBot.Utilities;
@@ -26,7 +26,7 @@ public class Guard extends Bot{
             	startTurn();
             	System.out.println("start turn");
             	
-            	if (!rc.canSenseRobot(gardenerToGuard.ID))
+            	if (rc.senseNearbyRobots(gardenerToGuard.getLocation(), 0.01f, ally).length == 0)
             	{
             		System.out.println("gardener died");
             		gardenerToGuard = rc.senseRobot(rc.getID());

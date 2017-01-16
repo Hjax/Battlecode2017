@@ -7,7 +7,14 @@ public class Guard extends Bot{
 		Bot.Init(RobCon);
 		
 		System.out.println("I'm an guard!");
-		RobotInfo gardenerToGuard = rc.senseNearbyRobots(2, ally)[0];
+		RobotInfo gardenerToGuard = rc.senseRobot(rc.getID());
+		try
+		{
+			gardenerToGuard = rc.senseNearbyRobots(2, ally)[0];
+		} catch (Exception e) {
+            System.out.println("Soldier Exception");
+            e.printStackTrace();
+        }
 		
 
         // The code you want your robot to perform every round should be in this loop

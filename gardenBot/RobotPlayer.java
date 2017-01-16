@@ -1,4 +1,4 @@
-package testBot;
+package gardenBot;
 
 import battlecode.common.*;
 
@@ -12,10 +12,7 @@ public strictfp class RobotPlayer {
     **/
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws Exception {
-
-        // This is the RobotController object. You use it to perform actions from this robot,
-        // and to get information on its current status.
-        RobotPlayer.rc = rc;
+		Bot.Init(rc);
 
         // Here, we've separated the controls into a different method for each RobotType.
         // You can add the missing ones or rewrite this into your own control structure.
@@ -24,29 +21,22 @@ public strictfp class RobotPlayer {
                 Archon.Start(rc);
                 break;
             case GARDENER:
-            	boolean garden = true;
-            	RobotInfo nearby[] = rc.senseNearbyRobots(2.0f);
-            	for (int bot = 0; bot < nearby.length; bot++)
-            	{
-            		if (nearby[bot].type == RobotType.ARCHON && new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees() % 4 >= 1.25f && new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees() % 4 <= 2.75)
-            		{
-            			garden = false;
-            			System.out.println(new Direction(nearby[bot].getLocation(), rc.getLocation()).getAngleDegrees());
-            		}
-            	}
-            	if (garden)
+            	if (Bot.behaviorType == 0)
             		{Gardener.Start(rc);}
             	else 
             		{Trainer.Start(rc);}
                 break;
             case SOLDIER:
-                Soldier.Start(rc);
+                Guard.Start(rc);
                 break;
             case LUMBERJACK:
                 LumberJack.Start(rc);
                 break;
             case TANK:
-            	Tank.Start(rc);
+            	Soldier.Start(rc);
+            	break;
+            case SCOUT:
+            	Scout.Start(rc);
             	break;
             default:
             	throw new Exception("Unknown Robot Type: " + rc.getType());
