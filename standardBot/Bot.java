@@ -177,7 +177,7 @@ public class Bot {
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
     			
     			//gardeners should avoid archons more
-    			if (rc.getType() == RobotType.GARDENER && avoidBots[botCount].getType() == RobotType.ARCHON)
+    			if (rc.getType() == RobotType.GARDENER && avoidBots[botCount].getType() == RobotType.ARCHON && false)
     			{
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
@@ -247,17 +247,17 @@ public class Bot {
     		
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
-    			if (distFromHighBound < 2)
+    			if (distFromHighBound < 4)
     				{yPressure += -30;}
-    			else if (distFromHighBound > 4)
+    			else if (distFromHighBound > 5)
     				{yPressure += 150;}	
     			System.out.println("D1Y: " + yPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
-    			if (distFromLowBound < 2)
+    			if (distFromLowBound < 4)
     				{yPressure += 30;}
-    			else if (distFromLowBound > 4)
+    			else if (distFromLowBound > 5)
     				{yPressure += -150;}	
     			System.out.println("D2Y: " + yPressure);
     		}
@@ -272,9 +272,9 @@ public class Bot {
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
     			System.out.println("right edge at " + Globals.getRightEdge());
-    			if (distFromHighBound < 2)
+    			if (distFromHighBound < 4)
     				{xPressure += -30;}
-    			else if (distFromHighBound > 4)
+    			else if (distFromHighBound > 5)
     				{xPressure += 150;}	
     			System.out.println("D1X: " + xPressure);
     		}
@@ -282,9 +282,9 @@ public class Bot {
     		{
     			System.out.println("left edge at " + Globals.getLeftEdge());
     			System.out.println("D2startX: " + xPressure);
-    			if (distFromLowBound < 2)
+    			if (distFromLowBound < 4)
     				{xPressure += 30;}
-    			else if (distFromLowBound > 4)
+    			else if (distFromLowBound > 5)
     				{xPressure += -150;}	
     			System.out.println("D2X: " + xPressure);
     		}
