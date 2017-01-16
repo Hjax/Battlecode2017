@@ -65,11 +65,12 @@ public class Memory extends Bot{
 		rc.broadcast(cell, Math.min(rc.readBroadcast(cell) ^ (int) (Math.pow(2, bit)), rc.readBroadcast(cell)));
 	}
 	
-	public static void writeAllyData(int index, int value) throws GameActionException {
-		rc.broadcast(min_ally + index, value);
+	public static void writeAllyData(int index, AllyData value) throws GameActionException {
+		rc.broadcast(min_ally + index, value.toInt());
 	}
 	
 	public static void pruneAllyMemory() throws Exception{
+		System.out.println("Starting defrag");
 		for (int i = min_ally; i <= max_ally; i++){
 			if (rc.readBroadcast(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
 				i += 30;
@@ -77,13 +78,11 @@ public class Memory extends Bot{
 			}
 			int current_int = rc.readBroadcast(i);
 			if (current_int != 0){
-				AllyData current = new AllyData(current_int);
 				// if the alive variable is correct for the current turn
 				// then it wasnt updated last turn
 				// NOTE freeing memory does not write zeroes to the old location
-				if (current.alive == ((rc.getRoundNum() % 2) == 1)){
-					AllyData current_value = new AllyData(rc.readBroadcast(i - min_ally));
-					Globals.incrementUnitCount(current_value.type, -1);
+				if (AllyData.isAlive(current_int) == ((rc.getRoundNum() % 2) == 1)){	
+					Globals.incrementUnitCount(AllyData.getType(rc.readBroadcast(i - min_ally)), -1);
 					freeAllyMemory(i - min_ally);
 				}
 			}

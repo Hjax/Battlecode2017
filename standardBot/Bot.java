@@ -24,9 +24,11 @@ public class Bot {
     	// this should put a new bot into memory
     	try {
     		memory_loc = Memory.first_free_ally();
+    		System.out.print("I got assigned memory loc");
+    		System.out.println(memory_loc);
     		Memory.reserveAllyIndex(memory_loc);
     		AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 0);
-			Memory.writeAllyData(memory_loc, me.toInt());
+			Memory.writeAllyData(memory_loc, me);
 			Globals.incrementUnitCount(me.type, 1);
 		} catch (Exception e) {
 			System.out.println("Weird error while updating our location in memory");
@@ -53,8 +55,14 @@ public class Bot {
     	}
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		Globals.setRoundNumber(rc.getRoundNum());
+    		int start = Clock.getBytecodeNum();
     		Memory.pruneAllyMemory();
+    		System.out.print("Defrag took: ");
+    		System.out.println(Clock.getBytecodeNum() - start);
+    		start = Clock.getBytecodeNum();
     		Memory.pruneOrders();
+    		System.out.print("Orders took: ");
+    		System.out.println(Clock.getBytecodeNum() - start);
     		isFirst = true;
     	} else {
     		isFirst = false;
@@ -64,8 +72,11 @@ public class Bot {
     protected static void endTurn() throws GameActionException {
     	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
-    	me.alive = rc.getRoundNum() % 2 == 0;
-    	rc.broadcast(memory_loc, me.toInt());
+    	me.alive = (rc.getRoundNum() % 2) == 1;
+    	System.out.print("Setting my alive variable equal to ");
+    	System.out.println(me.alive);
+    	
+    	Memory.writeAllyData(memory_loc, me);
 		try {
 			Globals.updateEdges();
 		} catch (Exception e) {
