@@ -73,7 +73,7 @@ public class Memory extends Bot{
 		System.out.println("Starting defrag");
 		for (int i = min_ally; i <= max_ally; i++){
 			if (rc.readBroadcast(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
-				i += 30;
+				i += 31;
 				continue;
 			}
 			int current_int = rc.readBroadcast(i);
@@ -82,7 +82,7 @@ public class Memory extends Bot{
 				// then it wasnt updated last turn
 				// NOTE freeing memory does not write zeroes to the old location
 				if (AllyData.isAlive(current_int) == ((rc.getRoundNum() % 2) == 1)){	
-					Globals.incrementUnitCount(AllyData.getType(rc.readBroadcast(i - min_ally)), -1);
+					Globals.incrementUnitCount(AllyData.getType(rc.readBroadcast(i)), -1);
 					freeAllyMemory(i - min_ally);
 				}
 			}
