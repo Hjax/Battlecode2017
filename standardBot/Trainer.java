@@ -54,6 +54,7 @@ public class Trainer extends Bot{
         {
         	
         	startTurn();
+        	rc.setIndicatorDot(rc.getLocation(), 0, 100, 100);
         	
 			Utilities.tryMove(neo());
 

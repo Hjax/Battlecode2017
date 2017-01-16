@@ -219,4 +219,5 @@ public class Utilities extends Bot{
 		return rc.getLocation();
 	}
 	
+	
 }

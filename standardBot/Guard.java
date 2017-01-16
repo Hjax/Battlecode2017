@@ -25,17 +25,47 @@ public class Guard extends Bot{
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
             	startTurn();
+            	System.out.println("start turn");
             	
-            	RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
-            	// if no enemies, stay near gardener
-            	if (enemies.length == 0)
             	{
-            		Utilities.moveTo(Utilities.melee(gardenerToGuard.getLocation(), 4.01f));
+            		System.out.println("gardener died");
+            		gardenerToGuard = rc.senseRobot(rc.getID());
+            	}
+            	if (gardenerToGuard.getID() == rc.getID())
+            	{
+            		System.out.println("look for gardener");
+            		RobotInfo allies[] = rc.senseNearbyRobots(-1, ally);
+            		RobotInfo gardener = gardenerToGuard;
+            		
+            		for (int countBot = 0; countBot < allies.length; countBot++)
+                	{
+                		if (allies[countBot].getType() == RobotType.GARDENER)
+                		{
+                			System.out.println("found gardener");
+                			gardener = allies[countBot];
+                			break;
+                		}
+                	}
+            		if (gardener.getID() != gardenerToGuard.getID())
+            		{
+            			System.out.println("set gardener");
+            			gardenerToGuard = gardener;
+            		}
             	}
             	else
             	{
-            		Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(enemies[0].getLocation()), 4.01f));
+            		RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
+                	// if no enemies, stay near gardener
+                	if (enemies.length == 0)
+                	{
+                		Utilities.moveTo(Utilities.melee(gardenerToGuard.getLocation(), 4.01f));
+                	}
+                	else
+                	{
+                		Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(enemies[0].getLocation()), 4.01f));
+                	}
             	}
+            	
                 
 
             	// See if there are any nearby enemy robots
