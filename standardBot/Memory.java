@@ -60,6 +60,7 @@ public class Memory extends Bot{
 	}
 	
 	public static void freeAllyMemory(int index) throws GameActionException {
+		rc.broadcast(min_ally + index, 0);
 		int cell = (int) Math.floor(index / 31) + min_address;
 		int bit = index % 31;
 		rc.broadcast(cell, Math.min(rc.readBroadcast(cell) ^ (int) (Math.pow(2, bit)), rc.readBroadcast(cell)));
