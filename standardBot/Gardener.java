@@ -83,7 +83,7 @@ public class Gardener extends Bot{
 					{trainUnit(RobotType.SCOUT);}
         	
     			//find a place to settle
-    			if (rc.getRoundNum() - builtOn < 18 && rc.hasMoved() == false)
+    			if (rc.getRoundNum() - builtOn < 23 && rc.hasMoved() == false)
     			{
     				try {
     					System.out.println("find a place to roost");
@@ -202,7 +202,7 @@ public class Gardener extends Bot{
 		int turnCount = 0;
 		while (!rc.canPlantTree(angle) && turnCount++ < 60)
 		{
-			angle = angle.rotateLeftDegrees(6);
+			angle = angle.rotateLeftDegrees(60);
 		}
 		try {
 			if (rc.canPlantTree(angle))

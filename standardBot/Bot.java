@@ -242,16 +242,16 @@ public class Bot {
     		{
     			if (distFromHighBound < 2)
     				{yPressure += -30;}
-    			else if (distFromHighBound > 5)
-    				{yPressure += 100;}	
+    			else if (distFromHighBound > 4)
+    				{yPressure += 150;}	
     			System.out.println("D1Y: " + yPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
     			if (distFromLowBound < 2)
     				{yPressure += 30;}
-    			else if (distFromLowBound > 5)
-    				{yPressure += -100;}	
+    			else if (distFromLowBound > 4)
+    				{yPressure += -150;}	
     			System.out.println("D2Y: " + yPressure);
     		}
     		
@@ -264,10 +264,11 @@ public class Bot {
     		
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
+    			System.out.println("right edge at " + Globals.getRightEdge());
     			if (distFromHighBound < 2)
     				{xPressure += -30;}
-    			else if (distFromHighBound > 5)
-    				{xPressure += 100;}	
+    			else if (distFromHighBound > 4)
+    				{xPressure += 150;}	
     			System.out.println("D1X: " + xPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
@@ -276,8 +277,8 @@ public class Bot {
     			System.out.println("D2startX: " + xPressure);
     			if (distFromLowBound < 2)
     				{xPressure += 30;}
-    			else if (distFromLowBound > 5)
-    				{xPressure += -100;}	
+    			else if (distFromLowBound > 4)
+    				{xPressure += -150;}	
     			System.out.println("D2X: " + xPressure);
     		}
     	}
