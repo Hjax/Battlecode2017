@@ -80,9 +80,7 @@ public class Bot {
     	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
     	me.alive = (rc.getRoundNum() % 2) == 1;
-    	System.out.print("Setting my alive variable equal to ");
-    	System.out.println(me.alive);
-    	
+    	me.hp = (int) rc.getHealth();  	
     	Memory.writeAllyData(memory_loc, me);
 		try {
 			Globals.updateEdges();

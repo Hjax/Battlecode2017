@@ -20,7 +20,7 @@ public class LumberJack extends Bot {
 	        	
 	        	if (enemyTrees.length > 0)
 	        	{
-	        		Utilities.moveTo(Utilities.melee(enemyTrees[0].getLocation(), 1 + neutralTrees[0].radius));
+	        		Utilities.moveTo(Utilities.melee(enemyTrees[0].getLocation(), 1 + enemyTrees[0].radius));
 	        		if (rc.canChop(enemyTrees[0].ID))
 	        			{rc.chop(enemyTrees[0].ID);}
 	        	}

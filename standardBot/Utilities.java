@@ -116,11 +116,11 @@ public class Utilities extends Bot{
     
 	public static MapLocation intToTarget(int location){
 		// so we have 32 bits in a java int 
-		// the high 10 bits are the x, we can get them by dividing
-		// the low  10 bits are the y, we can get them by mod
+		// the high 9 bits are the x, we can get them by dividing
+		// the low  9 bits are the y, we can get them by mod
 		//return new MapLocation(location / 1024, location % 1024); 
-		int x = location / 1024;
-		int y = location % 1024;
+		int x = location / 512;
+		int y = location % 512;
 		x = ((x / 2) - 100) + Math.round(archonStart.x);
 		y = ((y / 2) - 100) + Math.round(archonStart.y);
 		return new MapLocation(x, y);
@@ -128,7 +128,7 @@ public class Utilities extends Bot{
 	public static int targetToInt(MapLocation target) {
 		int x = ((Math.round(target.x) - Math.round(archonStart.x)) + 100) * 2;
 		int y = ((Math.round(target.y) - Math.round(archonStart.y)) + 100) * 2;
-		return x * 1024 + y;
+		return x * 512 + y;
 	}
 	
 	
