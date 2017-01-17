@@ -51,6 +51,7 @@ public class Guard extends Bot{
             			System.out.println("set gardener");
             			gardenerToGuard = gardener;
             		}
+            		else Utilities.tryMove(neo());
             	}
             	else
             	{
