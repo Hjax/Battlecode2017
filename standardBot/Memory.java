@@ -124,16 +124,12 @@ public class Memory extends Bot{
 			if (current == 0){
 				break;
 			}
-			Order current_order = new Order(current);
 			
-			// we need to reduce the time counter by one
-			current_order.TTL -= 1;
-			
-			if (current_order.count <= 0 || current_order.TTL <= 0) {
+			if (Order.getCount(current) <= 0 || Order.getTTL(current) <= 0) {
 				continue;
 			}
 
-			Orders[order_count++] = current_order.toInt();
+			Orders[order_count++] = current;
 		}
 		for (int i = 0; i < total_orders; i++){
 			if (i < order_count){
