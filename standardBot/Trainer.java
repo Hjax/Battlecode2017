@@ -24,10 +24,10 @@ public class Trainer extends Bot{
 		// 6 = archon
 		// 7 = neutral tree
 		int build[] = new int[14];
-		build[0] = 4;
+		build[0] = 1;
 		build[1] = 1;
 		build[2] = 1;
-		build[3] = 1;
+		build[3] = 4;
 		build[4] = 1;
 		build[5] = 4;
 		build[6] = 1;
