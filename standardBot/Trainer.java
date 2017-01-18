@@ -57,79 +57,82 @@ public class Trainer extends Bot{
         	
 			Utilities.tryMove(neo());
 
+			if (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getLumberjackCount() + Globals.getScoutCount() < 150)
+			{
+				// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
+	        	try 
+	        	{
 
-        	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
-        	try 
-        	{
+	        		// execute build order if possible
+	        		switch(build[buildIndex])
+	        		{
+	            		case 1:
+	            		{
+	            			if (rc.getRoundNum() < 1)
+	            			{
+	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+	            				{
+	            					trainUnit(RobotType.SOLDIER);
+	            					buildIndex++;
+	            					if (buildIndex > buildLength)
+	            					{buildIndex = 0;}
+	            				}
+	            			}
+	            			else 
+	            			{
+	            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
+	                			{
+	                				trainUnit(RobotType.TANK);
+	                				buildIndex++;
+	                				if (buildIndex > buildLength)
+	                				{buildIndex = 0;}
+	                			}
+	            			}
+	            			break;
+	            		}
+	            		case 2:
+	            		{
+	            			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
+	            			{
+	            				trainUnit(RobotType.TANK);
+	            				buildIndex++;
+	            				if (buildIndex > buildLength)
+	            				{buildIndex = 0;}
+	            			}
+	            			break;
+	            		}
+	            		case 3:
+	            		{
+	            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
+	            			{
+	            				trainUnit(RobotType.SCOUT);
+	            				buildIndex++;
+	            				if (buildIndex > buildLength)
+	            				{buildIndex = 0;}
+	            			}
+	            			break;
+	            		}
+	            		case 4:
+	            		{
+	            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
+	            			{
+	            				trainUnit(RobotType.LUMBERJACK);
+	            				buildIndex++;
+	            				if (buildIndex > buildLength)
+	            				{buildIndex = 0;}
+	            			}
+	            			break;
+	            		}
+	        		}
 
-        		// execute build order if possible
-        		switch(build[buildIndex])
-        		{
-            		case 1:
-            		{
-            			if (rc.getRoundNum() < 1)
-            			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
-            				{
-            					trainUnit(RobotType.SOLDIER);
-            					buildIndex++;
-            					if (buildIndex > buildLength)
-            					{buildIndex = 0;}
-            				}
-            			}
-            			else 
-            			{
-            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
-                			{
-                				trainUnit(RobotType.TANK);
-                				buildIndex++;
-                				if (buildIndex > buildLength)
-                				{buildIndex = 0;}
-                			}
-            			}
-            			break;
-            		}
-            		case 2:
-            		{
-            			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
-            			{
-            				trainUnit(RobotType.TANK);
-            				buildIndex++;
-            				if (buildIndex > buildLength)
-            				{buildIndex = 0;}
-            			}
-            			break;
-            		}
-            		case 3:
-            		{
-            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
-            			{
-            				trainUnit(RobotType.SCOUT);
-            				buildIndex++;
-            				if (buildIndex > buildLength)
-            				{buildIndex = 0;}
-            			}
-            			break;
-            		}
-            		case 4:
-            		{
-            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
-            			{
-            				trainUnit(RobotType.LUMBERJACK);
-            				buildIndex++;
-            				if (buildIndex > buildLength)
-            				{buildIndex = 0;}
-            			}
-            			break;
-            		}
-        		}
+	        	}
 
-        	}
-
-        	catch (Exception e) {
-        		System.out.println("Gardener Exception");
-        		e.printStackTrace();
-        	}
+	        	catch (Exception e) {
+	        		System.out.println("Gardener Exception");
+	        		e.printStackTrace();
+	        	}
+			}
+        	
         	endTurn();
         }
 	}

@@ -1,4 +1,4 @@
-package standardBot;
+package holyBot;
 
 import battlecode.common.*;
 
@@ -21,7 +21,7 @@ public class Bot {
     	enemyPing = enemyStarts[enemyPingIndex];
     	System.out.println("Attacking enemy archon number " + enemyPingIndex + " of " + enemyStarts.length);
     	
-    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2))
+    	if (Globals.getTrainerCount() < Globals.getGardenerCount() - (rc.getRoundNum() - 100) / 150)
     	{
     		System.out.println(Globals.getTrainerCount());
     		System.out.println(Globals.getGardenerCount());

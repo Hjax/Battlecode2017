@@ -1,4 +1,4 @@
-package standardBot;
+package dodgeBot;
 
 import battlecode.common.*;
 
@@ -27,6 +27,7 @@ public class Archon extends Bot{
      	int buildLength = 10;
      	int buildIndex = 0;
      	
+     	boolean pause = false;
      	
      	try {
 			Globals.initEdges();
@@ -35,6 +36,19 @@ public class Archon extends Bot{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+     	
+     	int row = Utilities.getRow(rc.getLocation().y, rc.getLocation());
+     	int column = Utilities.getColumn(rc.getLocation().x, rc.getLocation());
+     	
+     	System.out.println("Row is: " + row);
+     	System.out.println("Column is: " + column);
+     	
+     	int index = dodgeIndexLookup[row][column];
+     	System.out.println("Index is: " + index);
+     	
+     	MapLocation xy = Utilities.getXY(index, rc.getLocation());
+     	System.out.println("X is: " + xy.x);
+     	System.out.println("Y is: " + xy.y);
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
@@ -47,14 +61,19 @@ public class Archon extends Bot{
             	
             	
                 // dodge
-            	Utilities.tryMove(neo());
+            	// pause for one turn after building
+            	if (!pause)
+            		{
+            			Utilities.tryMove(neo());
+            		}
+            	else pause = false;
 
                 // Generate a random direction
                 Direction dir = Utilities.randomDirection();
 
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
-                if ((round == 1 && isFirst) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/4 && rc.getRoundNum() > 30))
+                if ((round == 1 && isFirst) || round == 100 || (round > 100 && round % 60 == 0))
                 	{tryBuild = true;}
              
                 if (tryBuild && rc.getTeamBullets() > 120) 

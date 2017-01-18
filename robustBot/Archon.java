@@ -1,4 +1,4 @@
-package standardBot;
+package robustBot;
 
 import battlecode.common.*;
 
@@ -54,7 +54,7 @@ public class Archon extends Bot{
 
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
-                if ((round == 1 && isFirst) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/4 && rc.getRoundNum() > 30))
+                if ((round == 1 && isFirst) || round == 100 || (round > 100 && round % 60 == 0))
                 	{tryBuild = true;}
              
                 if (tryBuild && rc.getTeamBullets() > 120) 

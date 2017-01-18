@@ -1,4 +1,4 @@
-package standardBot;
+package robustBot;
 
 import battlecode.common.*;
 
@@ -22,7 +22,7 @@ public class Gardener extends Bot{
 		// 5 = gardener
 		// 6 = archon
 		// 7 = neutral tree
-		int build[] = new int[8];
+		int build[] = new int[7];
 		build[0] = 1;
 		build[1] = 0;
 		build[2] = 0;
@@ -30,9 +30,8 @@ public class Gardener extends Bot{
 		build[4] = 0;
 		build[5] = 0;
 		build[6] = 0;
-		build[7] = 0;
 		
-		int buildLength = 7;
+		int buildLength = 6;
 		
 		int buildIndex = 0;
 		
@@ -53,7 +52,6 @@ public class Gardener extends Bot{
         	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
     		try 
     		{
-    			
         	
     			//dodge bullets if needed
     			BulletInfo bullets[] = rc.senseNearbyBullets(4);
@@ -91,8 +89,7 @@ public class Gardener extends Bot{
     				}
     			if (rc.getRoundNum() > 5 && rc.getRoundNum()< 15)
 				{
-					trainUnit(RobotType.SOLDIER);
-					build[0] = 3;
+					trainUnit(RobotType.SCOUT);
 				}
     			
     			
@@ -127,7 +124,7 @@ public class Gardener extends Bot{
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 50)
                 			{
-                				if (rc.senseNearbyRobots(-1, enemy).length == 0)
+                				if (rc.senseNearbyBullets().length == 0 || true)
                 				{
                 					if (!settled)
                 						{roost = rc.getLocation();}
@@ -136,20 +133,18 @@ public class Gardener extends Bot{
                 						if (plantSpacedTree(roost))
                     					{
                     						settled = true;
-                    						
                     							
                     					}
                 					}
                 					else if (plantSpacedTree(roost))
                 					{
                 						settled = true;
-                						
                 							
                 					}
-                					System.out.println("BUILD ORDER: " + buildIndex);
+                						
                 					buildIndex++;
                     				if (buildIndex > buildLength)
-                    					{buildIndex = 7;}
+                    					{buildIndex = 5;}
                 				}
                 				else if (rc.getTeamBullets() >= 100)
                 				{
@@ -231,7 +226,7 @@ public class Gardener extends Bot{
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 2.90f), 1.0f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 2.90f), 1.0f, ally).length + rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 2.90f), 3.0f))) || !rc.onTheMap(roost.add(angle, 2.90f), 1.0f)) && turnCount++ < 24)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 2.90f), 1.0f) || (Globals.getGardenerCount() < 3 && rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, ally).length + rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, Team.NEUTRAL).length > 0) || !rc.onTheMap(roost.add(angle, 2.90f), 1.0f)) && turnCount++ < 24)
 		{
 			rc.setIndicatorDot(roost.add(angle, 2.90f), 155, 155, 155);
 			if (angle.getAngleDegrees() > 89 && angle.getAngleDegrees() < 91)

@@ -1,4 +1,4 @@
-package standardBot;
+package dodgeBot;
 
 import battlecode.common.*;
 
@@ -10,6 +10,9 @@ public class Bot {
 	public static MapLocation archonStart, enemyStarts[], enemyPing;
 	public static int behaviorType = 0;
 	public static boolean isFirst = false;
+	public static int dodgeColumnLookup[] = {7, 8, 9, 10, 11, 12, 13, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 7, 8, 9, 10, 11, 12, 13};
+	public static int dodgeRowLookup[] = {19, 19, 19, 19, 19, 19, 19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
+	public static int dodgeIndexLookup[][] = {{-1, -1, -1, -1, -1, -1, -1, 305, 306, 307, 308, 309, 310, 311, -1, -1, -1, -1, -1, -1},{-1, -1, -1, -1, -1, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, -1, -1, -1, -1},{-1, -1, -1, -1, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, -1, -1, -1},{-1, -1, -1, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, -1, -1},{-1, -1, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, -1},{-1, -1, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, -1},{-1, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, },{-1, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212},{-1, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193},{-1, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174},{-1, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155},{-1, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136},{-1, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117},{-1, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, },{-1, -1, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, -1, },{-1, -1, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, -1},{-1, -1, -1, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, -1, -1, },{-1, -1, -1, -1, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, -1, -1, -1},{-1, -1, -1, -1, -1, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, -1, -1, -1, -1},{-1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, -1, -1, -1, -1, -1, -1}};
 	
     protected static void Init(RobotController RobCon) throws GameActionException{
     	rc = RobCon;
@@ -20,8 +23,10 @@ public class Bot {
     	int enemyPingIndex = rc.getID() % enemyStarts.length;
     	enemyPing = enemyStarts[enemyPingIndex];
     	System.out.println("Attacking enemy archon number " + enemyPingIndex + " of " + enemyStarts.length);
-    	
-    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2))
+    	initDodgeRowLookup();
+    	initDodgeColumnLookup();
+    	initDodgeIndexLookup();
+    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor(Globals.getGardenerCount()/2))
     	{
     		System.out.println(Globals.getTrainerCount());
     		System.out.println(Globals.getGardenerCount());
@@ -49,6 +54,95 @@ public class Bot {
 			e.printStackTrace();
 		}
     }
+    
+    protected static void initDodgeRowLookup()
+    {
+    	//int index = 0;
+    	//int value = 19;
+    	//System.out.println(Clock.getBytecodesLeft());
+    	//while (index < 312)
+    	//{
+    		//if (index == 7 || index == 18 || index == 31 || index == 46 || index == 63 || index == 80 || index == 99 || index == 118 || index == 137 || index == 156 || index == 175 || index == 194 || index == 213 || index == 232 || index == 249 || index == 166 || index == 281 || index == 294 || index == 305)
+    		//{
+    			//value--;
+    		//}
+    		
+    		//dodgeRowLookup[index++] = value;
+    		//System.out.println(Clock.getBytecodesLeft());
+    	//}
+    	
+    }
+    
+    protected static void initDodgeColumnLookup()
+    {
+    	//int index = 0;
+    	//int width = 7;
+    	//int value = 7;
+    	//while (index < 312)
+    	//{
+    		//for (value = 10 - (width - 1)/2; value < 10 + (width + 1)/2; value++)
+    		//{		
+    			//dodgeColumnLookup[index++] = value;
+    		//}
+    		//if (index == 7)
+    		//{
+    			//width += 4;
+    		//}
+    		//if (index == 18 || index == 31 || index == 46 || index == 80)
+    		//{
+    			//width += 2;
+    		//}
+    		//if (index == 232 || index == 266 || index == 281 || index == 294)
+    		//{
+    			//width-= 2;
+    		//}
+    		//if (index == 305)
+    		//{
+    			//width -= 4;
+    		//}
+    	//}
+    }
+    
+    protected static void initDodgeIndexLookup()
+    {
+    	//int row = 19;
+    	//int index = 0;
+    	//int column = 0;
+    	//int width = 7;
+    	//for (row = 19; row >= 0; row--)
+    	//{
+    		//for (column = 0; column < 20; column++)
+        	//{
+        		//if (column < 10 - (width - 1)/2 || column > 10 + (width - 1)/2)
+        		//{
+        			//dodgeIndexLookup[row][column] = -1;
+        		//}
+        		//else
+        		//{
+        			//dodgeIndexLookup[row][column] = index++;
+        		//}
+        	//}
+    		//if (index == 7)
+    		//{
+    			//width += 4;
+    		//}
+    		//if (index == 18 || index == 31 || index == 46 || index == 80)
+    		//{
+    			//width += 2;
+    		//}
+    		//if (index == 232 || index == 266 || index == 281 || index == 294)
+    		//{
+    			//width-= 2;
+    		//}
+    		//if (index == 305)
+    		//{
+    			//width -= 4;
+    		//}
+    	//}
+    }
+
+    
+    
     
     protected static void startTurn() throws Exception 
     {
@@ -80,7 +174,8 @@ public class Bot {
     	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
     	me.alive = (rc.getRoundNum() % 2) == 1;
-    	me.hp = (int) rc.getHealth();  	
+    	me.hp = (int) rc.getHealth();
+    	
     	Memory.writeAllyData(memory_loc, me);
 		try {
 			Globals.updateEdges();
