@@ -54,7 +54,7 @@ public class Archon extends Bot{
 
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
-                if ((round == 1 && isFirst) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/6 && rc.getRoundNum() > 30))
+                if ((round == 1 && isFirst) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/6 && rc.getRoundNum() > 30) || Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2) || rc.getTeamBullets() > 600)
                 	{tryBuild = true;}
              
                 if (tryBuild && rc.getTeamBullets() > 120) 

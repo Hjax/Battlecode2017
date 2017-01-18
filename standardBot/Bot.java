@@ -185,6 +185,12 @@ public class Bot {
     				xPressure += -50 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -50 / (relativeY + Math.copySign(1, relativeY));
     			}
+    			//archons should avoid enemies more
+    			if (avoidBots[botCount].getTeam() != rc.getTeam() && rc.getType() == RobotType.ARCHON)
+    			{
+    				xPressure += -250 / (relativeX + Math.copySign(1,  relativeX));
+        			yPressure += -250 / (relativeY + Math.copySign(1, relativeY));
+    			}
 	
     		}
     	}
