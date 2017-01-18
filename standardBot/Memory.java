@@ -77,6 +77,21 @@ public class Memory extends Bot{
 		write(min_ally + index, value.toInt());
 	}
 	
+	public static int findAllyInMemory(MapLocation loc) throws GameActionException{
+		int locNumber = Utilities.targetToInt(loc);
+		for (int i = min_ally; i <= max_ally; i++){
+			if (read(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
+				i += 31;
+						continue;
+				}
+			int current_int = read(i);
+			if (AllyData.getLocInt(current_int) == locNumber){
+				return i - min_ally;
+			}
+		}
+		return -1;
+	}
+	
 	public static void pruneAllyMemory() throws Exception{
 		System.out.println("Starting defrag");
 		System.out.print("Lumberjack: ");

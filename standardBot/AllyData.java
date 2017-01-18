@@ -33,4 +33,8 @@ public class AllyData {
 	public static int getType(int memoryData) {
 		return Utilities.bitInterval(memoryData, 28, 30);
 	}
+	
+	public static int getLocInt(int memoryData){
+		return Utilities.bitInterval(memoryData, 10, 27);
+	}
 }

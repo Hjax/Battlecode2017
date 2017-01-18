@@ -8,6 +8,7 @@ public class Guard extends Bot{
 		
 		System.out.println("I'm an guard!");
 		RobotInfo gardenerToGuard = rc.senseRobot(rc.getID());
+
 		try
 		{
 			gardenerToGuard = rc.senseNearbyRobots(2, ally)[0];
@@ -16,6 +17,7 @@ public class Guard extends Bot{
             e.printStackTrace();
         }
 		
+		int guardedMem = Memory.findAllyInMemory(gardenerToGuard.location);
 		
 
         // The code you want your robot to perform every round should be in this loop
@@ -26,7 +28,7 @@ public class Guard extends Bot{
             	startTurn();
             	System.out.println("start turn");
             	
-            	if (!rc.canSenseRobot(gardenerToGuard.ID))
+            	if (Memory.readAlly(guardedMem).toInt() == 0)
             	{
             		System.out.println("gardener died");
             		gardenerToGuard = rc.senseRobot(rc.getID());
@@ -55,19 +57,20 @@ public class Guard extends Bot{
             	}
             	else
             	{
+            		MapLocation target = Memory.readAlly(guardedMem).location;
             		RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
                 	// if no enemies, stay near gardener
-            		TreeInfo trees[] = rc.senseNearbyTrees(gardenerToGuard.getLocation(), 3, ally);
+            		TreeInfo trees[] = rc.senseNearbyTrees(target, 3, ally);
             		// if no enemies and a tree, sit in the tree
                 	if (enemies.length == 0)
                 	{
                 		if (trees.length == 0)
                 		{
-                			Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(rc.getLocation()), 2.01f));
+                			Utilities.moveTo(target.add(target.directionTo(rc.getLocation()), 2.01f));
                 		}
                 		else
                 		{
-                			Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(trees[0].getLocation()), 2.01f));
+                			Utilities.moveTo(target.add(target.directionTo(trees[0].getLocation()), 2.01f));
                 		}
                 		
                 		
@@ -75,7 +78,7 @@ public class Guard extends Bot{
                 	else
                 	{
                 		
-                		Utilities.moveTo(gardenerToGuard.getLocation().add(gardenerToGuard.getLocation().directionTo(enemies[0].getLocation()), 2.01f));
+                		Utilities.moveTo(target.add(target.directionTo(enemies[0].getLocation()), 2.01f));
                 	}
             	}
             	
