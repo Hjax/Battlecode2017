@@ -95,7 +95,7 @@ public class Guard extends Bot{
                     if (!(enemyTarget.getType() == RobotType.ARCHON && rc.getRoundNum() < 300))
                     {
                     	// And we have enough bullets, and haven't attacked yet this turn...;
-                    	if (rc.getLocation().isWithinDistance(enemyTarget.getLocation(), 4.5f)){
+                    	if (rc.getLocation().isWithinDistance(enemyTarget.getLocation(), 4.0f)){
                     		if (rc.canFirePentadShot()) {
                     			rc.firePentadShot(rc.getLocation().directionTo(enemyTarget.getLocation()));
                     		}
