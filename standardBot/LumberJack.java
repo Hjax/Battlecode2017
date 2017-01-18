@@ -15,8 +15,33 @@ public class LumberJack extends Bot {
 	        // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        try {
 	        	TreeInfo enemyTrees[] = rc.senseNearbyTrees(-1, enemy);
-	        	TreeInfo neutralTrees[] = rc.senseNearbyTrees(-1, Team.NEUTRAL);
-	        	TreeInfo bestTree;
+	        	RobotInfo gardeners[] = rc.senseNearbyRobots(-1, ally);
+	        	RobotInfo gardener = null;
+	        	if (gardeners.length > 0)
+	        	{
+	        		for (int unit = 0; unit < gardeners.length; unit++)
+	        		{
+	        			if (gardeners[unit].getType() == RobotType.GARDENER)
+	        			{
+	        				gardener = gardeners[unit];
+	        				break;
+	        			}
+	        		}
+	        		
+	        	}
+	        	
+	        	TreeInfo neutralTrees[];
+	        	
+	        	if (gardener == null)
+	        	{
+	        		neutralTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+	        	}
+	        	else
+	        	{
+	        		neutralTrees = rc.senseNearbyTrees(gardener.getLocation(), -1, Team.NEUTRAL);
+	        	}
+	        	
+
 	        	
 	        	if (enemyTrees.length > 0)
 	        	{
@@ -27,8 +52,9 @@ public class LumberJack extends Bot {
 	        	else if (neutralTrees.length > 0)
 	        	{
 	        		Utilities.moveTo(Utilities.melee(neutralTrees[0].getLocation(), 1 + neutralTrees[0].radius));
-	        		if (rc.canChop(neutralTrees[0].ID))
-        			{rc.chop(neutralTrees[0].ID);}
+	        		TreeInfo treesToChop[] = neutralTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+	        		if (rc.canChop(treesToChop[0].ID))
+        			{rc.chop(treesToChop[0].ID);}
 	        	}
 	        	else Utilities.tryMove(neo());
 
