@@ -328,11 +328,13 @@ public class Bot {
     	
     	if (rc.getType() != RobotType.GARDENER && rc.getType() != RobotType.ARCHON)
     	{
-    		relativeX = enemyPing.x - rc.getLocation().x;
-			relativeY = enemyPing.y - rc.getLocation().y;
-			
-			xPressure += relativeX / 1;
-			yPressure += relativeY / 1;
+    		if ((rc.getRoundLimit() - rc.getRoundNum()) > 1000){
+        		relativeX = enemyPing.x - rc.getLocation().x;
+    			relativeY = enemyPing.y - rc.getLocation().y;
+    			
+    			xPressure += relativeX / 1;
+    			yPressure += relativeY / 1;
+    		}
     	}
     	
     	System.out.println("EX: " + xPressure);

@@ -18,6 +18,16 @@ public class Scout extends Bot{
             try 
             {
             	startTurn();
+            	
+            	TreeInfo trees[] = rc.senseNearbyTrees();
+            	if (trees.length > 0){
+            		for (TreeInfo tree: trees){
+            			if (tree.getContainedBullets() >= 10){
+            				Utilities.moveTo(tree.location);
+            				break;
+            			}
+            		}
+            	}
 
             	RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
             	RobotInfo gardener = rc.senseRobot(rc.getID());
