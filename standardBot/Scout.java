@@ -19,26 +19,8 @@ public class Scout extends Bot{
             {
             	startTurn();
 
-            	
-            	
             	RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
             	RobotInfo gardener = rc.senseRobot(rc.getID());
-
-            	
-            	BulletInfo bullets[] = rc.senseNearbyBullets(4);
-            	MapLocation dodgeTo = rc.getLocation();
-            	for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
-            	{
-            		dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
-            		if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
-            		{
-            			rc.setIndicatorLine(rc.getLocation(), dodgeTo, 100, 100, 100);
-            			rc.setIndicatorDot(bullets[bulletCount].getLocation(), 100, 100, 100);
-            			Utilities.moveTo(dodgeTo);
-            		}
-            	}
-            	
-            	
             	for (int countBot = 0; countBot < enemies.length; countBot++)
             	{
             		if (enemies[countBot].getType() == RobotType.GARDENER)
@@ -50,10 +32,46 @@ public class Scout extends Bot{
             	System.out.println(goal.getAngleDegrees());
             	System.out.println(rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false);
             	
+            	if (gardener.location.distanceTo(rc.getLocation()) >=4 || gardener.getType() != RobotType.GARDENER){
+                	BulletInfo bullets[] = rc.senseNearbyBullets(4);
+                	MapLocation dodgeTo = rc.getLocation();
+                	for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+                	{
+                		dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
+                		if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
+                		{
+                			rc.setIndicatorLine(rc.getLocation(), dodgeTo, 100, 100, 100);
+                			rc.setIndicatorDot(bullets[bulletCount].getLocation(), 100, 100, 100);
+                			Utilities.moveTo(dodgeTo);
+                		}
+                	}
+            	}
+
+            	
             	if (gardener.getType() == RobotType.GARDENER)
             	{
-            		System.out.println("MELEE");
-            		Utilities.moveTo((Utilities.melee(gardener.getLocation(), 2)));
+            		if (gardener.location.distanceTo(rc.getLocation()) < 4){
+            			// we are already in melee range, find the closest enemy, and move to the side of the gardener
+            			System.out.println("Being annoying");
+            			RobotInfo defense =  rc.senseRobot(rc.getID());
+    	            	for (int countBot = 0; countBot < enemies.length; countBot++)
+    	            	{
+    	            		if (enemies[countBot].getType() == RobotType.SOLDIER || enemies[countBot].getType() == RobotType.SCOUT || enemies[countBot].getType() == RobotType.TANK || enemies[countBot].getType() == RobotType.LUMBERJACK)
+    	            		{
+    	            			defense = enemies[countBot];
+    	            			break;
+    	            		}
+    	            	}
+    	            	MapLocation target = gardener.getLocation();
+    	            	target = target.add(defense.location.directionTo(gardener.location), 2.01f);
+    	            	rc.setIndicatorDot(target, 255, 255, 255);
+    	            	Utilities.moveTo(target);
+
+    	            	
+            		} else {
+                		System.out.println("MELEE");
+                		Utilities.moveTo((Utilities.melee(gardener.getLocation(), 2)));
+            		}
             	}
             	else 
             	{
@@ -89,9 +107,6 @@ public class Scout extends Bot{
                     }
                 }
 
-
-
-
             } catch (Exception e) 
             {
                 System.out.println("Scout Exception");
@@ -101,4 +116,5 @@ public class Scout extends Bot{
             endTurn();
         }
     }
+	
 }
