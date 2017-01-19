@@ -160,9 +160,9 @@ public class Utilities extends Bot{
 		return rc.getLocation().add(dir, max_dist).x;
 	}
 	
-	public static int bitInterval(int input, int start, int end) {
+	public static int bitInterval(long input, int start, int end) {
 		// found this equation on stackoverflow
-		return (input >> start) & ~(~0 << (end-start+1));
+		return (int) ((input >> start) & ~(~0 << (end-start+1)));
 	}
 	
 	public static void moveTo(MapLocation destination) throws GameActionException

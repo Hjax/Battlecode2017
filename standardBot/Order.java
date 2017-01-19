@@ -7,7 +7,7 @@ public class Order {
 	public MapLocation location;
 	public int TTL;
 	public int count;
-	public Order(int memoryData) {
+	public Order(long memoryData) {
 		type = Utilities.bitInterval(memoryData, 29, 32);
 		TTL = Utilities.bitInterval(memoryData, 23, 28);
 		location = Utilities.intToTarget(Utilities.bitInterval(memoryData, 5, 22));
@@ -19,13 +19,13 @@ public class Order {
 		TTL = time;
 		count = number;
 	}
-	public int toInt(){
+	public long toInt(){
 		return type * (int) Math.pow(2, 29) + TTL * (int) Math.pow(2, 23) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 5) + count;
 	}
-	public static int getCount(int input){
+	public static int getCount(long input){
 		return Utilities.bitInterval(input, 0, 4);
 	}
-	public static int getTTL(int input){
+	public static int getTTL(long input){
 		return Utilities.bitInterval(input, 23, 28);
 	}
 }

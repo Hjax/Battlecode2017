@@ -11,38 +11,48 @@ public class Memory extends Bot{
 	private static int min_address = 50;
 	private static int max_address = 65;
 	private static int min_ally = 66;
-	private static int max_ally = 561;
-	private static int min_order = 562;
-	private static int max_order = 661;
-	private static int min_map_data = 662;
+	private static int max_ally = 577;
+	private static int min_order = 578;
+	private static int max_order = 677;
+	private static int min_map_data = 678;
 	private static int max_map_data = 999;
+	private static long bits_zero = (long) Math.pow(2, 32);
 	
-	public static int read(int index) throws GameActionException{
+	public static int readValue(int index) throws GameActionException {
 		return rc.readBroadcast(index);
 	}
 	
-	public static void write(int index, int value) throws GameActionException{
+	public static void writeValue(int index, int value) throws GameActionException{
 		rc.broadcast(index, value);
 	}
 	
+	public static long readBits(int index) throws GameActionException {
+		return (rc.readBroadcast(index) + bits_zero);
+	}
+	
+	public static void writeBits(int index, long value) throws GameActionException {
+		rc.broadcast(index, (int) (value - bits_zero));
+	}
+	
+	
 	public static int readGlobal(int index) throws GameActionException {
-		return read(min_global + index);
+		return readValue(min_global + index);
 	}
 	
 	public static void writeGlobal(int index, int value) throws Exception {
-		write(min_global + index, value);
+		writeValue(min_global + index, value);
 	}
 	
 	public static int first_free_ally() throws Exception {
 		int index = 0;
 		for (int i = min_address; i <= max_address; i++){
-			int current_cell = read(i);
-			if (current_cell == 2147483647){
-				index += 31;
+			long current_cell = readBits(i);
+			if (current_cell == 6442450943l){
+				index += 32;
 				continue;
 			}
-			int value = 1;
-			for (int j = 0; j < 31; j++){
+			long value = 1;
+			for (int j = 0; j < 32; j++){
 				if ((current_cell & value) == 0){
 					return index;
 				}
@@ -54,37 +64,37 @@ public class Memory extends Bot{
 	}
 	
 	public static AllyData readAlly(int index) throws GameActionException {
-		return new AllyData(read(index + min_ally));
+		return new AllyData(readBits(index + min_ally));
 	}
 	
 	public static void reserveAllyIndex(int index) throws Exception {
 		if (index > 495) {
 			throw new Exception("Out of Memory");
 		}
-		int cell = (int) Math.floor(index / 31) + min_address;
-		int bit = index % 31;
-		write(cell, read(cell) | (int) (Math.pow(2, bit)));
+		int cell = (int) Math.floor(index / 32) + min_address;
+		int bit = index % 32;
+		writeBits(cell, readBits(cell) | (int) (Math.pow(2, bit)));
 	}
 	
 	public static void freeAllyMemory(int index) throws GameActionException {
-		write(min_ally + index, 0);
-		int cell = (int) Math.floor(index / 31) + min_address;
-		int bit = index % 31;
-		write(cell, Math.min(read(cell) ^ (int) (Math.pow(2, bit)), read(cell)));
+		writeBits(min_ally + index, 0);
+		int cell = (int) Math.floor(index / 32) + min_address;
+		int bit = index % 32;
+		writeBits(cell, Math.min(readBits(cell) ^ (int) (Math.pow(2, bit)), readBits(cell)));
 	}
 	
 	public static void writeAllyData(int index, AllyData value) throws GameActionException {
-		write(min_ally + index, value.toInt());
+		writeBits(min_ally + index, value.toInt());
 	}
 	
 	public static int findAllyInMemory(MapLocation loc) throws GameActionException{
 		int locNumber = Utilities.targetToInt(loc);
 		for (int i = min_ally; i <= max_ally; i++){
-			if (read(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
-				i += 31;
+			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
+				i += 32;
 						continue;
 				}
-			int current_int = read(i);
+			long current_int = readBits(i);
 			if (AllyData.getLocInt(current_int) == locNumber){
 				return i - min_ally;
 			}
@@ -105,20 +115,20 @@ public class Memory extends Bot{
 		System.out.print("Soldier: ");
 		System.out.println(Globals.getSoldierCount());
 		for (int i = min_ally; i <= max_ally; i++){
-			if (read(min_address + (int) Math.floor((i - min_ally) / 31)) == 0){
-				i += 31;
+			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
+				i += 32;
 				continue;
 			}
-			int current_int = read(i);
-			if (current_int != 0){
+			long current_int = readBits(i);
+			if (current_int != bits_zero){
 				// if the alive variable is correct for the current turn
 				// then it wasnt updated last turn
 				// NOTE freeing memory does not write zeroes to the old location
 				if (AllyData.isAlive(current_int) == ((rc.getRoundNum() % 2) == 1)){
 					System.out.print("Killing: ");
-					System.out.println(Integer.toBinaryString(current_int));
+					System.out.println(Long.toBinaryString(current_int));
 					System.out.println(i);
-					Globals.incrementUnitCount(AllyData.getType(read(i)), -1);
+					Globals.incrementUnitCount(AllyData.getType(readBits(i)), -1);
 					freeAllyMemory(i - min_ally);
 				}
 			}
@@ -130,13 +140,13 @@ public class Memory extends Bot{
 		if (old_orders == 0){
 			return;
 		}
-		int[] Orders = new int[old_orders];
+		long[] Orders = new long[old_orders];
 		int order_count = 0;
 		int total_orders = 0;
 		for (int i = min_order; i <= max_order; i++){
 			total_orders++;
-			int current = read(i);
-			if (current == 0){
+			long current = readBits(i);
+			if (current == bits_zero){
 				break;
 			}
 			
@@ -148,20 +158,20 @@ public class Memory extends Bot{
 		}
 		for (int i = 0; i < total_orders; i++){
 			if (i < order_count){
-				write(i + min_order, Orders[i]);
+				writeBits(i + min_order, Orders[i]);
 			} else {
-				write(i + min_order, 0);
+				writeBits(i + min_order, 0);
 			}
 		}
 		Globals.setOrderCount(order_count);
 	}
 	
 	public static Order getOrder(int index) throws GameActionException{
-		return new Order(read(min_order + index));
+		return new Order(readBits(min_order + index));
 	}
 	
 	public static void addOrder(Order o) throws Exception{
-		write(min_order + Globals.getOrderCount(), o.toInt());
+		writeBits(min_order + Globals.getOrderCount(), o.toInt());
 		Globals.setOrderCount(Globals.getOrderCount() + 1);
 	}
 	

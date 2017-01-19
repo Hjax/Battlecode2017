@@ -7,7 +7,7 @@ public class EnemyData {
 	public MapLocation location;
 	public int hp;
 	public boolean building;
-	public EnemyData(int memoryData) {
+	public EnemyData(long memoryData) {
 		type = Utilities.bitInterval(memoryData, 28, 30);
 		location = Utilities.intToTarget(Utilities.bitInterval(memoryData, 10, 27));
 		hp = Utilities.bitInterval(memoryData, 1, 9);
@@ -19,7 +19,7 @@ public class EnemyData {
 		hp = health;
 		building = is_alive;
 	}
-	public int toInt(){
+	public long toInt(){
 		return type * (int) Math.pow(2, 28) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 10) + hp * 2 + ((building) ? 1 : 0);
 	}
 }
