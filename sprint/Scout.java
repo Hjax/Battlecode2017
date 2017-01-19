@@ -1,4 +1,4 @@
-package standardBot;
+package sprint;
 
 import battlecode.common.*;
 
