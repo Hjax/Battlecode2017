@@ -84,7 +84,7 @@ public class Memory extends Bot{
 	}
 	
 	public static void writeAllyData(int index, AllyData value) throws GameActionException {
-		writeBits(min_ally + index, value.toInt());
+		writeBits(min_ally + index, value.toLong());
 	}
 	
 	public static int findAllyInMemory(MapLocation loc) throws GameActionException{
@@ -153,9 +153,11 @@ public class Memory extends Bot{
 		long[] Orders = new long[old_orders];
 		int order_count = 0;
 		int total_orders = 0;
-		for (int i = min_order; i <= max_order; i++){
+		for (int i = min_order; i <= min_order + old_orders; i++){
 			total_orders++;
 			long current = readBits(i);
+			System.out.print("looking at :");
+			System.out.println(Long.toBinaryString(current));
 			if (current == bits_zero){
 				break;
 			}
@@ -176,12 +178,17 @@ public class Memory extends Bot{
 		Globals.setOrderCount(order_count);
 	}
 	
+	public static void deleteOrder(Order o) throws GameActionException {
+		o.TTL = 0;
+		writeBits(o.index + min_order, o.toLong());
+	}
+	
 	public static Order getOrder(int index) throws GameActionException{
 		return new Order(readBits(min_order + index), index);
 	}
 	
 	public static void addOrder(Order o) throws Exception{
-		writeBits(min_order + Globals.getOrderCount(), o.toInt());
+		writeBits(min_order + Globals.getOrderCount(), o.toLong());
 		Globals.setOrderCount(Globals.getOrderCount() + 1);
 	}
 	

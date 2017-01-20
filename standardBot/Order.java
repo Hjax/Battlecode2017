@@ -21,7 +21,7 @@ public class Order {
 		index = i;
 	}
 	
-	public long toInt(){
+	public long toLong(){
 		// you could hard code the values here for a small bytecode improvement (3 per int, so 6 here)
 		return type * (int) Math.pow(2, 30) + TTL * (int) Math.pow(2, 18) + (int) Utilities.targetToInt(location);
 	}

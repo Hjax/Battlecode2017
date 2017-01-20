@@ -16,18 +16,27 @@ public class OrderManager extends Bot{
 
 		for (int i = 0; i < Globals.getOrderCount(); i++){
 			Order current = Memory.getOrder(i);
-			//if (current.location.distanceTo(rc.getLocation()) <= 4) {
-			//	if (rc.senseNearbyRobots(-1, enemy).length == 0) {
-			//		current.TTL = 0;
-					
-			//	}
-			//}
-			if (UnitType.isCombat() && current.type == 0){
-				currentOrder = current;
-				return;
+			if (checkDelete(current)){
+				if (UnitType.isCombat() && current.type == 0){
+					currentOrder = current;
+					return;
+				}
 			}
 		}
 		currentOrder = null;
+	}
+	
+	public static boolean checkDelete(Order o) throws GameActionException{
+		System.out.println("running check delete");
+		if (o.location.distanceTo(rc.getLocation()) <= 4) {
+			System.out.println(1);
+			if (rc.senseNearbyRobots(-1, enemy).length == 0) {
+				System.out.println(2);
+				Memory.deleteOrder(o);
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public static MapLocation getTarget() { 

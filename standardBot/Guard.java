@@ -28,7 +28,7 @@ public class Guard extends Bot{
             	startTurn();
             	System.out.println("start turn");
             	
-            	if (Memory.readAlly(guardedMem).toInt() == 0 || memory_loc == guardedMem)
+            	if (Memory.readAlly(guardedMem).toLong() == 0 || memory_loc == guardedMem)
             	{
             		System.out.println("gardener died");
             		gardenerToGuard = rc.senseRobot(rc.getID());

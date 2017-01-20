@@ -19,7 +19,7 @@ public class EnemyData {
 		hp = health;
 		building = is_alive;
 	}
-	public long toInt(){
+	public long toLong(){
 		return type * (int) Math.pow(2, 28) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 10) + hp * 2 + ((building) ? 1 : 0);
 	}
 }

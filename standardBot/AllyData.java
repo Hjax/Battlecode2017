@@ -20,7 +20,7 @@ public class AllyData {
 		hp = health;
 		alive = is_alive;
 	}
-	public long toInt(){
+	public long toLong(){
 		return type * (int) Math.pow(2, 28) + (int) Utilities.targetToInt(location) * (int) Math.pow(2, 10) + hp * 2 + ((alive) ? 1 : 0);
 	}
 	
