@@ -56,7 +56,7 @@ public class OrderManager extends Bot{
 robot:	for (RobotInfo enemy: rc.senseNearbyRobots(-1, enemy)){
 			for (int i = 0; i < Globals.getOrderCount(); i++){
 				if (enemy.location.distanceTo(Memory.getOrder(i).location) <= 10) {
-					break robot;
+					continue robot;
 				}
 			}
 			Memory.addOrder(new Order(0, enemy.location, 3000, -1));

@@ -343,8 +343,8 @@ public class Bot {
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
-    		xPressure += relativeX / 1;
-    		yPressure += relativeY / 1;
+    		xPressure += relativeX * 2;
+    		yPressure += relativeY * 2;
     	}
     	
     	System.out.println("EX: " + xPressure);
