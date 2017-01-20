@@ -7,7 +7,7 @@ public class Scout extends Bot{
 		
 		System.out.println("I'm a scout!");
 		
-		Direction goal = rc.getLocation().directionTo(enemyPing);
+		Direction goal = rc.getLocation().directionTo(rc.getInitialArchonLocations(enemy)[0]);
 		System.out.println(goal.getAngleDegrees());
 
         // The code you want your robot to perform every round should be in this loop

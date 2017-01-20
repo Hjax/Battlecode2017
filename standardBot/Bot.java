@@ -7,7 +7,7 @@ public class Bot {
     protected static Team ally;
     protected static Team enemy;
     protected static int memory_loc = -1;
-	public static MapLocation archonStart, enemyStarts[], enemyPing;
+	public static MapLocation archonStart;
 	public static int behaviorType = 0;
 	public static boolean isFirst = false;
 	
@@ -16,10 +16,6 @@ public class Bot {
     	ally = rc.getTeam();
     	enemy = ally.opponent();
     	archonStart = rc.getInitialArchonLocations(ally)[0];
-    	enemyStarts = rc.getInitialArchonLocations(enemy);
-    	int enemyPingIndex = rc.getID() % enemyStarts.length;
-    	enemyPing = enemyStarts[enemyPingIndex];
-    	System.out.println("Attacking enemy archon number " + enemyPingIndex + " of " + enemyStarts.length);
     	
     	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2))
     	{
@@ -52,6 +48,11 @@ public class Bot {
     
     protected static void startTurn() throws Exception 
     {
+    	OrderManager.updateOrders();
+    	if (OrderManager.shouldMove()){
+    		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
+    	}
+    	
     	if (rc.getTeamBullets() > 1000)
     	{
     		rc.donate(1000);
@@ -61,6 +62,13 @@ public class Bot {
     		rc.donate(rc.getTeamBullets() - rc.getTeamBullets() % 10);
     	}
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
+    		if (rc.getRoundNum() == 1) {
+    			// we went first on the first round, add enemy archon spawns as orders
+    			MapLocation[] targets = rc.getInitialArchonLocations(enemy);
+    			for (int i = 0; i < targets.length; i++){
+    				Memory.addOrder(new Order(0, targets[i], rc.getRoundLimit(), -1));
+    			}
+    		}
     		Globals.setRoundNumber(rc.getRoundNum());
     		int start = Clock.getBytecodeNum();
     		Memory.pruneAllyMemory();
@@ -324,17 +332,14 @@ public class Bot {
     		}
     	}
     	
-    	//aggress to enemy spawn if soldier
-    	
-    	if (rc.getType() != RobotType.GARDENER && rc.getType() != RobotType.ARCHON)
-    	{
-    		if ((rc.getRoundLimit() - rc.getRoundNum()) > 1000){
-        		relativeX = enemyPing.x - rc.getLocation().x;
-    			relativeY = enemyPing.y - rc.getLocation().y;
+    	// move towards a target if we have one 
+    	if (OrderManager.hasOrder() && OrderManager.shouldMove()){
     			
-    			xPressure += relativeX / 1;
-    			yPressure += relativeY / 1;
-    		}
+        	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
+    		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
+    			
+    		xPressure += relativeX / 1;
+    		yPressure += relativeY / 1;
     	}
     	
     	System.out.println("EX: " + xPressure);

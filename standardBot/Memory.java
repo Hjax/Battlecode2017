@@ -16,7 +16,7 @@ public class Memory extends Bot{
 	private static int max_order = 677;
 	private static int min_map_data = 678;
 	private static int max_map_data = 999;
-	private static long bits_zero = (long) Math.pow(2, 32);
+	private static long bits_zero = (long) Math.pow(2, 31);
 	
 	public static int readValue(int index) throws GameActionException {
 		return rc.readBroadcast(index);
@@ -150,7 +150,7 @@ public class Memory extends Bot{
 				break;
 			}
 			
-			if (Order.getCount(current) <= 0 || Order.getTTL(current) <= 0) {
+			if (Order.getTTL(current) < rc.getRoundNum()) {
 				continue;
 			}
 
@@ -167,7 +167,7 @@ public class Memory extends Bot{
 	}
 	
 	public static Order getOrder(int index) throws GameActionException{
-		return new Order(readBits(min_order + index));
+		return new Order(readBits(min_order + index), index);
 	}
 	
 	public static void addOrder(Order o) throws Exception{
