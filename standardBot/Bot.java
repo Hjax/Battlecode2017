@@ -68,7 +68,9 @@ public class Bot {
     			for (int i = 0; i < targets.length; i++){
     				Memory.addOrder(new Order(0, targets[i], rc.getRoundLimit(), -1));
     			}
+    			Memory.clearAllies();
     		}
+    		
     		Globals.setRoundNumber(rc.getRoundNum());
     		int start = Clock.getBytecodeNum();
     		Memory.pruneAllyMemory();

@@ -47,7 +47,7 @@ public class Memory extends Bot{
 		int index = 0;
 		for (int i = min_address; i <= max_address; i++){
 			long current_cell = readBits(i);
-			if (current_cell == 6442450943l){
+			if (current_cell == 4294967295l){
 				index += 32;
 				continue;
 			}
@@ -114,13 +114,17 @@ public class Memory extends Bot{
 		System.out.println(Globals.getArchonCount());
 		System.out.print("Soldier: ");
 		System.out.println(Globals.getSoldierCount());
+		System.out.print("Gardener: ");
+		System.out.println(Globals.getGardenerCount());
+		System.out.print("Trainer: ");
+		System.out.println(Globals.getTrainerCount());
 		for (int i = min_ally; i <= max_ally; i++){
 			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
 				i += 32;
 				continue;
 			}
 			long current_int = readBits(i);
-			if (current_int != bits_zero){
+			if (current_int != 0){
 				// if the alive variable is correct for the current turn
 				// then it wasnt updated last turn
 				// NOTE freeing memory does not write zeroes to the old location
@@ -132,6 +136,12 @@ public class Memory extends Bot{
 					freeAllyMemory(i - min_ally);
 				}
 			}
+		}
+	}
+	
+	public static void clearAllies() throws GameActionException {
+		for (int i = min_ally + 1; i <= max_ally; i++){
+			writeBits(i, 0);
 		}
 	}
 	
