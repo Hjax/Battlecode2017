@@ -131,14 +131,14 @@ public class Bot {
     		pathOffset = (relativeY - relativeX * bulletYVel / bulletXVel) / (bulletXVel + (bulletYVel * bulletYVel)/bulletXVel);
     		pathDistance = relativeX/bulletXVel + bulletYVel * pathOffset / bulletXVel;
     		
-    		if (pathDistance > -0.2)
+    		if (pathDistance > -0.2 && pathDistance < 4)
     		{
     			double timeToDodge = pathDistance/bullets[bulletCount].getSpeed();
     			System.out.println("PathOffset: " + pathOffset);
     			System.out.println("bulletXVel: " + bulletXVel);
     			System.out.println("relativeX: " + relativeX);
-    			xPressure += (bullets[bulletCount].damage * -500 / Math.copySign(1, bulletYVel) / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
-    			yPressure += (bullets[bulletCount].damage * 500/ Math.copySign(1, bulletXVel) / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
+    			xPressure += (bullets[bulletCount].damage * -500 * bulletYVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
+    			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
     		}
     	}
     	System.out.println("AX: " + xPressure);
