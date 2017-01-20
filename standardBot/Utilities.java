@@ -220,4 +220,70 @@ public class Utilities extends Bot{
 	}
 	
 	
+	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets)
+	{
+		float x = rc.getLocation().x;
+		float y = rc.getLocation().y;
+		int iterations = 80/(bullets.length + 1);
+		float pressureMultiplier = 0.6f;
+		float xPres = 0f;
+		float yPres = 0f;
+		float bulletXVel = 0f;
+		float bulletYVel = 0f;
+		float relativeX = 0f;
+		float relativeY = 0f;
+		float pathOffset = 0f;
+		float pathDistance = 0f;
+		float bulletYOverX = 0f;
+		float cubed = 0f;
+		double angle = 0;
+		for (int i = 0; i < iterations; i++)
+		{
+			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+			{
+				bulletXVel = (float) (bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].dir.radians));
+				bulletYVel = (float) (bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].dir.radians));
+				bulletYOverX = bulletYVel / bulletXVel;
+				
+				relativeX = x - bullets[bulletCount].getLocation().x;
+				relativeY = y - bullets[bulletCount].getLocation().y;
+				
+				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
+				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
+				
+				if (pathDistance > -0.1 && pathDistance < 1.1)
+				{
+					cubed = (float) Math.pow((pathOffset + Math.copySign(0.22, pathOffset)), 3);
+					xPres += bulletYVel * -0.012f / cubed;
+					yPres += bulletXVel * 0.012f / cubed;
+				}
+				
+				if (pathOffset > -0.5 && pathOffset < 0.5)
+				{
+					cubed = (float) Math.pow((pathDistance + Math.copySign(0.5, pathDistance)), 3);
+					xPres += bulletXVel * 0.04f / cubed;
+					yPres += bulletYVel * 0.04f / cubed;
+				}
+			}
+			
+			x += pressureMultiplier * xPres;
+			y += pressureMultiplier * yPres;
+			
+			relativeX = x - rc.getLocation().x;
+			relativeY = y - rc.getLocation().y;
+			if (relativeX * relativeX + relativeY * relativeY > rc.getType().strideRadius * rc.getType().strideRadius)
+			{
+				angle = Math.atan(relativeY / relativeX);
+				if (relativeX < 0)
+				{
+					angle = Math.PI - angle;
+				}
+				x = (float) (rc.getLocation().x + rc.getType().strideRadius * Math.cos(angle));
+				y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
+			}
+			pressureMultiplier = pressureMultiplier * 0.95f;
+		}
+		return new MapLocation(x, y);
+	}
+	
 }

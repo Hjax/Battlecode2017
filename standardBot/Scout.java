@@ -40,23 +40,18 @@ public class Scout extends Bot{
             		}
             	}
             	
-            	if (gardener.location.distanceTo(rc.getLocation()) >=4 || gardener.getType() != RobotType.GARDENER){
-                	BulletInfo bullets[] = rc.senseNearbyBullets(4);
-                	MapLocation dodgeTo = rc.getLocation();
-                	for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
-                	{
-                		dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
-                		if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
-                		{
-                			rc.setIndicatorLine(rc.getLocation(), dodgeTo, 100, 100, 100);
-                			rc.setIndicatorDot(bullets[bulletCount].getLocation(), 100, 100, 100);
-                			Utilities.moveTo(dodgeTo);
-                		}
-                	}
+            	BulletInfo bullets[] = rc.senseNearbyBullets(4);
+            	
+            	if (bullets.length > 0){
+            		System.out.println("PRESSURE DODGE");
+                	MapLocation dodgeTo = Utilities.magnitudePressureDodge(bullets);
+                	Utilities.moveTo(dodgeTo);
+                	System.out.println("PRESSURE DODGE DONE");
+                	
             	}
 
             	
-            	if (gardener.getType() == RobotType.GARDENER)
+            	else if (gardener.getType() == RobotType.GARDENER)
             	{
             		if (gardener.location.distanceTo(rc.getLocation()) < 4){
             			// we are already in melee range, find the closest enemy, and move to the side of the gardener
