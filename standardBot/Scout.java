@@ -39,8 +39,6 @@ public class Scout extends Bot{
             			break;
             		}
             	}
-            	System.out.println(goal.getAngleDegrees());
-            	System.out.println(rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false);
             	
             	if (gardener.location.distanceTo(rc.getLocation()) >=4 || gardener.getType() != RobotType.GARDENER){
                 	BulletInfo bullets[] = rc.senseNearbyBullets(4);
@@ -85,19 +83,25 @@ public class Scout extends Bot{
             	}
             	else 
             	{
-            		if (rc.getRoundNum() < 3000)
-            		{
-            			Utilities.tryMove(goal);
-            		}
-            		else
-            		{
-            			Utilities.tryMove(neo());
+            		if (! rc.hasMoved()){
+                		if (rc.getRoundNum() < 3000)
+                		{
+                			
+                			Utilities.tryMove(goal);
+                		}
+                		else
+                		{
+                			Utilities.tryMove(neo());
+                		}
             		}
             	}
             	rc.setIndicatorDot(rc.getLocation().add(goal, 4.0f), 0, 0, 255);
             	
-            	if (rc.onTheMap(rc.getLocation().add(goal, 4.0f)) == false)
+            	System.out.println(goal.getAngleDegrees());
+            	System.out.println(rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false);
+            	if (rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false)
             	{
+            		System.out.println("setting new goal");
             		goal = goal.rotateLeftRads((float) (Math.random() * 2 * Math.PI));
             	}
             	System.out.println(goal.getAngleDegrees());

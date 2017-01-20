@@ -194,7 +194,7 @@ public class Utilities extends Bot{
 		TreeInfo trees[] = rc.senseNearbyTrees(rc.getType().bodyRadius + 1, Team.NEUTRAL);
 		for (int countTree = 0; countTree < trees.length; countTree++)
 		{
-			if (rc.canShake(trees[countTree].ID))
+			if (rc.canShake(trees[countTree].ID) && trees[countTree].containedBullets > 0)
 			{
 				rc.shake(trees[countTree].ID);
 			}
