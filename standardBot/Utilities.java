@@ -238,7 +238,7 @@ public class Utilities extends Bot{
 	{
 		float x = rc.getLocation().x;
 		float y = rc.getLocation().y;
-		int iterations = 80/(bullets.length + 1);
+		int iterations = 70/(bullets.length + 1);
 		float pressureMultiplier = 0.6f;
 		float xPres = 0f;
 		float yPres = 0f;
