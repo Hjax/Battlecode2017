@@ -104,7 +104,7 @@ public class Scout extends Bot{
             	
 
                 // See if there are any nearby enemy robots
-            	RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
+            	RobotInfo[] robots = rc.senseNearbyRobots(2.5f, enemy);
                 // If there are some...
                 if (robots.length > 0) 
                 {
