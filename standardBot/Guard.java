@@ -96,11 +96,11 @@ public class Guard extends Bot{
                     {
                     	// And we have enough bullets, and haven't attacked yet this turn...;
                     	if (rc.getLocation().isWithinDistance(enemyTarget.getLocation(), 4.0f)){
-                    		if (rc.canFirePentadShot()) {
+                    		if (rc.canFirePentadShot() && !Utilities.willHitAlly(enemyTarget.getLocation())) {
                     			rc.firePentadShot(rc.getLocation().directionTo(enemyTarget.getLocation()));
                     		}
                     	}
-                        if (rc.canFireSingleShot()) {
+                        if (rc.canFireSingleShot() && !Utilities.willHitAlly(enemyTarget.getLocation())) {
                             // ...Then fire a bullet in the direction of the enemy.
                             rc.fireSingleShot(rc.getLocation().directionTo(enemyTarget.getLocation()));
                         }

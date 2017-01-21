@@ -24,12 +24,12 @@ public class Soldier extends Bot{
                 if (robots.length > 0) {
                     MapLocation target = robots[0].location;
                     // And we have enough bullets, and haven't attacked yet this turn...;
-                	if (rc.getLocation().isWithinDistance(target, 5.5f)){
-                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(rc.getLocation(), rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target))) {
+                	if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 4.5f)){
+                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
                 			rc.firePentadShot(rc.getLocation().directionTo(target));
                 		}
                 	}
-                    if (rc.canFireSingleShot() && !Utilities.willHitAlly(rc.getLocation(), rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target))) {
+                    if (rc.canFireSingleShot() && !Utilities.willHitAlly(target)) {
                         // ...Then fire a bullet in the direction of the enemy.
                         rc.fireSingleShot(rc.getLocation().directionTo(target));
                     }

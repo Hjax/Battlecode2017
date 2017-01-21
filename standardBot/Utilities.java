@@ -87,19 +87,15 @@ public class Utilities extends Bot{
         return false;
     }
 
-    static boolean willHitAlly(MapLocation bulletLoc, Direction bulletDir, float targetDistance) {
+    static boolean willHitAlly(MapLocation target) {
     	
-    	RobotInfo[] allies = rc.senseNearbyRobots(targetDistance, ally);
+    	RobotInfo[] allies = rc.senseNearbyRobots(rc.getLocation().distanceTo(target), ally);
     	for (RobotInfo friend: allies) {
             // Calculate bullet relations to this robot
-            Direction directionToRobot = bulletLoc.directionTo(friend.location);
-            float distToRobot = bulletLoc.distanceTo(friend.location);
-            float theta = bulletDir.radiansBetween(directionToRobot);
+            Direction directionToRobot = rc.getLocation().directionTo(friend.location);
+            float distToRobot = rc.getLocation().distanceTo(friend.location);
+            float theta = rc.getLocation().directionTo(target).radiansBetween(directionToRobot);
 
-            // If theta > 90 degrees, then the bullet is traveling away from us and we can break early
-            if (Math.abs(theta) > Math.PI/2) {
-                return false;
-            }
 
             // distToRobot is our hypotenuse, theta is our angle, and we want to know this length of the opposite leg.
             // This is the distance of a line that goes from myLocation and intersects perpendicularly with propagationDirection.
@@ -107,7 +103,7 @@ public class Utilities extends Bot{
             // line that is the path of the bullet.
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
-            if (perpendicularDist > friend.getType().bodyRadius) {
+            if (perpendicularDist < friend.getType().bodyRadius) {
             	return true;
             }
     	}
