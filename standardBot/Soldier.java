@@ -16,7 +16,7 @@ public class Soldier extends Bot{
             	
             	// dodge
             	BulletInfo[] bullets = rc.senseNearbyBullets(4);
-            	if (bullets.length > 0)
+            	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
             		{Utilities.moveTo(Utilities.magnitudePressureDodge(bullets));}
             	else Utilities.tryMove(neo());
             	
@@ -26,11 +26,11 @@ public class Soldier extends Bot{
                 RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
                 
                 // If there are some...
-                if (robots.length > 0) {
+                if (robots.length > 0 && (robots[0].getType() != RobotType.ARCHON || rc.getRoundNum() > 500)) {
                     MapLocation target = robots[0].location;
                     // And we have enough bullets, and haven't attacked yet this turn...;
                 	if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 4.5f)){
-                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
+                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target) && Globals.getGardenerCount() >= 2) {
                 			rc.firePentadShot(rc.getLocation().directionTo(target));
                 		}
                 	}

@@ -23,7 +23,7 @@ public class Gardener extends Bot{
 		// 6 = archon
 		// 7 = neutral tree
 		int build[] = new int[8];
-		build[0] = 1;
+		build[0] = 0;
 		build[1] = 0;
 		build[2] = 0;
 		build[3] = 4;
@@ -108,7 +108,7 @@ public class Gardener extends Bot{
     					e.printStackTrace();
     				}	
     			}	
-    			else if (settled == true && rc.getLocation().distanceTo(roost) > 0.5f && rc.hasMoved() == false)
+    			else if (settled == true && rc.getLocation().distanceTo(roost) > 1f && rc.hasMoved() == false)
     			{
     				//return to roost if scared away
     				System.out.println("return to roost");
@@ -127,7 +127,7 @@ public class Gardener extends Bot{
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 50)
                 			{
-                				if (rc.senseNearbyRobots(-1, enemy).length == 0)
+                				if (rc.senseNearbyRobots(4, enemy).length == 0)
                 				{
                 					if (!settled)
                 						{roost = rc.getLocation();}
@@ -219,7 +219,12 @@ public class Gardener extends Bot{
     		System.out.println("end turn");
     		if (rc.canWater())
     		{
+    			System.out.println("watering");
     			waterTrees(roost);
+    		}
+    		else
+    		{
+    			System.out.println("can't water");
     		}
         	endTurn();
         }
@@ -231,25 +236,21 @@ public class Gardener extends Bot{
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 2.90f), 1.0f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 2.90f), 1.0f, ally).length + rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 2.90f), 3.0f))) || !rc.onTheMap(roost.add(angle, 2.90f), 1.0f)) && turnCount++ < 24)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 3.0f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.0f)) && turnCount++ < 24)
 		{
-			rc.setIndicatorDot(roost.add(angle, 2.90f), 155, 155, 155);
-			if (angle.getAngleDegrees() > 89 && angle.getAngleDegrees() < 91)
-			{
-				rc.setIndicatorDot(roost.add(angle, 2.90f), 255, 255, 100);
-				System.out.println("canBuild: " + rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 2.90f), 1.0f));
-				System.out.println("has open space: " + (Globals.getGardenerCount() < 3 && rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, ally).length == 0 && rc.senseNearbyTrees(roost.add(angle, 2.90f), 3.0f, Team.NEUTRAL).length == 0));
-			}
+			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
 			angle = angle.rotateLeftDegrees(15);
 		}
-		System.out.println(rc.hasMoved());
-		System.out.println(!rc.isCircleOccupied(roost.add(angle, 1.90f), 1.0f));
 		try {
-			if (!rc.isCircleOccupied(roost.add(angle, 2.90f), 1.0f) && rc.hasMoved() == false && rc.onTheMap(roost.add(angle, 2.90f), 1.0f))
+			if (!rc.isCircleOccupied(roost.add(angle, 3.0f), 1.0f) && rc.hasMoved() == false && rc.onTheMap(roost.add(angle, 3.0f), 1.0f))
 			{
-				Utilities.moveTo(Utilities.melee(roost.add(angle, 2.90f), 2.0f));
-				rc.plantTree(angle);
+				Utilities.moveTo((roost.add(angle, 2.0f)));
+				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
+				{
+					rc.plantTree(angle);
+				}
+				
 				return true;
 			}
 		} catch (GameActionException e) {
@@ -286,10 +287,8 @@ public class Gardener extends Bot{
 	private static void waterTrees(MapLocation roost) throws GameActionException
 	{
 		int bytes = Clock.getBytecodeNum();
-		TreeInfo[] trees = rc.senseNearbyTrees(2, ally);
-		if (trees.length == 0)
-			{return;}
-		else
+		TreeInfo[] trees = rc.senseNearbyTrees(2.0f, ally);
+		if (trees.length > 0)
 		{
 			TreeInfo bestTree = trees[0];
 			for (int treeCount = 1; treeCount < trees.length; treeCount++)
@@ -304,23 +303,23 @@ public class Gardener extends Bot{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
 			
-			if (!rc.hasMoved())
+		if (!rc.hasMoved())
+		{
+			trees = rc.senseNearbyTrees(roost, 3, ally);
+			if (trees.length > 0)
 			{
-				trees = rc.senseNearbyTrees(roost, 7, ally);
-				if (trees.length > 0)
+				TreeInfo bestTree = trees[0];
+				for (int treeCount = 1; treeCount < trees.length; treeCount++)
 				{
-					bestTree = trees[0];
-					for (int treeCount = 1; treeCount < trees.length; treeCount++)
-					{
-						if (trees[treeCount].health < bestTree.health)
-						{bestTree = trees[treeCount];}
-					}
-					rc.setIndicatorDot(bestTree.getLocation(), 0, 255, 0);
-					Utilities.moveTo(Utilities.melee(bestTree.getLocation(), 2.01f));
+					if (trees[treeCount].health < bestTree.health)
+					{bestTree = trees[treeCount];}
 				}
-				
+				rc.setIndicatorDot(bestTree.getLocation(), 0, 255, 0);
+				Utilities.moveTo(Utilities.melee(bestTree.getLocation(), 2.01f));
 			}
+				
 		}
 		System.out.println("watering takes: " + (Clock.getBytecodeNum() - bytes));
 	}

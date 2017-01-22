@@ -89,7 +89,7 @@ public class Utilities extends Bot{
 
     static boolean willHitAlly(MapLocation target) {
     	
-    	RobotInfo[] allies = rc.senseNearbyRobots(rc.getLocation().distanceTo(target), ally);
+    	RobotInfo[] allies = rc.senseNearbyRobots(rc.getLocation().add(rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target) / 2), rc.getLocation().distanceTo(target) / 2, ally);
     	for (RobotInfo friend: allies) {
             // Calculate bullet relations to this robot
             Direction directionToRobot = rc.getLocation().directionTo(friend.location);
@@ -251,7 +251,7 @@ public class Utilities extends Bot{
 		float bulletYOverX = 0f;
 		float cubed = 0f;
 		double angle = 0;
-		while ((Clock.getBytecodesLeft() -1500) / bullets.length > 150)
+		while ((Clock.getBytecodesLeft() -2750) / bullets.length > 150)
 		{
 			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
 			{

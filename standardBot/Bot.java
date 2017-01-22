@@ -17,7 +17,7 @@ public class Bot {
     	enemy = ally.opponent();
     	archonStart = rc.getInitialArchonLocations(ally)[0];
     	
-    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2))
+    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/3))
     	{
     		System.out.println(Globals.getTrainerCount());
     		System.out.println(Globals.getGardenerCount());
@@ -343,8 +343,8 @@ public class Bot {
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
-    		xPressure += relativeX * 2;
-    		yPressure += relativeY * 2;
+    		xPressure += Math.copySign(50, relativeX);
+    		yPressure += Math.copySign(50, relativeY);
     	}
     	
     	System.out.println("EX: " + xPressure);
