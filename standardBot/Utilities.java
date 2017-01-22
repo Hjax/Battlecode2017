@@ -236,10 +236,10 @@ public class Utilities extends Bot{
 	
 	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets)
 	{
+		
 		float x = rc.getLocation().x;
 		float y = rc.getLocation().y;
-		int iterations = 80/(bullets.length + 1);
-		float pressureMultiplier = 0.6f;
+		float pressureMultiplier = 0.7f;
 		float xPres = 0f;
 		float yPres = 0f;
 		float bulletXVel = 0f;
@@ -251,7 +251,7 @@ public class Utilities extends Bot{
 		float bulletYOverX = 0f;
 		float cubed = 0f;
 		double angle = 0;
-		for (int i = 0; i < iterations; i++)
+		while ((Clock.getBytecodesLeft() -1500) / bullets.length > 150)
 		{
 			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
 			{
@@ -265,14 +265,14 @@ public class Utilities extends Bot{
 				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
 				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
 				
-				if (pathDistance > -0.1 && pathDistance < 1.1)
+				if (pathDistance > -0.2 && pathDistance < 2.2)
 				{
 					cubed = (float) Math.pow((pathOffset + Math.copySign(0.22, pathOffset)), 3);
 					xPres += bulletYVel * -0.012f / cubed;
 					yPres += bulletXVel * 0.012f / cubed;
 				}
 				
-				if (pathOffset > -0.5 && pathOffset < 0.5)
+				if (pathOffset > -1 && pathOffset < 1)
 				{
 					cubed = (float) Math.pow((pathDistance + Math.copySign(0.5, pathDistance)), 3);
 					xPres += bulletXVel * 0.04f / cubed;
@@ -296,6 +296,8 @@ public class Utilities extends Bot{
 				y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
 			}
 			pressureMultiplier = pressureMultiplier * 0.95f;
+			System.out.println("bytes left: " + Clock.getBytecodesLeft());
+			System.out.println((Clock.getBytecodesLeft() - 1000) / bullets.length);
 		}
 		return new MapLocation(x, y);
 	}

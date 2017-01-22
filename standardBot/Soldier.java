@@ -15,7 +15,12 @@ public class Soldier extends Bot{
             	startTurn();
             	
             	// dodge
-                Utilities.tryMove(neo());
+            	BulletInfo[] bullets = rc.senseNearbyBullets(4);
+            	if (bullets.length > 0)
+            		{Utilities.moveTo(Utilities.magnitudePressureDodge(bullets));}
+            	else Utilities.tryMove(neo());
+            	
+                
 
                 // See if there are any nearby enemy robots
                 RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
