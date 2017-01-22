@@ -233,10 +233,20 @@ public class Utilities extends Bot{
 		return rc.getLocation();
 	}
 	
-	
 	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets)
 	{
-		
+		return magnitudePressureDodge(bullets, null);
+	}
+	
+	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets, MapLocation destination)
+	{
+		float destX = 0;
+		float destY = 0;
+		if (destination != null)
+		{
+			destX = destination.x;
+			destY = destination.y;
+		}
 		float x = rc.getLocation().x;
 		float y = rc.getLocation().y;
 		float pressureMultiplier = 0.7f;
@@ -279,6 +289,12 @@ public class Utilities extends Bot{
 					yPres += bulletYVel * 0.04f / cubed;
 				}
 			}
+			if (destination != null)
+			{
+				xPres += Math.copySign(0.00, destX - x);
+				yPres += Math.copySign(0.00, destY - y);
+			}
+			
 			
 			x += pressureMultiplier * xPres;
 			y += pressureMultiplier * yPres;

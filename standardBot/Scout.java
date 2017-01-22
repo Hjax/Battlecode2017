@@ -42,11 +42,25 @@ public class Scout extends Bot{
             	
             	BulletInfo bullets[] = rc.senseNearbyBullets(4);
             	
-            	if (bullets.length > 0){
-            		System.out.println("PRESSURE DODGE");
-                	MapLocation dodgeTo = Utilities.magnitudePressureDodge(bullets);
-                	Utilities.moveTo(dodgeTo);
-                	System.out.println("PRESSURE DODGE DONE");
+            	if (bullets.length > 0)
+            	{
+            		if (enemies.length > 0)
+            		{
+            			RobotInfo defense =  rc.senseRobot(rc.getID());
+    	            	for (int countBot = 0; countBot < enemies.length; countBot++)
+    	            	{
+    	            		if (enemies[countBot].getType() == RobotType.SOLDIER || enemies[countBot].getType() == RobotType.SCOUT || enemies[countBot].getType() == RobotType.TANK || enemies[countBot].getType() == RobotType.LUMBERJACK)
+    	            		{
+    	            			defense = enemies[countBot];
+    	            			break;
+    	            		}
+    	            	}
+            			System.out.println("PRESSURE DODGE");
+            			MapLocation dodgeTo = Utilities.magnitudePressureDodge(bullets, defense.getLocation().add(defense.location.directionTo(rc.getLocation()), 12.01f));
+            			Utilities.moveTo(dodgeTo);
+            			System.out.println("PRESSURE DODGE DONE");
+            		}
+            		
                 	
             	}
 
@@ -65,8 +79,7 @@ public class Scout extends Bot{
     	            			break;
     	            		}
     	            	}
-    	            	MapLocation target = gardener.getLocation();
-    	            	target = target.add(defense.location.directionTo(rc.getLocation()), 5.01f);
+    	            	MapLocation target = defense.getLocation().add(defense.location.directionTo(rc.getLocation()), 12.01f);
     	            	rc.setIndicatorDot(target, 255, 255, 255);
     	            	Utilities.moveTo(target);
 
