@@ -1,4 +1,4 @@
-package standardBot;
+package tankRushBot;
 
 import battlecode.common.*;
 
@@ -53,7 +53,7 @@ public class Scout extends Bot{
             	
             	else if (gardener.getType() == RobotType.GARDENER)
             	{
-            		if (enemies.length > 0){
+            		if (gardener.location.distanceTo(rc.getLocation()) < 4){
             			// we are already in melee range, find the closest enemy, and move to the side of the gardener
             			System.out.println("Being annoying");
             			RobotInfo defense =  rc.senseRobot(rc.getID());
@@ -66,7 +66,7 @@ public class Scout extends Bot{
     	            		}
     	            	}
     	            	MapLocation target = gardener.getLocation();
-    	            	target = target.add(defense.location.directionTo(rc.getLocation()), 5.01f);
+    	            	target = target.add(defense.location.directionTo(gardener.location), 2.01f);
     	            	rc.setIndicatorDot(target, 255, 255, 255);
     	            	Utilities.moveTo(target);
 

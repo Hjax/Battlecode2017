@@ -1,4 +1,4 @@
-package standardBot;
+package tankRushBot;
 
 import battlecode.common.*;
 
@@ -26,7 +26,7 @@ public class Gardener extends Bot{
 		build[0] = 0;
 		build[1] = 0;
 		build[2] = 0;
-		build[3] = 4;
+		build[3] = 0;
 		build[4] = 0;
 		build[5] = 0;
 		build[6] = 0;
@@ -92,7 +92,7 @@ public class Gardener extends Bot{
     			if (rc.getRoundNum() > 5 && rc.getRoundNum()< 15)
 				{
 					trainUnit(RobotType.SOLDIER);
-					build[0] = 3;
+					//build[0] = 3;
 				}
     			
     			
@@ -108,7 +108,7 @@ public class Gardener extends Bot{
     					e.printStackTrace();
     				}	
     			}	
-    			else if (settled == true && rc.getLocation().distanceTo(roost) > 1f && rc.hasMoved() == false)
+    			else if (settled == true && rc.getLocation().distanceTo(roost) > 1.5f && rc.hasMoved() == false)
     			{
     				//return to roost if scared away
     				System.out.println("return to roost");
@@ -236,7 +236,7 @@ public class Gardener extends Bot{
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 3.0f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.0f)) && turnCount++ < 24)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (!rc.onTheMap(roost.add(angle, 3.0f), 1.05f))) && turnCount++ < 24)
 		{
 			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
@@ -246,7 +246,7 @@ public class Gardener extends Bot{
 			if (!rc.isCircleOccupied(roost.add(angle, 3.0f), 1.0f) && rc.hasMoved() == false && rc.onTheMap(roost.add(angle, 3.0f), 1.0f))
 			{
 				Utilities.moveTo((roost.add(angle, 2.0f)));
-				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
+				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.1f)
 				{
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
 				}
