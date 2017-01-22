@@ -12,8 +12,6 @@ public class Tank extends Bot {
             try {
             	
             	startTurn();
-            	
-                MapLocation myLocation = rc.getLocation();
 
                 // See if there are any nearby enemy robots
                 RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
@@ -26,9 +24,6 @@ public class Tank extends Bot {
                         rc.fireSingleShot(rc.getLocation().directionTo(robots[0].location));
                     }
                 }
-
-                // Move randomly
-                Utilities.tryMove(Utilities.randomDirection());
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
 

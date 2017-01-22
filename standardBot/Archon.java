@@ -49,9 +49,6 @@ public class Archon extends Bot{
                 // dodge
             	Utilities.tryMove(neo());
 
-                // Generate a random direction
-                Direction dir = Utilities.randomDirection();
-
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
                 if ((Globals.getGardenerCount() < 14 || Globals.getTrainerCount() < 4) && ((round == 1 && isFirst) || (Globals.getGardenerCount() == 0 && rc.getRoundNum() > 30) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + 3 * Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/6 && rc.getRoundNum() > 100) || Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2) || rc.getTeamBullets() > 600))

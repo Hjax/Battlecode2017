@@ -67,7 +67,7 @@ public class Guard extends Bot{
                 	{
                 		if (trees.length == 0 || true)
                 		{
-                			Utilities.moveTo(target.add(target.directionTo(rc.getLocation()).rotateLeftRads((float) (Math.random() - 0.5)), 5.01f));
+                			Utilities.moveTo(target.add(target.directionTo(rc.getLocation()).rotateLeftRads((float) (rand.nextDouble() - 0.5)), 5.01f));
                 		}
                 		else
                 		{

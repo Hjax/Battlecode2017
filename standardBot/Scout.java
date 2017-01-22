@@ -19,6 +19,11 @@ public class Scout extends Bot{
             {
             	startTurn();
             	
+            	int start = Clock.getBytecodeNum();
+            	OrderManager.checkCreateOrderCheap();
+            	System.out.print("Order checking used: ");
+            	System.out.println(Clock.getBytecodeNum() - start);
+            	
             	TreeInfo trees[] = rc.senseNearbyTrees();
             	if (trees.length > 0){
             		for (TreeInfo tree: trees){
@@ -110,7 +115,7 @@ public class Scout extends Bot{
             	if (rc.onTheMap(rc.getLocation().add(goal, 4.0f), 1.0f) == false)
             	{
             		System.out.println("setting new goal");
-            		goal = goal.rotateLeftRads((float) (Math.random() * 2 * Math.PI));
+            		goal = goal.rotateLeftRads((float) (rand.nextDouble() * 2 * Math.PI));
             	}
             	System.out.println(goal.getAngleDegrees());
             	

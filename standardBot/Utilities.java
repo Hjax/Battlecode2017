@@ -1,20 +1,8 @@
 package standardBot;
 
 import battlecode.common.*;
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotType;
 
 public class Utilities extends Bot{
-
-    /**
-     * Returns a random Direction
-     * @return a random Direction
-     */
-    static Direction randomDirection() {
-        return new Direction((float)Math.random() * 2 * (float)Math.PI);
-    }
 
     /**
      * Attempts to move in a given direction, while avoiding small obstacles directly in the path.

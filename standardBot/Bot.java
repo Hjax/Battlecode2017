@@ -1,6 +1,9 @@
 package standardBot;
 
+import java.util.Random;
+
 import battlecode.common.*;
+
 
 public class Bot {
 	public static RobotController rc;
@@ -10,12 +13,15 @@ public class Bot {
 	public static MapLocation archonStart;
 	public static int behaviorType = 0;
 	public static boolean isFirst = false;
+	public static Random rand;
 	
     protected static void Init(RobotController RobCon) throws GameActionException{
     	rc = RobCon;
     	ally = rc.getTeam();
     	enemy = ally.opponent();
     	archonStart = rc.getInitialArchonLocations(ally)[0];
+    	
+    	rand = new Random(rc.getID());
     	
     	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/3))
     	{
@@ -106,8 +112,8 @@ public class Bot {
     	int bytecodeUsed = Clock.getBytecodeNum();
     	
     	BulletInfo[] bullets = rc.senseNearbyBullets();
-    	double xPressure = (float) (Math.random() - 0.5) * 20;
-    	double yPressure = (float) (Math.random() - 0.5) * 20;
+    	double xPressure = (float) (rand.nextDouble() - 0.5) * 20;
+    	double yPressure = (float) (rand.nextDouble() - 0.5) * 20;
     	
     	double pathDistance = 0.0f;
     	double pathOffset = 0.0f;

@@ -64,6 +64,19 @@ robot:	for (RobotInfo enemy: rc.senseNearbyRobots(-1, enemy)){
 		}
 	}
 	
+	public static void checkCreateOrderCheap() throws Exception {
+		RobotInfo[] enemies = rc.senseNearbyRobots(-1, enemy);
+		if (enemies.length == 0){
+			return;
+		}
+		for (int i = 0; i < Globals.getOrderCount(); i++){
+			if (rc.getLocation().distanceTo(Memory.getOrder(i).location) <= 15) {
+				return;
+			}
+		}
+		Memory.addOrder(new Order(0, enemies[0].location, 3000, -1));
+	}
+	
 	public static boolean shouldMove() {
 		return hasOrder() && currentOrder.type == 0;
 	}

@@ -62,6 +62,12 @@ public class Trainer extends Bot{
 				// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        	try 
 	        	{
+	        		
+	        		if (Globals.getOrderCount() == 0 && Globals.getScoutCount() < 4 && rand.nextDouble() < 0.25) {
+	        			if (rc.isBuildReady() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost) {
+	        				trainUnit(RobotType.SCOUT);
+	        			}
+	        		}
 
 	        		// execute build order if possible
 	        		switch(build[buildIndex])
