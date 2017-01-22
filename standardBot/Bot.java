@@ -59,13 +59,8 @@ public class Bot {
     		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
     	}
     	
-    	if (rc.getTeamBullets() > 1000)
-    	{
-    		rc.donate(1000);
-    	}
-    	if (rc.getRoundLimit() - rc.getRoundNum() < 100)
-    	{
-    		rc.donate(rc.getTeamBullets() - rc.getTeamBullets() % 10);
+    	if (rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 100){
+    		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
     	}
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		if (rc.getRoundNum() == 1) {
