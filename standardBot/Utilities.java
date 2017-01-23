@@ -81,7 +81,8 @@ public class Utilities extends Bot{
         return false;
     }
 
-    static boolean willHitAlly(MapLocation target) {
+    static boolean willHitAlly(MapLocation target) 
+    {
     	
     	RobotInfo[] allies = rc.senseNearbyRobots(rc.getLocation().add(rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target) / 2), rc.getLocation().distanceTo(target) / 2, ally);
     	for (RobotInfo friend: allies) {
@@ -120,6 +121,42 @@ public class Utilities extends Bot{
             }
     	}
     	return false;
+    }
+    
+    public static boolean canMoveInto(BulletInfo bullet)
+    {
+    	
+    	float checkRadius = rc.getType().bodyRadius + rc.getType().strideRadius;
+    	
+    	//clean out false positives preemptively
+    	 Direction directionToRobot = bullet.getLocation().directionTo(rc.getLocation());
+         float distToRobot = bullet.getLocation().distanceTo(rc.getLocation());
+         float theta = bullet.dir.radiansBetween(directionToRobot);
+
+         if (Math.abs(theta) > Math.PI/2 && distToRobot > checkRadius) {
+             return false;
+         }
+    	
+    	
+    	
+    	//math courtesy of wolfram
+    	float x1 = bullet.getLocation().x - rc.getLocation().x;
+    	float y1 = bullet.getLocation().y - rc.getLocation().y;
+    	float x2 = (float) (bullet.getLocation().x + Math.cos(bullet.dir.radians) * bullet.speed) - rc.getLocation().x;
+    	float y2 = (float) (bullet.getLocation().y + Math.sin(bullet.dir.radians) * bullet.speed) - rc.getLocation().y;
+    	float dx = x2 - x1;
+    	float dy = y2 - y1;
+    	float D = x1 * y2 - x2 * y1;
+    	
+    	float discriminant = checkRadius * checkRadius * (dx * dx + dy * dy) - D * D;
+    	if (discriminant < 0)
+    	{
+    		return false;
+    	}
+    	else
+    	{
+    		return true;
+    	}
     }
     
 	public static MapLocation intToTarget(int location){
@@ -241,8 +278,41 @@ public class Utilities extends Bot{
 		return magnitudePressureDodge(bullets, null);
 	}
 	
-	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets, MapLocation destination)
+	public static MapLocation magnitudePressureDodge(BulletInfo[] allBullets, MapLocation destination)
 	{
+		System.out.println("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		System.out.println("BULLETS PASSED: " + allBullets.length);
+		
+		BulletInfo[] bullets = new BulletInfo[allBullets.length];
+		int relevantBullets = 0;
+		
+		for (int countBullets = 0; countBullets < allBullets.length; countBullets++)
+		{
+			if (canMoveInto(allBullets[countBullets]))
+			{
+				bullets[relevantBullets++] = allBullets[countBullets];
+			}
+		}
+		
+		if (relevantBullets == 0)
+		{
+			if (destination == null)
+			{
+				return rc.getLocation();
+			}
+			else
+			{
+				return destination;
+			}
+		}
+		
+		System.out.println("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		System.out.println("BULLETS LEFT: " + relevantBullets);
+		
+		
+		
+		
+		
 		float destX = 0;
 		float destY = 0;
 		if (destination != null)
@@ -266,7 +336,7 @@ public class Utilities extends Bot{
 		double angle = 0;
 		while ((Clock.getBytecodesLeft() -2750) / bullets.length > 150)
 		{
-			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+			for (int bulletCount = 0; bulletCount < relevantBullets; bulletCount++)
 			{
 				bulletXVel = (float) (bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].dir.radians));
 				bulletYVel = (float) (bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].dir.radians));
@@ -278,14 +348,14 @@ public class Utilities extends Bot{
 				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
 				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
 				
-				if (pathDistance > -0.2 && pathDistance < 2.2)
+				if (pathDistance > -1.2 && pathDistance < 3.2)
 				{
 					cubed = (float) Math.pow((pathOffset + Math.copySign(0.22, pathOffset)), 3);
 					xPres += bulletYVel * -0.012f / cubed;
 					yPres += bulletXVel * 0.012f / cubed;
 				}
 				
-				if (pathOffset > -1 && pathOffset < 1)
+				if (pathOffset > -1.5 && pathOffset < 1.5)
 				{
 					cubed = (float) Math.pow((pathDistance + Math.copySign(0.5, pathDistance)), 3);
 					xPres += bulletXVel * 0.04f / cubed;
