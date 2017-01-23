@@ -123,6 +123,9 @@ public class Memory extends Bot{
 				i += 32;
 				continue;
 			}
+			if (i == memory_loc){
+				continue;
+			}
 			long current_int = readBits(i);
 			if (current_int != 0){
 				// if the alive variable is correct for the current turn
