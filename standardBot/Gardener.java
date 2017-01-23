@@ -35,6 +35,7 @@ public class Gardener extends Bot{
 		int buildLength = 7;
 		
 		int buildIndex = 0;
+		int openerIndex = 0;
 		
 		MapLocation roost = rc.getLocation();
 		boolean settled = false;
@@ -83,16 +84,18 @@ public class Gardener extends Bot{
         	
         	
     			//if start of game, settle immediately.open with a scout
-    			if (rc.getRoundNum() < 5 && rc.hasMoved() == false && rc.isBuildReady())
+    			if (openerIndex == 0 && rc.getRoundNum() < 45 && rc.hasMoved() == false && rc.isBuildReady())
 					{
     					settled = true;
     					roost = rc.getLocation();
     					plantSpacedTree(roost);
+    					openerIndex++;
     				}
-    			if (rc.getRoundNum() > 5 && rc.getRoundNum()< 15)
+    			if (openerIndex == 1)
 				{
 					trainUnit(RobotType.SOLDIER);
 					build[0] = 3;
+					openerIndex++;
 				}
     			
     			
@@ -116,9 +119,13 @@ public class Gardener extends Bot{
     				Utilities.moveTo(roost);
     			}
 
+    			if (rc.senseNearbyRobots(4, enemy).length > 0 && rc.getTeamBullets() >= 100)
+				{
+					trainUnit(RobotType.SOLDIER);
+				}
 
         		// execute build order if possible
-    			if (rc.getRoundNum() > 15)
+    			if (openerIndex != 1)
     			{
     				System.out.println("build order");
             		switch(build[buildIndex])
@@ -127,35 +134,24 @@ public class Gardener extends Bot{
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 50)
                 			{
-                				if (rc.senseNearbyRobots(4, enemy).length == 0)
+                				if (!settled)
+                					{roost = rc.getLocation();}
+                				if (Globals.getGardenerCount() < 3)
                 				{
-                					if (!settled)
-                						{roost = rc.getLocation();}
-                					if (Globals.getGardenerCount() < 3)
-                					{
-                						if (plantSpacedTree(roost))
-                    					{
-                    						settled = true;
-                    						
-                    							
-                    					}
-                					}
-                					else if (plantSpacedTree(roost))
-                					{
-                						settled = true;
-                						
-                							
-                					}
-                					System.out.println("BUILD ORDER: " + buildIndex);
-                					buildIndex++;
-                    				if (buildIndex > buildLength)
-                    					{buildIndex = 7;}
+                					if (plantSpacedTree(roost))
+                    				{
+                    					settled = true;	
+                    				}
                 				}
-                				else if (rc.getTeamBullets() >= 100)
+                				else if (plantSpacedTree(roost))
                 				{
-                					trainUnit(RobotType.SOLDIER);
+                					settled = true;	
                 				}
-                					
+                				System.out.println("BUILD ORDER: " + buildIndex);
+                				buildIndex++;
+                    			if (buildIndex > buildLength)
+                    				{buildIndex = 7;}
+                				                					
                 			}
                 			break;
                 		}
