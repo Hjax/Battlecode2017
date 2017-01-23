@@ -120,6 +120,27 @@ public class Utilities extends Bot{
             	return true;
             }
     	}
+    	
+    	TreeInfo[] neutralTrees = rc.senseNearbyTrees(rc.getLocation().distanceTo(target), Team.NEUTRAL);
+    	for (TreeInfo friend: neutralTrees) {
+            // Calculate bullet relations to this robot
+            Direction directionToRobot = rc.getLocation().directionTo(friend.location);
+            float distToRobot = rc.getLocation().distanceTo(friend.location);
+            float theta = rc.getLocation().directionTo(target).radiansBetween(directionToRobot);
+
+
+            // distToRobot is our hypotenuse, theta is our angle, and we want to know this length of the opposite leg.
+            // This is the distance of a line that goes from myLocation and intersects perpendicularly with propagationDirection.
+            // This corresponds to the smallest radius circle centered at our location that would intersect with the
+            // line that is the path of the bullet.
+            float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
+
+            if (perpendicularDist < 1) {
+            	return true;
+            }
+    	}
+    	
+    	
     	return false;
     }
     
