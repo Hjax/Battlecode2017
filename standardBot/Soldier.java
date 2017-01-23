@@ -38,23 +38,25 @@ public class Soldier extends Bot{
                 
                 
                 // If there are some...
-                if (robots.length > 0 && (robots[0].getType() != RobotType.ARCHON || rc.getRoundNum() > 500)) {
-                    MapLocation target = robots[0].location;
-                    // And we have enough bullets, and haven't attacked yet this turn...;
-                	if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f))
-                	{
-                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
-                			rc.firePentadShot(rc.getLocation().directionTo(target));
-                		}
-                	}
-                    if (rc.canFireSingleShot() && !Utilities.willHitAlly(target)) 
-                    {
-                        // ...Then fire a bullet in the direction of the enemy.
-                        rc.fireSingleShot(rc.getLocation().directionTo(target));
+            	for (int i = 0; i < robots.length; i++){
+                    if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 500) {
+                        MapLocation target = robots[i].location;
+                        // And we have enough bullets, and haven't attacked yet this turn...;
+                    	if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f))
+                    	{
+                    		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
+                    			rc.firePentadShot(rc.getLocation().directionTo(target));
+                    			break;
+                    		}
+                    	}
+                        if (rc.canFireSingleShot() && !Utilities.willHitAlly(target)) 
+                        {
+                            // ...Then fire a bullet in the direction of the enemy.
+                            rc.fireSingleShot(rc.getLocation().directionTo(target));
+                            break;
+                        }
                     }
-                }
-
-
+            	}
 
 
             } catch (Exception e) {
