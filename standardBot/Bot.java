@@ -57,6 +57,7 @@ public class Bot {
     protected static void startTurn() throws Exception 
     {
     	OrderManager.updateOrders();
+    	Memory.updateMyMemory();
     	if (OrderManager.shouldMove()){
     		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
     	}
@@ -90,11 +91,7 @@ public class Bot {
     }
     
     protected static void endTurn() throws GameActionException {
-    	AllyData me = Memory.readAlly(memory_loc);
-    	me.location = rc.getLocation();
-    	me.alive = (rc.getRoundNum() % 2) == 1;
-    	me.hp = (int) rc.getHealth();  	
-    	Memory.writeAllyData(memory_loc, me);
+    	Memory.updateMyMemory();
 		try {
 			Globals.updateEdges();
 		} catch (Exception e) {

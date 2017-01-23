@@ -145,6 +145,14 @@ public class Memory extends Bot{
 		}
 	}
 	
+	public static void updateMyMemory() throws GameActionException {
+    	AllyData me = Memory.readAlly(memory_loc);
+    	me.location = rc.getLocation();
+    	me.alive = (rc.getRoundNum() % 2) == 1;
+    	me.hp = (int) rc.getHealth();  	
+    	Memory.writeAllyData(memory_loc, me);
+	}
+	
 	public static void pruneOrders() throws Exception {
 		int old_orders = Globals.getOrderCount();
 		if (old_orders == 0){
