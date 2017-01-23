@@ -1,4 +1,4 @@
-package standardBot;
+package soldierCheeseBot;
 
 import battlecode.common.*;
 

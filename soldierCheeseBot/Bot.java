@@ -1,4 +1,4 @@
-package standardBot;
+package soldierCheeseBot;
 
 import java.util.Random;
 
@@ -61,8 +61,13 @@ public class Bot {
     		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
     	}
     	
-    	if (rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 100){
-    		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
+    	if (rc.getTeamBullets() > 1000)
+    	{
+    		rc.donate(1000);
+    	}
+    	if (rc.getRoundLimit() - rc.getRoundNum() < 100)
+    	{
+    		rc.donate(rc.getTeamBullets() - rc.getTeamBullets() % 10);
     	}
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		if (rc.getRoundNum() == 1) {
@@ -221,7 +226,7 @@ public class Bot {
     		relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     		relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
     			
-    		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
+    		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam() && rc.getType() != RobotType.SOLDIER)
     		{
     			xPressure += -1400 / (relativeX + Math.copySign(10,  relativeX));
     			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
@@ -242,9 +247,6 @@ public class Bot {
         			
         		xPressure += -90 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
         		yPressure += -90 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
-        		
-        		System.out.println("treeX: " + xPressure);
-        		System.out.println("treeY: " + yPressure);
         	} 
         	treeCost = Clock.getBytecodeNum() - treeCost;
         	System.out.println("tree pathing costs: " + treeCost);
@@ -340,14 +342,17 @@ public class Bot {
     		}
     	}
     	
+    	
+    	
+    	
     	// move towards a target if we have one 
     	if (OrderManager.hasOrder() && OrderManager.shouldMove()){
     			
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
-    		xPressure += Math.copySign(50, relativeX);
-    		yPressure += Math.copySign(50, relativeY);
+    		xPressure += Math.copySign(75, relativeX);
+    		yPressure += Math.copySign(75, relativeY);
     	}
     	
     	System.out.println("EX: " + xPressure);

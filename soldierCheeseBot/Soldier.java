@@ -1,4 +1,4 @@
-package standardBot;
+package soldierCheeseBot;
 
 import battlecode.common.*;
 
@@ -14,16 +14,31 @@ public class Soldier extends Bot{
             try {
             	startTurn();
             	
+            	// See if there are any nearby enemy robots
+                RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
+                
             	// dodge
             	BulletInfo[] bullets = rc.senseNearbyBullets(4);
             	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
-            		{Utilities.moveTo(Utilities.magnitudePressureDodge(bullets));}
-            	else Utilities.tryMove(neo());
+            		{
+            		if (robots.length > 0)
+            		{
+            			Utilities.moveTo(Utilities.magnitudePressureDodge(bullets, Utilities.melee(robots[0].getLocation(), 1 + robots[0].getType().bodyRadius)));
+            		}
+            		else
+            		{
+            			Utilities.moveTo(Utilities.magnitudePressureDodge(bullets));
+            		}
+            			
+            		}
+            	else if (rc.getRoundNum() > 45)
+            		{
+            			Utilities.tryMove(neo());
+            		}
             	
                 
 
-                // See if there are any nearby enemy robots
-                RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
+                
                 
                 // If there are some...
                 if (robots.length > 0 && (robots[0].getType() != RobotType.ARCHON || rc.getRoundNum() > 500)) {
