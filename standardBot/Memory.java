@@ -123,7 +123,7 @@ public class Memory extends Bot{
 				i += 32;
 				continue;
 			}
-			if (i == memory_loc){
+			if (i == memory_loc + min_ally){
 				continue;
 			}
 			long current_int = readBits(i);
