@@ -139,6 +139,14 @@ public class Utilities extends Bot{
 		return x * 512 + y;
 	}
 	
+	public static MapLocation getAdjustedMapLocation(MapLocation target) {
+		return new MapLocation(((Math.round(target.x) - Math.round(archonStart.x)) + 100) * 2, ((Math.round(target.y) - Math.round(archonStart.y)) + 100) * 2);
+	}
+	
+	public static MapLocation getActualMapLocation(MapLocation adjusted) {
+		return new MapLocation(((adjusted.x / 2) - 100) + Math.round(archonStart.x), ((adjusted.y / 2) - 100) + Math.round(archonStart.y));
+	}
+	
 	
 	// returns the closest edge in a given direction, -1 otherwise 
 	public static float edgeInDirection(Direction dir) throws GameActionException {
