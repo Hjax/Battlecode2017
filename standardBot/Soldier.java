@@ -35,8 +35,6 @@ public class Soldier extends Bot{
         		{
         			Utilities.tryMove(neo());
         		}
-            	
-                
 
                 
                 
@@ -45,22 +43,18 @@ public class Soldier extends Bot{
                     if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 500) {
                         MapLocation target = robots[i].location;
                         // And we have enough bullets, and haven't attacked yet this turn...;
-                    	if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f))
-                    	{
-                    		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
+                		if (rc.canFirePentadShot() && !Utilities.willHitAlly(target)) {
+                			if (rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)) {
                     			rc.firePentadShot(rc.getLocation().directionTo(target));
                     			break;
+                    		} else {
+                            	// ...Then fire a bullet in the direction of the enemy.
+                            	rc.fireSingleShot(rc.getLocation().directionTo(target));
+                            	break;
                     		}
-                    	}
-                        if (rc.canFireSingleShot() && !Utilities.willHitAlly(target)) 
-                        {
-                            // ...Then fire a bullet in the direction of the enemy.
-                            rc.fireSingleShot(rc.getLocation().directionTo(target));
-                            break;
-                        }
+                		}
                     }
             	}
-
 
             } catch (Exception e) {
                 System.out.println("Soldier Exception");
