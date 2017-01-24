@@ -187,22 +187,22 @@ public class Utilities extends Bot{
 		//return new MapLocation(location / 1024, location % 1024); 
 		int x = location / 512;
 		int y = location % 512;
-		x = ((x / 2) - 100) + Math.round(archonStart.x);
-		y = ((y / 2) - 100) + Math.round(archonStart.y);
+		x = ((x / 2) - 100) + Math.round(allyArchons[0].x);
+		y = ((y / 2) - 100) + Math.round(allyArchons[0].y);
 		return new MapLocation(x, y);
 	}
 	public static int targetToInt(MapLocation target) {
-		int x = ((Math.round(target.x) - Math.round(archonStart.x)) + 100) * 2;
-		int y = ((Math.round(target.y) - Math.round(archonStart.y)) + 100) * 2;
+		int x = ((Math.round(target.x) - Math.round(allyArchons[0].x)) + 100) * 2;
+		int y = ((Math.round(target.y) - Math.round(allyArchons[0].y)) + 100) * 2;
 		return x * 512 + y;
 	}
 	
 	public static MapLocation getAdjustedMapLocation(MapLocation target) {
-		return new MapLocation(((Math.round(target.x) - Math.round(archonStart.x)) + 100) * 2, ((Math.round(target.y) - Math.round(archonStart.y)) + 100) * 2);
+		return new MapLocation(((Math.round(target.x) - Math.round(allyArchons[0].x)) + 100) * 2, ((Math.round(target.y) - Math.round(allyArchons[0].y)) + 100) * 2);
 	}
 	
 	public static MapLocation getActualMapLocation(MapLocation adjusted) {
-		return new MapLocation(((adjusted.x / 2) - 100) + Math.round(archonStart.x), ((adjusted.y / 2) - 100) + Math.round(archonStart.y));
+		return new MapLocation(((adjusted.x / 2) - 100) + Math.round(allyArchons[0].x), ((adjusted.y / 2) - 100) + Math.round(allyArchons[0].y));
 	}
 	
 	

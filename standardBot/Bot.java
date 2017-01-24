@@ -10,7 +10,8 @@ public class Bot {
     protected static Team ally;
     protected static Team enemy;
     protected static int memory_loc = -1;
-	public static MapLocation archonStart;
+	public static MapLocation[] allyArchons;
+	public static MapLocation[] enemyArchons;
 	public static int behaviorType = 0;
 	public static boolean isFirst = false;
 	public static Random rand;
@@ -20,7 +21,8 @@ public class Bot {
     	rc = RobCon;
     	ally = rc.getTeam();
     	enemy = ally.opponent();
-    	archonStart = rc.getInitialArchonLocations(ally)[0];
+    	allyArchons = rc.getInitialArchonLocations(ally);
+    	enemyArchons = rc.getInitialArchonLocations(enemy);
     	lastPosition = rc.getLocation();
     	
     	rand = new Random(rc.getID());
@@ -68,9 +70,8 @@ public class Bot {
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		if (rc.getRoundNum() == 1) {
     			// we went first on the first round, add enemy archon spawns as orders
-    			MapLocation[] targets = rc.getInitialArchonLocations(enemy);
-    			for (int i = 0; i < targets.length; i++){
-    				Memory.addOrder(new Order(0, targets[i], rc.getRoundLimit(), -1));
+    			for (int i = 0; i < enemyArchons.length; i++){
+    				Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
     			}
     			Memory.clearAllies();
     		}

@@ -158,4 +158,13 @@ public class Globals extends Bot{
 		Memory.writeGlobal(12, n);
 	}
 	
+	public static void setArchonScore(int m , int n) throws Exception {
+		Memory.writeGlobal(13 + m, n);
+	}
+	
+	public static int getArchonScore(int n) throws GameActionException{
+		return Memory.readGlobal(13 + n);
+	}
+	
+
 }
