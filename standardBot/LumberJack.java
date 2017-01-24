@@ -12,6 +12,12 @@ public class LumberJack extends Bot {
 
 	    	startTurn();
 	    	
+        	int start = Clock.getBytecodeNum();
+        	OrderManager.checkCreateOrderCheap();
+        	System.out.print("Order checking used: ");
+        	System.out.println(Clock.getBytecodeNum() - start);
+        	
+	    	
 	        // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        try {
 	        	TreeInfo enemyTrees[] = rc.senseNearbyTrees(-1, enemy);

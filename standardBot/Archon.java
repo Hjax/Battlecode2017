@@ -55,6 +55,12 @@ public class Archon extends Bot{
             {
             	startTurn();
             	
+            	int start = Clock.getBytecodeNum();
+            	OrderManager.checkCreateOrderCheap();
+            	System.out.print("Order checking used: ");
+            	System.out.println(Clock.getBytecodeNum() - start);
+            	
+            	
             	TreeInfo trees[] = rc.senseNearbyTrees();
             	if (trees.length > 0){
             		for (TreeInfo tree: trees){
