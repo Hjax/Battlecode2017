@@ -351,7 +351,7 @@ public class Bot {
     	System.out.println("EY: " + yPressure);
     	
     	//avoid previous location - AKA pressure bug
-    	if (rc.senseNearbyTrees(1 + rc.getType().bodyRadius).length > 0)
+    	if (rc.senseNearbyTrees(1 + rc.getType().bodyRadius, Team.NEUTRAL).length > 0 || rc.senseNearbyTrees(1 + rc.getType().bodyRadius, ally).length > 0)
     	{
     		rc.setIndicatorDot(lastPosition, 50, 150, 250);
     		if (lastPosition.equals(rc.getLocation()) == false)
