@@ -369,14 +369,14 @@ public class Utilities extends Bot{
 				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
 				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
 				
-				if (pathDistance > -1.2 && pathDistance < 3.2)
+				if (pathDistance > 0.2 && pathDistance < 2.2)
 				{
 					cubed = (float) Math.pow((pathOffset + Math.copySign(0.22, pathOffset)), 3);
 					xPres += bulletYVel * -0.012f / cubed;
 					yPres += bulletXVel * 0.012f / cubed;
 				}
 				
-				if (pathOffset > -1.5 && pathOffset < 1.5)
+				if (pathOffset > -1.0 && pathOffset < 1.0)
 				{
 					cubed = (float) Math.pow((pathDistance + Math.copySign(0.5, pathDistance)), 3);
 					xPres += bulletXVel * 0.04f / cubed;

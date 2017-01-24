@@ -211,22 +211,25 @@ public class Bot {
     	System.out.println("CX: " + xPressure);
     	System.out.println("CY: " + yPressure);
     	
-    	//avoid friendly gardeners a lot
-    	
-    	avoidBots = rc.senseNearbyRobots(2 + rc.getType().bodyRadius);
-    	for (int botCount = 0; botCount < avoidBots.length; botCount++)
+    	//avoid friendly gardeners a lot if not soldier all inning
+    	if (Globals.getStrat() != 1)
     	{
-    		relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
-    		relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
-    			
-    		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
-    		{
-    			xPressure += -1400 / (relativeX + Math.copySign(10,  relativeX));
-    			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
-    		}
+    		avoidBots = rc.senseNearbyRobots(2 + rc.getType().bodyRadius);
+        	for (int botCount = 0; botCount < avoidBots.length; botCount++)
+        	{
+        		relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
+        		relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
+        			
+        		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
+        		{
+        			xPressure += -1400 / (relativeX + Math.copySign(10,  relativeX));
+        			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
+        		}
+        	}
+        	System.out.println("DX: " + xPressure);
+        	System.out.println("DY: " + yPressure);
     	}
-    	System.out.println("DX: " + xPressure);
-    	System.out.println("DY: " + yPressure);
+    	
     	
     	//if gardener or archon, avoid trees
     	if (rc.getType() == RobotType.GARDENER && behaviorType == 0 || rc.getType() == RobotType.ARCHON)
@@ -238,8 +241,8 @@ public class Bot {
         		relativeX = avoidTrees[treeCount].getLocation().x - rc.getLocation().x;
         		relativeY = avoidTrees[treeCount].getLocation().y - rc.getLocation().y;
         			
-        		xPressure += -90 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
-        		yPressure += -90 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        		xPressure += -40 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+        		yPressure += -40 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
         		
         		System.out.println("treeX: " + xPressure);
         		System.out.println("treeY: " + yPressure);
@@ -359,47 +362,49 @@ public class Bot {
     		{
     			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateLeftDegrees(85), 3), 0,0,0);
     			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateRightDegrees(85), 3), 0,0,0);
+    			
+    			relativeX = lastPosition.x - rc.getLocation().x;
+    			relativeY = lastPosition.y - rc.getLocation().y;
+        	
+    			float rotateX = (float) (relativeX * Math.cos(Math.PI / 36) - relativeY * Math.sin(Math.PI / 36));
+    			float rotateY = (float) (relativeX * Math.sin(Math.PI / 36) + relativeY * Math.cos(Math.PI / 36));
+        	
+    			System.out.println("Rotate left x: " + rotateX);
+    			System.out.println("Rotate left y: " + rotateY);
+        		
+	        	double perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
+	        	double straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
+	        		
+	        	xPressure = straight * relativeX - perp * relativeY;
+	        	yPressure = perp * relativeX + straight * relativeY;
+	        	
+	        	rotateX = (float) (relativeX * Math.cos(Math.PI / -36) - relativeY * Math.sin(Math.PI / -36));
+	        	rotateY = (float) (relativeX * Math.sin(Math.PI / -36) + relativeY * Math.cos(Math.PI / -36));
+	        	
+	        	System.out.println("Rotate right x: " + rotateX);
+	        	System.out.println("Rotate right y: " + rotateY);
+	        		
+	        	perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
+	        	straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
+	        	
+	        	xPressure = straight * relativeX - perp * relativeY;
+	        	yPressure = perp * relativeX + straight * relativeY;
+	        	
+	        	System.out.println("BugX: " + xPressure);
+	        	System.out.println("BugY: " + yPressure);
+	        	
+	        	xPressure += -30 * relativeX;
+	        	yPressure += -30 * relativeY;
+	        	
+	        	System.out.println("Relative X: " + relativeX);
+	        	System.out.println("Relative Y: " + relativeY);
+	        	
+	        	System.out.println("repelX: " + xPressure);
+	        	System.out.println("repelY: " + yPressure);
     		}
     		
         		
-        	relativeX = lastPosition.x - rc.getLocation().x;
-        	relativeY = lastPosition.y - rc.getLocation().y;
         	
-        	float rotateX = (float) (relativeX * Math.cos(Math.PI / 36) - relativeY * Math.sin(Math.PI / 36));
-        	float rotateY = (float) (relativeX * Math.sin(Math.PI / 36) + relativeY * Math.cos(Math.PI / 36));
-        	
-        	System.out.println("Rotate left x: " + rotateX);
-        	System.out.println("Rotate left y: " + rotateY);
-        		
-        	double perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
-        	double straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
-        		
-        	xPressure = straight * relativeX - perp * relativeY;
-        	yPressure = perp * relativeX + straight * relativeY;
-        	
-        	rotateX = (float) (relativeX * Math.cos(Math.PI / -36) - relativeY * Math.sin(Math.PI / -36));
-        	rotateY = (float) (relativeX * Math.sin(Math.PI / -36) + relativeY * Math.cos(Math.PI / -36));
-        	
-        	System.out.println("Rotate right x: " + rotateX);
-        	System.out.println("Rotate right y: " + rotateY);
-        		
-        	perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
-        	straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
-        	
-        	xPressure = straight * relativeX - perp * relativeY;
-        	yPressure = perp * relativeX + straight * relativeY;
-        	
-        	System.out.println("BugX: " + xPressure);
-        	System.out.println("BugY: " + yPressure);
-        	
-        	xPressure += -30 * relativeX;
-        	yPressure += -30 * relativeY;
-        	
-        	System.out.println("Relative X: " + relativeX);
-        	System.out.println("Relative Y: " + relativeY);
-        	
-        	System.out.println("repelX: " + xPressure);
-        	System.out.println("repelY: " + yPressure);
     	}
     	
     	bytecodeUsed = Clock.getBytecodeNum() - bytecodeUsed;

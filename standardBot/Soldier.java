@@ -31,7 +31,10 @@ public class Soldier extends Bot{
             			}
             			
             		}
-            	else Utilities.tryMove(neo());
+            	else if (rc.getRoundNum() > 45 || Globals.getStrat() == 0)
+        		{
+        			Utilities.tryMove(neo());
+        		}
             	
                 
 

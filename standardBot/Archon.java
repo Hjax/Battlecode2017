@@ -35,6 +35,17 @@ public class Archon extends Bot{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+     	
+     	MapLocation[] enemyArchons = rc.getInitialArchonLocations(enemy);
+     	if (enemyArchons.length == 1 && rc.getLocation().distanceTo(enemyArchons[0]) < 30)
+     	{
+     		try {
+				Globals.setStrat(1);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+     	}
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
@@ -44,14 +55,26 @@ public class Archon extends Bot{
             {
             	startTurn();
             	
-            	
+            	TreeInfo trees[] = rc.senseNearbyTrees();
+            	if (trees.length > 0){
+            		for (TreeInfo tree: trees){
+            			if (tree.getContainedBullets() >= 10){
+            				Utilities.moveTo(tree.location);
+            				break;
+            			}
+            		}
+            	}
             	
                 // dodge
-            	Utilities.tryMove(neo());
+            	if (!rc.hasMoved())
+            	{
+            		Utilities.tryMove(neo());
+            	}
+            	
 
                 // build gardeners at reasonable times
                 int round = rc.getRoundNum();
-                if ((Globals.getGardenerCount() < 14 || Globals.getTrainerCount() < 4) && ((round == 1 && isFirst) || (Globals.getGardenerCount() == 0 && rc.getRoundNum() > 30) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + 3 * Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/6 && rc.getRoundNum() > 100) || Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2) || rc.getTeamBullets() > 600))
+                if ((Globals.getGardenerCount() <= 1 || rc.getTreeCount() / Globals.getGardenerCount() >= 2) &&(Globals.getGardenerCount() < 14 || Globals.getTrainerCount() < 4) && ((round == 1 && isFirst) || (Globals.getGardenerCount() == 0 && rc.getRoundNum() > 30) || (Globals.getGardenerCount() - 2 < (Globals.getSoldierCount() + 3 * Globals.getTankCount() + Globals.getScoutCount() + Globals.getLumberjackCount())/6 && rc.getRoundNum() > 100) || Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/2) || rc.getTeamBullets() > 600))
                 	{tryBuild = true;}
              
                 if (tryBuild && rc.getTeamBullets() > 120) 

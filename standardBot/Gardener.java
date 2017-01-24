@@ -2,7 +2,9 @@ package standardBot;
 
 import battlecode.common.*;
 
-public class Gardener extends Bot{
+public class Gardener extends Bot
+{
+	static int buildIndex = 0;
 	public static void Start(RobotController RobCon) throws Exception{
 		
 		System.out.println("I'm a gardener!");
@@ -22,19 +24,41 @@ public class Gardener extends Bot{
 		// 5 = gardener
 		// 6 = archon
 		// 7 = neutral tree
-		int build[] = new int[8];
-		build[0] = 0;
-		build[1] = 0;
-		build[2] = 0;
-		build[3] = 4;
-		build[4] = 0;
-		build[5] = 0;
-		build[6] = 0;
-		build[7] = 0;
+		int build[] = new int[9];
 		
-		int buildLength = 7;
 		
-		int buildIndex = 0;
+		
+		// 0 = greedy/standard
+		// 1 = soldier aggro into fast tank
+		
+		if (Globals.getStrat() == 1)
+		{
+			build[0] = 1;
+			build[1] = 1;
+			build[2] = 1;
+			build[3] = 0;
+			build[4] = 1;
+			build[5] = 1;
+			build[6] = 0;
+			build[7] = 2;
+			build[8] = 0;
+		}
+		else
+		{
+			build[0] = 1;
+			build[1] = 0;
+			build[2] = 0;
+			build[3] = 0;
+			build[4] = 4;
+			build[5] = 0;
+			build[6] = 0;
+			build[7] = 0;
+			build[8] = 0;
+		}
+		
+		
+		
+		int buildLength = 8;
 		int openerIndex = 0;
 		
 		MapLocation roost = rc.getLocation();
@@ -83,18 +107,26 @@ public class Gardener extends Bot{
     			}
         	
         	
-    			//if start of game, settle immediately.open with a scout
+    			//if start of game, settle immediately. open with a scout
     			if (openerIndex == 0 && rc.getRoundNum() < 45 && rc.hasMoved() == false && rc.isBuildReady())
 					{
     					settled = true;
-    					roost = rc.getLocation();
-    					plantSpacedTree(roost);
-    					openerIndex++;
+    					roost = rc.getLocation().add(neo(), 1.5f);
+    					if (Globals.getStrat() == 0)
+    					{
+    						plantSpacedTree(roost);
+    						openerIndex++;
+    					}
+    					else
+    					{
+    						openerIndex = -1;
+    					}
+    					
     				}
-    			if (openerIndex == 1)
+    			if (openerIndex == 1 && Globals.getStrat() == 0)
 				{
 					trainUnit(RobotType.SOLDIER);
-					build[0] = 3;
+					build[2] = 3;
 					openerIndex++;
 				}
     			
@@ -127,7 +159,7 @@ public class Gardener extends Bot{
         		// execute build order if possible
     			if (openerIndex != 1)
     			{
-    				System.out.println("build order");
+    				System.out.println("BUILD ORDER: " + buildIndex);
             		switch(build[buildIndex])
             		{
                 		case 0:
@@ -147,10 +179,9 @@ public class Gardener extends Bot{
                 				{
                 					settled = true;	
                 				}
-                				System.out.println("BUILD ORDER: " + buildIndex);
                 				buildIndex++;
                     			if (buildIndex > buildLength)
-                    				{buildIndex = 7;}
+                    				{buildIndex = 8;}
                 				                					
                 			}
                 			break;
@@ -184,6 +215,7 @@ public class Gardener extends Bot{
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
                 			{
+                				System.out.println("building scout");
                 				trainUnit(RobotType.SCOUT);
                 				buildIndex++;
                 				if (buildIndex > buildLength)
@@ -323,6 +355,10 @@ public class Gardener extends Bot{
 	private static void trainUnit(RobotType unit)
 	{
 		Direction angle = new Direction(0);
+		if (unit == RobotType.LUMBERJACK)
+		{
+			angle = rc.getLocation().directionTo(rc.senseNearbyTrees(-1, Team.NEUTRAL)[0].getLocation()); 
+		}
 		int turnCount = 0;
 		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
 		{

@@ -166,5 +166,13 @@ public class Globals extends Bot{
 		return Memory.readGlobal(13 + n);
 	}
 	
+	public static int getStrat() throws GameActionException {
+		return Memory.readGlobal(16);
+	}
+	
+	public static void setStrat(int n) throws Exception {
+		Memory.writeGlobal(16, n);
+	}
+	
 
 }
