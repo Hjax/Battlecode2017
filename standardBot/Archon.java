@@ -37,7 +37,7 @@ public class Archon extends Bot{
 		}
      	
      	MapLocation[] enemyArchons = rc.getInitialArchonLocations(enemy);
-     	if (enemyArchons.length == 1 && rc.getLocation().distanceTo(enemyArchons[0]) < 30)
+     	if (enemyArchons.length == 1 && rc.getLocation().distanceTo(enemyArchons[0]) < 32)
      	{
      		try {
 				Globals.setStrat(1);
