@@ -61,7 +61,7 @@ public class Gardener extends Bot
 		int buildLength = 8;
 		int openerIndex = 0;
 		
-		MapLocation roost = rc.getLocation();
+		MapLocation roost = null;
 		boolean settled = false;
 		
 
@@ -71,7 +71,10 @@ public class Gardener extends Bot
         	
         	
         	startTurn();
-        	rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
+        	if (settled)
+        	{
+        		rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
+        	}
         	System.out.println("start turn");
         	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
         	
@@ -111,7 +114,11 @@ public class Gardener extends Bot
     			if (openerIndex == 0 && rc.getRoundNum() < 45 && rc.hasMoved() == false && rc.isBuildReady())
 					{
     					settled = true;
-    					roost = rc.getLocation().add(neo(), 1.5f);
+    					if (roost == null)
+    					{
+    						roost = rc.getLocation().add(neo(), 1.0f);
+    					}
+    					
     					if (Globals.getStrat() == 0)
     					{
     						plantSpacedTree(roost);
@@ -179,7 +186,7 @@ public class Gardener extends Bot
                 				{
                 					settled = true;	
                 				}
-                				buildIndex++;
+                				
                     			if (buildIndex > buildLength)
                     				{buildIndex = 8;}
                 				                					
@@ -245,7 +252,7 @@ public class Gardener extends Bot
         		e.printStackTrace();
         	}
     		System.out.println("end turn");
-    		if (rc.canWater())
+    		if (rc.canWater() && settled)
     		{
     			System.out.println("watering");
     			waterTrees(roost);
@@ -264,22 +271,36 @@ public class Gardener extends Bot
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 3.0f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.0f)) && turnCount++ < 24)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 3.0f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 24)
 		{
 			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
 			angle = angle.rotateLeftDegrees(15);
 		}
-		try {
-			if (!rc.isCircleOccupied(roost.add(angle, 3.0f), 1.0f) && rc.hasMoved() == false && rc.onTheMap(roost.add(angle, 3.0f), 1.0f))
+		try 
+		{
+			if (turnCount < 24)
 			{
-				Utilities.moveTo((roost.add(angle, 2.0f)));
+				if (!rc.hasMoved())
+				{
+					System.out.println("moving to plant");
+					Utilities.moveTo((roost.add(angle, 2.0f)));
+				}
+				else
+				{
+					System.out.println("already moved, can't plant");
+				}
 				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
 				{
+					buildIndex++;
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
 				}
 				
 				return true;
+			}
+			else
+			{
+				System.out.println("can't plant");
 			}
 		} catch (GameActionException e) {
 			// TODO Auto-generated catch block
