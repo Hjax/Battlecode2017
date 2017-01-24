@@ -416,9 +416,10 @@ public class Utilities extends Bot{
 	public static void trainUnit(RobotType unit) throws GameActionException
 	{
 		Direction angle = new Direction(0);
-		if (unit == RobotType.LUMBERJACK)
+		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
 		{
-			angle = rc.getLocation().directionTo(rc.senseNearbyTrees(-1, Team.NEUTRAL)[0].getLocation()); 
+			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
 		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
 			angle = rc.getLocation().directionTo(Memory.getOrder(0).location);
 		}

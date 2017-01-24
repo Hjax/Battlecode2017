@@ -189,7 +189,7 @@ public class Bot {
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
     			
     			//gardeners should avoid archons more
-    			if (rc.getType() == RobotType.GARDENER && avoidBots[botCount].getType() == RobotType.ARCHON && false)
+    			if (rc.getType() == RobotType.GARDENER && avoidBots[botCount].getType() == RobotType.ARCHON)
     			{
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
@@ -310,26 +310,26 @@ public class Bot {
     		if (Globals.getTopEdge() != -1)
     		{
     			relativeY = Globals.getTopEdge() - rc.getLocation().y;
-    			yPressure += -2000/(relativeY * relativeY);
+    			yPressure += -4000/(relativeY * relativeY);
     			System.out.println("D1Y: " + yPressure);
     		}
     		if (Globals.getBottomEdge() != -1)
     		{
     			relativeY = rc.getLocation().y - Globals.getBottomEdge();
-    			yPressure += 2000/(relativeY * relativeY);
+    			yPressure += 4000/(relativeY * relativeY);
     			System.out.println("D2Y: " + yPressure);
     		}
     		
     		if (Globals.getRightEdge() != -1)
     		{
     			relativeX = Globals.getRightEdge() - rc.getLocation().x;
-    			xPressure += -2000/(relativeX * relativeX);	
+    			xPressure += -4000/(relativeX * relativeX);	
     			System.out.println("D1X: " + xPressure);
     		}
     		if (Globals.getLeftEdge() != -1)
     		{
     			relativeX = rc.getLocation().x - Globals.getLeftEdge();
-    			xPressure += 2000/(relativeX * relativeX);
+    			xPressure += 4000/(relativeX * relativeX);
     			System.out.println("D2X: " + xPressure);
     		}
     	}

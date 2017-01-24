@@ -235,7 +235,11 @@ public class Gardener extends Bot
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
                 			{
                 				Utilities.trainUnit(RobotType.LUMBERJACK);
-                				buildIndex++;
+                				if (!rc.isBuildReady())
+                				{
+                					buildIndex++;
+                				}
+                				
                 				if (buildIndex > buildLength)
                 					{buildIndex = 0;}
                 			}
@@ -301,6 +305,7 @@ public class Gardener extends Bot
 			else
 			{
 				System.out.println("can't plant");
+				buildIndex++;
 			}
 		} catch (GameActionException e) {
 			// TODO Auto-generated catch block
