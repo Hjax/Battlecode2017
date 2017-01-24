@@ -125,7 +125,7 @@ public class Gardener extends Bot
     				}
     			if (openerIndex == 1 && Globals.getStrat() == 0)
 				{
-					trainUnit(RobotType.SOLDIER);
+					Utilities.trainUnit(RobotType.SOLDIER);
 					build[2] = 3;
 					openerIndex++;
 				}
@@ -153,7 +153,7 @@ public class Gardener extends Bot
 
     			if (rc.senseNearbyRobots(4, enemy).length > 0 && rc.getTeamBullets() >= 100)
 				{
-					trainUnit(RobotType.SOLDIER);
+					Utilities.trainUnit(RobotType.SOLDIER);
 				}
 
         		// execute build order if possible
@@ -192,7 +192,7 @@ public class Gardener extends Bot
                 			{
                 				if (Globals.getGardenerCount() < 3)
                 				{
-                					trainUnit(RobotType.SOLDIER);
+                					Utilities.trainUnit(RobotType.SOLDIER);
                 				}
                 				buildIndex++;
                 				if (buildIndex > buildLength)
@@ -204,7 +204,7 @@ public class Gardener extends Bot
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
                 			{
-                				trainUnit(RobotType.TANK);
+                				Utilities.trainUnit(RobotType.TANK);
                 				buildIndex++;
                 				if (buildIndex > buildLength)
                 					{buildIndex = 0;}
@@ -216,7 +216,7 @@ public class Gardener extends Bot
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
                 			{
                 				System.out.println("building scout");
-                				trainUnit(RobotType.SCOUT);
+                				Utilities.trainUnit(RobotType.SCOUT);
                 				buildIndex++;
                 				if (buildIndex > buildLength)
                 					{buildIndex = 0;}
@@ -227,7 +227,7 @@ public class Gardener extends Bot
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
                 			{
-                				trainUnit(RobotType.LUMBERJACK);
+                				Utilities.trainUnit(RobotType.LUMBERJACK);
                 				buildIndex++;
                 				if (buildIndex > buildLength)
                 					{buildIndex = 0;}
@@ -351,30 +351,5 @@ public class Gardener extends Bot
 		}
 		System.out.println("watering takes: " + (Clock.getBytecodeNum() - bytes));
 	}
-	
-	private static void trainUnit(RobotType unit)
-	{
-		Direction angle = new Direction(0);
-		if (unit == RobotType.LUMBERJACK)
-		{
-			angle = rc.getLocation().directionTo(rc.senseNearbyTrees(-1, Team.NEUTRAL)[0].getLocation()); 
-		}
-		int turnCount = 0;
-		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
-		{
-			angle = angle.rotateRightDegrees(6);
-		}
-		try {
-			if (rc.canBuildRobot(unit,  angle))
-				{rc.buildRobot(unit, angle);}
-		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
- 
-	
-	
-	
-	
+
 }

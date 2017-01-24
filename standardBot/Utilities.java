@@ -412,4 +412,28 @@ public class Utilities extends Bot{
 		return new MapLocation(x, y);
 	}
 	
+	
+	public static void trainUnit(RobotType unit)
+	{
+		Direction angle = new Direction(0);
+		if (unit == RobotType.LUMBERJACK)
+		{
+			angle = rc.getLocation().directionTo(rc.senseNearbyTrees(-1, Team.NEUTRAL)[0].getLocation()); 
+		} else if (unit == RobotType.SOLDIER) {
+			angle = rc.getLocation().directionTo(enemyArchons[0]);
+		}
+		int turnCount = 0;
+		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
+		{
+			angle = angle.rotateRightDegrees(6);
+		}
+		try {
+			if (rc.canBuildRobot(unit,  angle))
+				{rc.buildRobot(unit, angle);}
+		} catch (GameActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

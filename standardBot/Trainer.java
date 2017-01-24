@@ -65,7 +65,7 @@ public class Trainer extends Bot{
 	        		
 	        		if (Globals.getOrderCount() == 0 && Globals.getScoutCount() < 4 && rand.nextDouble() < 0.25) {
 	        			if (rc.isBuildReady() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost) {
-	        				trainUnit(RobotType.SCOUT);
+	        				Utilities.trainUnit(RobotType.SCOUT);
 	        			}
 	        		}
 
@@ -78,7 +78,7 @@ public class Trainer extends Bot{
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
 	            				{
-	            					trainUnit(RobotType.SOLDIER);
+	            					Utilities.trainUnit(RobotType.SOLDIER);
 	            					buildIndex++;
 	            					if (buildIndex > buildLength)
 	            					{buildIndex = 0;}
@@ -88,7 +88,7 @@ public class Trainer extends Bot{
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
 	                			{
-	                				trainUnit(RobotType.TANK);
+	                				Utilities.trainUnit(RobotType.TANK);
 	                				buildIndex++;
 	                				if (buildIndex > buildLength)
 	                				{buildIndex = 0;}
@@ -100,7 +100,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
 	            			{
-	            				trainUnit(RobotType.TANK);
+	            				Utilities.trainUnit(RobotType.TANK);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}
@@ -111,7 +111,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
 	            			{
-	            				trainUnit(RobotType.SCOUT);
+	            				Utilities.trainUnit(RobotType.SCOUT);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}
@@ -122,7 +122,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
 	            			{
-	            				trainUnit(RobotType.LUMBERJACK);
+	            				Utilities.trainUnit(RobotType.LUMBERJACK);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}
@@ -142,26 +142,4 @@ public class Trainer extends Bot{
         	endTurn();
         }
 	}
-	
-	private static void trainUnit(RobotType unit)
-	{
-		Direction angle = new Direction(0);
-		int turnCount = 0;
-		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
-		{
-			angle = angle.rotateRightDegrees(6);
-		}
-		try {
-			if (rc.canBuildRobot(unit,  angle))
-				{rc.buildRobot(unit, angle);}
-		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
- 
-	
-	
-	
-	
 }

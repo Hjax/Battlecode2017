@@ -243,17 +243,10 @@ public class Bot {
         			
         		xPressure += -40 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
         		yPressure += -40 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
-        		
-        		System.out.println("treeX: " + xPressure);
-        		System.out.println("treeY: " + yPressure);
         	} 
         	treeCost = Clock.getBytecodeNum() - treeCost;
         	System.out.println("tree pathing costs: " + treeCost);
     	}
-    	
-    	
-    	
-    	
     	
     	//if gardener, move toward nearest edge
     	if (rc.getType() == RobotType.GARDENER && behaviorType == 0)
