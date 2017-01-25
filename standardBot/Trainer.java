@@ -74,7 +74,7 @@ public class Trainer extends Bot{
 	        		{
 	            		case 1:
 	            		{
-	            			if (rc.getTreeCount() < 30)
+	            			if (rc.getTreeCount() < 35)
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100)
 	            				{
