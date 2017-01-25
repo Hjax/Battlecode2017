@@ -13,7 +13,7 @@ public class Utilities extends Bot{
      */
     static boolean tryMove(Direction dir) throws GameActionException 
     {    	
-        return tryMove(dir,10,10);
+        return tryMove(dir,4,20);
     }
 
     /**
@@ -69,6 +69,7 @@ public class Utilities extends Bot{
         		}
         		// No move performed, try slightly further
         		currentCheck++;
+        		degreeOffset = degreeOffset * 1.1f;
         	}
         	distance -= 0.4f;
         	currentCheck = 1;

@@ -163,13 +163,13 @@ public class Bot {
         		else if (engageBots[botCount].getType() == RobotType.ARCHON)
         		{
         			//be very attracted to enemy archons
-        			xPressure += relativeX * 10;
-            		yPressure += relativeY * 10;
+        			xPressure += relativeX * 20;
+            		yPressure += relativeY * 20;
         		}	
         		else
         		{
-        			xPressure += relativeX / 40;
-            		yPressure += relativeY / 40;
+        			xPressure += relativeX / 1;
+            		yPressure += relativeY / 1;
         		}
         		
         	}
@@ -193,6 +193,11 @@ public class Bot {
     			{
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
+    			}
+    			else if (rc.getType() == RobotType.ARCHON) // archons should avoid allies more
+    			{
+    				xPressure += -100 / (relativeX + Math.copySign(1,  relativeX));
+        			yPressure += -100 / (relativeY + Math.copySign(1, relativeY));
     			}
     			else
     			{
@@ -340,8 +345,8 @@ public class Bot {
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
-    		xPressure += Math.copySign(50, relativeX);
-    		yPressure += Math.copySign(50, relativeY);
+    		xPressure += 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
+    		yPressure += 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
     	}
     	
     	System.out.println("EX: " + xPressure);
