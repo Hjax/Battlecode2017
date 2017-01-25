@@ -122,6 +122,7 @@ public class Gardener extends Bot
     					if (Globals.getStrat() == 0)
     					{
     						plantSpacedTree(roost);
+    						buildIndex = 0;
     						openerIndex++;
     					}
     					else
@@ -130,7 +131,7 @@ public class Gardener extends Bot
     					}
     					
     				}
-    			if (openerIndex == 1 && Globals.getStrat() == 0)
+    			if (openerIndex == 1 && Globals.getStrat() == 0 && rc.isBuildReady())
 				{
 					Utilities.trainUnit(RobotType.SOLDIER);
 					build[2] = 3;
