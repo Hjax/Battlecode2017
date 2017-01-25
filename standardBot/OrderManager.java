@@ -63,7 +63,6 @@ robot:	for (RobotInfo enemy: rc.senseNearbyRobots(-1, enemy)){
 			break;
 		}
 	}
-	
 	public static void checkCreateOrderCheap() throws Exception {
 		RobotInfo[] enemies = rc.senseNearbyRobots(-1, enemy);
 		if (enemies.length == 0){
@@ -74,7 +73,12 @@ robot:	for (RobotInfo enemy: rc.senseNearbyRobots(-1, enemy)){
 				return;
 			}
 		}
-		Memory.addOrder(new Order(0, enemies[0].location, 3000, -1));
+		for (RobotInfo enemy: enemies) {
+			if (enemy.getType() != RobotType.SCOUT) {
+				Memory.addOrder(new Order(0, enemies[0].location, 3000, -1));
+				return;
+			}
+		}
 	}
 	
 	public static boolean shouldMove() {
