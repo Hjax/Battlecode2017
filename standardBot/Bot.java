@@ -160,7 +160,7 @@ public class Bot {
         			xPressure += relativeX * 30;
             		yPressure += relativeY * 30;
         		}	
-        		else if (engageBots[botCount].getType() == RobotType.ARCHON)
+        		else if (engageBots[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
         			//be very attracted to enemy archons
         			xPressure += relativeX * 20;

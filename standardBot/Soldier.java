@@ -40,7 +40,7 @@ public class Soldier extends Bot{
                 
                 // If there are some...
             	for (int i = 0; i < robots.length; i++){
-                    if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 500) {
+                    if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 250) {
                         MapLocation target = robots[i].location;
                         // And we have enough bullets, and haven't attacked yet this turn...;
                 		if (!Utilities.willHitAlly(target)) 
