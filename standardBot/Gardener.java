@@ -151,7 +151,7 @@ public class Gardener extends Bot
     					e.printStackTrace();
     				}	
     			}	
-    			else if (settled == true && rc.getLocation().distanceTo(roost) > 1f && rc.hasMoved() == false)
+    			else if (settled == true && rc.getLocation().distanceTo(roost) > 1.5f && rc.hasMoved() == false)
     			{
     				//return to roost if scared away
     				System.out.println("return to roost");
@@ -276,7 +276,7 @@ public class Gardener extends Bot
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 3.0f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 3.0f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 24)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 24)
 		{
 			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
@@ -298,6 +298,7 @@ public class Gardener extends Bot
 				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
 				{
 					buildIndex++;
+					System.out.println("Planting");
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
 				}
 				
