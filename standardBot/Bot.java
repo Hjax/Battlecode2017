@@ -106,44 +106,51 @@ public class Bot {
     {
     	int bytecodeUsed = Clock.getBytecodeNum();
     	
-    	BulletInfo[] bullets = rc.senseNearbyBullets();
     	double xPressure = (float) (rand.nextDouble() - 0.5) * 20;
     	double yPressure = (float) (rand.nextDouble() - 0.5) * 20;
-    	
-    	double pathDistance = 0.0f;
-    	double pathOffset = 0.0f;
-    	
-    	double bulletXVel = 0.0;
-    	double bulletYVel = 0.0;
     	
     	double relativeX = 0.0;
     	double relativeY = 0.0;
     	
     	//dodge bullets
-    	
-    	for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+    	if (rc.getType() != RobotType.TANK)
     	{
-    		bulletXVel = bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].getDir().radians);
-    		bulletYVel = bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].getDir().radians);
-    		
-    		relativeX = rc.getLocation().x - bullets[bulletCount].getLocation().x;
-    		relativeY = rc.getLocation().y - bullets[bulletCount].getLocation().y;
-    		
-    		pathOffset = (relativeY - relativeX * bulletYVel / bulletXVel) / (bulletXVel + (bulletYVel * bulletYVel)/bulletXVel);
-    		pathDistance = relativeX/bulletXVel + bulletYVel * pathOffset / bulletXVel;
-    		
-    		if (pathDistance > -0.2 && pathDistance < 4)
-    		{
-    			double timeToDodge = pathDistance/bullets[bulletCount].getSpeed();
-    			System.out.println("PathOffset: " + pathOffset);
-    			System.out.println("bulletXVel: " + bulletXVel);
-    			System.out.println("relativeX: " + relativeX);
-    			xPressure += (bullets[bulletCount].damage * -500 * bulletYVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
-    			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
-    		}
+    		BulletInfo[] bullets = rc.senseNearbyBullets();
+        	
+        	double pathDistance = 0.0f;
+        	double pathOffset = 0.0f;
+        	
+        	double bulletXVel = 0.0;
+        	double bulletYVel = 0.0;
+        	
+        	
+        	
+    		for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
+        	{
+        		bulletXVel = bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].getDir().radians);
+        		bulletYVel = bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].getDir().radians);
+        		
+        		relativeX = rc.getLocation().x - bullets[bulletCount].getLocation().x;
+        		relativeY = rc.getLocation().y - bullets[bulletCount].getLocation().y;
+        		
+        		pathOffset = (relativeY - relativeX * bulletYVel / bulletXVel) / (bulletXVel + (bulletYVel * bulletYVel)/bulletXVel);
+        		pathDistance = relativeX/bulletXVel + bulletYVel * pathOffset / bulletXVel;
+        		
+        		if (pathDistance > -0.2 && pathDistance < 4)
+        		{
+        			double timeToDodge = pathDistance/bullets[bulletCount].getSpeed();
+        			System.out.println("PathOffset: " + pathOffset);
+        			System.out.println("bulletXVel: " + bulletXVel);
+        			System.out.println("relativeX: " + relativeX);
+        			xPressure += (bullets[bulletCount].damage * -500 * bulletYVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
+        			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
+        		}
+        	}
+        	System.out.println("AX: " + xPressure);
+        	System.out.println("AY: " + yPressure);
     	}
-    	System.out.println("AX: " + xPressure);
-    	System.out.println("AY: " + yPressure);
+    	
+    	
     	
     	//if not gardener or archon stay near enemy bots
     	if (rc.getType() != RobotType.ARCHON && rc.getType() != RobotType.GARDENER)
@@ -188,8 +195,8 @@ public class Bot {
     			relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
     			
-    			//gardeners should avoid archons more
-    			if (rc.getType() == RobotType.GARDENER && avoidBots[botCount].getType() == RobotType.ARCHON)
+    			//gardeners should avoid archons and gardeners more
+    			if (rc.getType() == RobotType.GARDENER && (avoidBots[botCount].getType() == RobotType.ARCHON || avoidBots[botCount].getType() == RobotType.GARDENER))
     			{
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
