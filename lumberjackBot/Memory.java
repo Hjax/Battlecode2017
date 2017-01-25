@@ -1,4 +1,4 @@
-package standardBot;
+package lumberjackBot;
 
 import battlecode.common.*;
 

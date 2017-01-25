@@ -1,4 +1,4 @@
-package standardBot;
+package lumberjackBot;
 
 import java.util.Random;
 
@@ -58,8 +58,13 @@ public class Bot {
     
     protected static void startTurn() throws Exception 
     {
+    	
     	System.out.println("I live at: " + Integer.toString(memory_loc + Memory.min_ally));
-    	OrderManager.updateOrders();
+    	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
+    	{
+    		OrderManager.updateOrders();
+    	}
+    	
     	Memory.updateMyMemory();
     	if (OrderManager.shouldMove()){
     		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
@@ -168,9 +173,9 @@ public class Bot {
         			xPressure += relativeX * 30;
             		yPressure += relativeY * 30;
         		}	
-        		else if (engageBots[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() > 250)
+        		else if (engageBots[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
-        			//be more attracted to enemy archons after early game
+        			//be very attracted to enemy archons
         			xPressure += relativeX * 20;
             		yPressure += relativeY * 20;
         		}	

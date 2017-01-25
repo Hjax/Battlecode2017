@@ -1,7 +1,6 @@
-package standardBot;
+package lumberjackBot;
 
 import battlecode.common.*;
-import lumberjackBot.Globals;
 
 public class Trainer extends Bot{
 	public static void Start(RobotController RobCon) throws Exception
@@ -58,7 +57,7 @@ public class Trainer extends Bot{
         	
 			Utilities.tryMove(neo());
 
-			if (Globals.getSoldierCount() + Globals.getTankCount() + Globals.getLumberjackCount() + Globals.getScoutCount() < 150)
+			if (Globals.getSoldierCount() + 3 * Globals.getTankCount() + Globals.getLumberjackCount() + Globals.getScoutCount() < 150)
 			{
 				// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        	try 
@@ -75,7 +74,7 @@ public class Trainer extends Bot{
 	        		{
 	            		case 1:
 	            		{
-	            			if (rc.getTreeCount() < 35)
+	            			if (Globals.getGardenerCount() < 10)
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100 && (Globals.getSoldierCount() * 1 < rc.getTreeCount()))
 	            				{
