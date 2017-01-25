@@ -43,7 +43,8 @@ public class Soldier extends Bot{
                     if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 500) {
                         MapLocation target = robots[i].location;
                         // And we have enough bullets, and haven't attacked yet this turn...;
-                		if (!Utilities.willHitAlly(target)) {
+                		if (!Utilities.willHitAlly(target)) 
+                		{
                 			if (rc.canFirePentadShot() && rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)) {
                     			rc.firePentadShot(rc.getLocation().directionTo(target));
                     			break;
@@ -53,7 +54,16 @@ public class Soldier extends Bot{
                             	break;
                     		}
                 		}
+                		else
+            			{
+            				System.out.println("not shooting to avoid hitting ally");
+            			}
                     }
+            	}
+            	
+            	if (!rc.hasAttacked())
+            	{
+            		System.out.println("did not fire this turn");
             	}
 
             } catch (Exception e) {

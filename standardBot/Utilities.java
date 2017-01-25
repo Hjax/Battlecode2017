@@ -82,7 +82,7 @@ public class Utilities extends Bot{
         return false;
     }
 
-    static boolean willHitAlly(MapLocation target) 
+    static boolean willHitAlly(MapLocation target) throws GameActionException 
     {
     	
     	RobotInfo[] allies = rc.senseNearbyRobots(rc.getLocation().add(rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target) / 2), rc.getLocation().distanceTo(target) / 2, ally);
@@ -100,10 +100,11 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < friend.getType().bodyRadius) {
+            	System.out.println("hitting ally");
             	return true;
             }
     	}
-    	TreeInfo[] alliedTrees = rc.senseNearbyTrees(rc.getLocation().distanceTo(target), ally);
+    	TreeInfo[] alliedTrees = rc.senseNearbyTrees(rc.getLocation().add(rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target) / 2), rc.getLocation().distanceTo(target) / 2, ally);
     	for (TreeInfo friend: alliedTrees) {
             // Calculate bullet relations to this robot
             Direction directionToRobot = rc.getLocation().directionTo(friend.location);
@@ -118,11 +119,15 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
+            	System.out.println("hitting allied tree");
+
+					rc.setIndicatorDot(friend.getLocation(), 0, 0, 0);
+
             	return true;
             }
     	}
     	
-    	TreeInfo[] neutralTrees = rc.senseNearbyTrees(rc.getLocation().distanceTo(target), Team.NEUTRAL);
+    	TreeInfo[] neutralTrees = rc.senseNearbyTrees(rc.getLocation().add(rc.getLocation().directionTo(target), rc.getLocation().distanceTo(target) / 2), rc.getLocation().distanceTo(target) / 2, Team.NEUTRAL);
     	for (TreeInfo friend: neutralTrees) {
             // Calculate bullet relations to this robot
             Direction directionToRobot = rc.getLocation().directionTo(friend.location);
@@ -137,6 +142,10 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
+            	System.out.println("hitting neutral tree");
+
+					rc.setIndicatorDot(friend.getLocation(), 255, 255, 255);
+
             	return true;
             }
     	}
