@@ -240,7 +240,7 @@ public class Bot {
     	if (rc.getType() == RobotType.GARDENER && behaviorType == 0 || rc.getType() == RobotType.ARCHON)
     	{
     		int treeCost = Clock.getBytecodeNum();
-    		TreeInfo[] avoidTrees = rc.senseNearbyTrees(5);
+    		TreeInfo[] avoidTrees = rc.senseNearbyTrees(7);
         	for (int treeCount = 0; treeCount < avoidTrees.length; treeCount++)
         	{
         		relativeX = avoidTrees[treeCount].getLocation().x - rc.getLocation().x;
