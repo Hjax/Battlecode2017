@@ -14,16 +14,34 @@ public class BuildPlanner extends Bot {
 	}
 	
 	public static float getDensity() throws GameActionException{
+		int bytes = Clock.getBytecodeNum();
 		float total = 0;
-		for (int i = 0; i < 2 * Math.PI; i += 1/8 * Math.PI) {
-			MapLocation clone = rc.getLocation();
-			for (int j = 1; j <= 3; j++) {
-				clone.add(i, j * (rc.getType().sensorRadius / 3));
-				if (rc.isLocationOccupiedByTree(clone)) { 
-					total += 1/48;
+		TreeInfo blockingTree = null;
+		for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
+			MapLocation clone = rc.getLocation().add(i, rc.getType().bodyRadius - 0.01f);
+			for (int j = 1; j <= 5; j++) 
+			{
+				clone = clone.add(i, (rc.getType().sensorRadius - rc.getType().bodyRadius) / 5);
+				rc.setIndicatorDot(clone, 75, 75, 255);
+				blockingTree = rc.senseTreeAtLocation(clone);
+				if (!rc.onTheMap(clone) || (blockingTree != null && blockingTree.getTeam() != rc.getTeam())) 
+				{ 
+					if (!rc.onTheMap(clone))
+					{
+						total += (6 - j)/180f;
+					}
+					else
+					{
+						total += (6 - j)/60f;
+					}
+					
+
+					break;
 				}
 			}
 		}
+		System.out.println("checking density: " + (Clock.getBytecodeNum() - bytes));
+		System.out.println("density is: " + total);
 		return total;
 	}
 	

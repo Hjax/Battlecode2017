@@ -38,9 +38,11 @@ public class LumberJack extends Bot {
 	        	else if (neutralTrees.length > 0)
 	        	{
 	        		Utilities.moveTo(Utilities.melee(neutralTrees[0].getLocation(), 1 + neutralTrees[0].radius));
-	        		TreeInfo treesToChop[] = neutralTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
-	        		if (rc.canChop(treesToChop[0].ID))
-        				{rc.chop(treesToChop[0].ID);}
+	        		neutralTrees = rc.senseNearbyTrees(2, Team.NEUTRAL);
+	        		System.out.println("try to chop neutral tree");
+	        		rc.setIndicatorDot(neutralTrees[0].getLocation(), 0, 0, 0);
+	        		if (rc.canChop(neutralTrees[0].ID))
+        				{rc.chop(neutralTrees[0].ID);}
 	        	}
 	        	else Utilities.tryMove(neo());
 

@@ -64,6 +64,10 @@ public class Gardener extends Bot
 		MapLocation roost = null;
 		boolean settled = false;
 		
+		boolean dynamicLumberjack = false;
+		
+		
+		
 
         // The code you want your robot to perform every round should be in this loop
         while (true) 
@@ -75,8 +79,10 @@ public class Gardener extends Bot
         	{
         		rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
         	}
+        	
         	System.out.println("start turn");
         	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
+        	
         	
         	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
     		try 
@@ -134,12 +140,19 @@ public class Gardener extends Bot
     			if (openerIndex == 1 && Globals.getStrat() == 0 && rc.isBuildReady())
 				{
 					Utilities.trainUnit(RobotType.SOLDIER);
-					build[2] = 3;
-					openerIndex++;
+					System.out.println("trying to build a soldier");
+					if (!rc.isBuildReady())
+					{
+						build[2] = 3;
+						openerIndex++;
+					}
+					else
+					{
+						System.out.println("failed to build a soldier");
+					}
+					
 				}
     			
-    			
-        	
     			//find a place to settle
     			if (rc.getRoundNum() - builtOn < 23 && rc.hasMoved() == false && settled == false)
     			{
@@ -163,9 +176,23 @@ public class Gardener extends Bot
 				{
 					Utilities.trainUnit(RobotType.SOLDIER);
 				}
-
+    			
+    			//dynamic lumberjacks
+    			if (dynamicLumberjack || (settled && rc.getRoundNum() > 4 && Globals.getStrat() == 0 && Bot.rand.nextDouble() * (1 + Globals.getLumberjackCount()) < BuildPlanner.getDensity() - 0.4))
+    			{
+    				System.out.println("dynamically building lumberjack");
+    				dynamicLumberjack = true;
+    				if (rc.isBuildReady() && rc.getTeamBullets() >= 100)
+    				{
+    					Utilities.trainUnit(RobotType.LUMBERJACK);
+    					dynamicLumberjack = false;
+    				}
+    				
+    			}
+    				
+    			
         		// execute build order if possible
-    			if (openerIndex != 1)
+    			if (openerIndex != 1 && !dynamicLumberjack)
     			{
     				System.out.println("BUILD ORDER: " + buildIndex);
             		switch(build[buildIndex])
@@ -276,15 +303,15 @@ public class Gardener extends Bot
 		Direction angle = new Direction(0);
 		int turnCount = 0;
 		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 16)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 8)
 		{
 			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
-			angle = angle.rotateLeftDegrees(22.5f);
+			angle = angle.rotateLeftDegrees(45);
 		}
 		try 
 		{
-			if (turnCount < 16)
+			if (turnCount < 8)
 			{
 				if (!rc.hasMoved())
 				{

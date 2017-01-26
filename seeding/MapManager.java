@@ -1,4 +1,4 @@
-package lumberjackBot;
+package seeding;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;

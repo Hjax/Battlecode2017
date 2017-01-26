@@ -13,17 +13,14 @@ public class Soldier extends Bot{
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
             	startTurn();
-            	
-            	// See if there are any nearby enemy robots
-                RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
                 
             	// dodge
             	BulletInfo[] bullets = rc.senseNearbyBullets(4);
             	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
             		{
-            			if (robots.length > 0)
+            			if (enemiesMaxRange.length > 0)
             			{
-            				Utilities.moveTo(Utilities.magnitudePressureDodge(bullets, robots[0].getLocation()));
+            				Utilities.moveTo(Utilities.magnitudePressureDodge(bullets, enemiesMaxRange[0].getLocation()));
             			}
             			else
             			{
@@ -39,9 +36,9 @@ public class Soldier extends Bot{
                 
                 
                 // If there are some...
-            	for (int i = 0; i < robots.length; i++){
-                    if (robots[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 250) {
-                        MapLocation target = robots[i].location;
+            	for (int i = 0; i < enemiesMaxRange.length; i++){
+                    if (enemiesMaxRange[i].getType() != RobotType.ARCHON || rc.getRoundNum() > 250) {
+                        MapLocation target = enemiesMaxRange[i].location;
                         // And we have enough bullets, and haven't attacked yet this turn...;
                 		if (!Utilities.willHitAlly(target)) 
                 		{

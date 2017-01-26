@@ -1,4 +1,4 @@
-package lumberjackBot;
+package seeding;
 
 import java.util.Random;
 

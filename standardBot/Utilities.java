@@ -431,16 +431,21 @@ public class Utilities extends Bot{
 		{
 			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
 		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
-			angle = rc.getLocation().directionTo(Memory.getOrder(0).location);
+			angle = rc.getLocation().directionTo(Order.getLocation(Memory.getOrder(0)));
 		}
 		int turnCount = 0;
-		while (!rc.canBuildRobot(unit, angle) && turnCount++ < 60)
+		Direction testAngle = angle;
+		while (!rc.canBuildRobot(unit, testAngle) && turnCount++ < 60)
 		{
-			angle = angle.rotateRightDegrees(6);
+			testAngle = angle.rotateRightDegrees(3 * turnCount);
+			if (!rc.canBuildRobot(unit, testAngle))
+			{
+				testAngle = angle.rotateLeftDegrees(3 * turnCount);
+			}
 		}
 		try {
-			if (rc.canBuildRobot(unit,  angle))
-				{rc.buildRobot(unit, angle);}
+			if (rc.canBuildRobot(unit,  testAngle))
+				{rc.buildRobot(unit, testAngle);}
 		} catch (GameActionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

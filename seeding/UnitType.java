@@ -1,4 +1,4 @@
-package lumberjackBot;
+package seeding;
 
 public class UnitType extends Bot {
 	public static final int TRAINER 	= 0;

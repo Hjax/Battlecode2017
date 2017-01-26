@@ -29,4 +29,12 @@ public class Order {
 	public static int getTTL(long input){
 		return Utilities.bitInterval(input, 18, 29);
 	}
+	
+	public static MapLocation getLocation(long input) {
+		return Utilities.intToTarget(Utilities.bitInterval(input, 0, 17));
+	}
+	
+	public static int getType(long input) {
+		return Utilities.bitInterval(input, 30, 32);
+	}
 }

@@ -194,8 +194,8 @@ public class Memory extends Bot{
 		writeBits(o.index + min_order, o.toLong());
 	}
 	
-	public static Order getOrder(int index) throws GameActionException{
-		return new Order(readBits(min_order + index), index);
+	public static long getOrder(int index) throws GameActionException{
+		return readBits(min_order + index);
 	}
 	
 	public static void addOrder(Order o) throws Exception{
