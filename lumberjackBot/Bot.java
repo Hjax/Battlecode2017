@@ -16,6 +16,7 @@ public class Bot {
 	public static boolean isFirst = false;
 	public static Random rand;
 	public static MapLocation lastPosition;
+	public static RobotInfo[] enemiesMaxRange = new RobotInfo[0];
 	
     protected static void Init(RobotController RobCon) throws GameActionException{
     	rc = RobCon;
@@ -62,13 +63,15 @@ public class Bot {
     	System.out.println("I live at: " + Integer.toString(memory_loc + Memory.min_ally));
     	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
     	{
+    		// NOTE we only set this for units that need it
+    		enemiesMaxRange = rc.senseNearbyRobots(-1, enemy);
     		OrderManager.updateOrders();
+        	if (OrderManager.shouldMove()){
+        		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
+        	}
     	}
     	
     	Memory.updateMyMemory();
-    	if (OrderManager.shouldMove()){
-    		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
-    	}
     	
     	if (rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 100){
     		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
@@ -161,19 +164,19 @@ public class Bot {
     	//if not gardener or archon stay near enemy bots
     	if (rc.getType() != RobotType.ARCHON && rc.getType() != RobotType.GARDENER)
     	{
-    		RobotInfo[] engageBots = rc.senseNearbyRobots(7, enemy);
-        	for (int botCount = 0; botCount < engageBots.length; botCount++)
+    		
+        	for (int botCount = 0; botCount < enemiesMaxRange.length; botCount++)
         	{
-        		relativeX = engageBots[botCount].getLocation().x - rc.getLocation().x;
-        		relativeY = engageBots[botCount].getLocation().y - rc.getLocation().y;
+        		relativeX = enemiesMaxRange[botCount].getLocation().x - rc.getLocation().x;
+        		relativeY = enemiesMaxRange[botCount].getLocation().y - rc.getLocation().y;
         			
-        		if (engageBots[botCount].getType() == RobotType.GARDENER)
+        		if (enemiesMaxRange[botCount].getType() == RobotType.GARDENER)
         		{
         			//be very attracted to enemy gardeners
         			xPressure += relativeX * 30;
             		yPressure += relativeY * 30;
         		}	
-        		else if (engageBots[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
+        		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
         			//be very attracted to enemy archons
         			xPressure += relativeX * 20;

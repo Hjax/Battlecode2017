@@ -58,11 +58,10 @@ public class Guard extends Bot{
             	else
             	{
             		MapLocation target = Memory.readAlly(guardedMem).location;
-            		RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
                 	// if no enemies, stay near gardener
             		TreeInfo trees[] = rc.senseNearbyTrees(target, 3, ally);
             		// if no enemies and a tree, sit in the tree
-                	if (enemies.length == 0)
+                	if (enemiesMaxRange.length == 0)
                 	{
                 		if (trees.length == 0 || true)
                 		{
@@ -78,19 +77,14 @@ public class Guard extends Bot{
                 	else
                 	{
                 		
-                		Utilities.moveTo(target.add(target.directionTo(enemies[0].getLocation()), 2.01f));
+                		Utilities.moveTo(target.add(target.directionTo(enemiesMaxRange[0].getLocation()), 2.01f));
                 	}
                 	rc.setIndicatorLine(rc.getLocation(), target, 255, 255, 255);
             	}
-            	
-                
-
-            	// See if there are any nearby enemy robots
-                RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
                 
                 // If there are some...
-                if (robots.length > 0) {
-                    RobotInfo enemyTarget = robots[0];
+                if (enemiesMaxRange.length > 0) {
+                    RobotInfo enemyTarget = enemiesMaxRange[0];
                     if (!(enemyTarget.getType() == RobotType.ARCHON && rc.getRoundNum() < 300))
                     {
                     	// And we have enough bullets, and haven't attacked yet this turn...;

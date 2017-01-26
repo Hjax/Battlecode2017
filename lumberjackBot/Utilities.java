@@ -431,7 +431,7 @@ public class Utilities extends Bot{
 		{
 			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
 		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
-			angle = rc.getLocation().directionTo(Memory.getOrder(0).location);
+			angle = rc.getLocation().directionTo(Order.getLocation(Memory.getOrder(0)));
 		}
 		int turnCount = 0;
 		Direction testAngle = angle;

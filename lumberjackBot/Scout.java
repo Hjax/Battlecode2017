@@ -34,13 +34,12 @@ public class Scout extends Bot{
             		}
             	}
 
-            	RobotInfo enemies[] = rc.senseNearbyRobots(-1, enemy);
             	RobotInfo gardener = rc.senseRobot(rc.getID());
-            	for (int countBot = 0; countBot < enemies.length; countBot++)
+            	for (int countBot = 0; countBot < enemiesMaxRange.length; countBot++)
             	{
-            		if (enemies[countBot].getType() == RobotType.GARDENER)
+            		if (enemiesMaxRange[countBot].getType() == RobotType.GARDENER)
             		{
-            			gardener = enemies[countBot];
+            			gardener = enemiesMaxRange[countBot];
             			break;
             		}
             	}
@@ -49,14 +48,14 @@ public class Scout extends Bot{
             	
             	if (bullets.length > 0)
             	{
-            		if (enemies.length > 0)
+            		if (enemiesMaxRange.length > 0)
             		{
             			RobotInfo defense =  rc.senseRobot(rc.getID());
-    	            	for (int countBot = 0; countBot < enemies.length; countBot++)
+    	            	for (int countBot = 0; countBot < enemiesMaxRange.length; countBot++)
     	            	{
-    	            		if (enemies[countBot].getType() == RobotType.SOLDIER || enemies[countBot].getType() == RobotType.SCOUT || enemies[countBot].getType() == RobotType.TANK || enemies[countBot].getType() == RobotType.LUMBERJACK)
+    	            		if (enemiesMaxRange[countBot].getType() == RobotType.SOLDIER || enemiesMaxRange[countBot].getType() == RobotType.SCOUT || enemiesMaxRange[countBot].getType() == RobotType.TANK || enemiesMaxRange[countBot].getType() == RobotType.LUMBERJACK)
     	            		{
-    	            			defense = enemies[countBot];
+    	            			defense = enemiesMaxRange[countBot];
     	            			break;
     	            		}
     	            	}
@@ -72,15 +71,15 @@ public class Scout extends Bot{
             	
             	else if (gardener.getType() == RobotType.GARDENER)
             	{
-            		if (enemies.length > 0){
+            		if (enemiesMaxRange.length > 0){
             			// we are already in melee range, find the closest enemy, and move to the side of the gardener
             			System.out.println("Being annoying");
             			RobotInfo defense =  rc.senseRobot(rc.getID());
-    	            	for (int countBot = 0; countBot < enemies.length; countBot++)
+    	            	for (int countBot = 0; countBot < enemiesMaxRange.length; countBot++)
     	            	{
-    	            		if (enemies[countBot].getType() == RobotType.SOLDIER || enemies[countBot].getType() == RobotType.SCOUT || enemies[countBot].getType() == RobotType.TANK || enemies[countBot].getType() == RobotType.LUMBERJACK)
+    	            		if (enemiesMaxRange[countBot].getType() == RobotType.SOLDIER || enemiesMaxRange[countBot].getType() == RobotType.SCOUT || enemiesMaxRange[countBot].getType() == RobotType.TANK || enemiesMaxRange[countBot].getType() == RobotType.LUMBERJACK)
     	            		{
-    	            			defense = enemies[countBot];
+    	            			defense = enemiesMaxRange[countBot];
     	            			break;
     	            		}
     	            	}

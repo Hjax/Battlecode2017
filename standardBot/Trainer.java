@@ -1,7 +1,6 @@
 package standardBot;
 
 import battlecode.common.*;
-import lumberjackBot.Globals;
 
 public class Trainer extends Bot{
 	public static void Start(RobotController RobCon) throws Exception
