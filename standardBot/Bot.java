@@ -86,6 +86,21 @@ public class Bot {
     			Memory.clearAllies();
     		}
     		
+        	int win_round = Math.min(100, rc.getRoundLimit() - rc.getRoundNum());
+        	// averaged over the rounds we want to win 
+        	float victory_point_cost = (float) ((7.5 + (rc.getRoundNum() * 12.5 / 3000)) + (7.5 + ((rc.getRoundNum() + win_round)* 12.5 / 3000))) / 2;
+        	float bullets_to_win = (GameConstants.VICTORY_POINTS_TO_WIN - rc.getTeamVictoryPoints()) * victory_point_cost;
+        	if (rc.getTreeCount() > 0) {
+        		System.out.println("Winning from vp in " + Float.toString((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()));
+        		System.out.println("Needed bullets: " + Float.toString(bullets_to_win));
+        		System.out.println("Current vp cost: " + Float.toString(victory_point_cost));
+        	}
+
+        	if (rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round)  {
+        		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
+        	}
+    		
+    		
     		Globals.setRoundNumber(rc.getRoundNum());
     		int start = Clock.getBytecodeNum();
     		Memory.pruneAllyMemory();
