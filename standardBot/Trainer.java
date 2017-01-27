@@ -67,7 +67,7 @@ public class Trainer extends Bot{
 	        		
 	        		if (Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 4 && rand.nextDouble() < 0.25) {
 	        			if (rc.isBuildReady() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost) {
-	        				Utilities.trainUnit(RobotType.SCOUT);
+	        				BuildManager.trainUnit(RobotType.SCOUT);
 	        			}
 	        		}
 
@@ -80,7 +80,7 @@ public class Trainer extends Bot{
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100 && (Globals.getUnitCount(UnitType.SOLDIER) * 1 < rc.getTreeCount()))
 	            				{
-	            					Utilities.trainUnit(RobotType.SOLDIER);
+	            					BuildManager.trainUnit(RobotType.SOLDIER);
 	            					buildIndex++;
 	            					if (buildIndex > buildLength)
 	            					{buildIndex = 0;}
@@ -90,7 +90,7 @@ public class Trainer extends Bot{
 	            			{
 	            				if (rc.isBuildReady() && rc.getTeamBullets() > 300)
 	                			{
-	                				Utilities.trainUnit(RobotType.TANK);
+	                				BuildManager.trainUnit(RobotType.TANK);
 	                				buildIndex++;
 	                				if (buildIndex > buildLength)
 	                				{buildIndex = 0;}
@@ -102,7 +102,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 300)
 	            			{
-	            				Utilities.trainUnit(RobotType.TANK);
+	            				BuildManager.trainUnit(RobotType.TANK);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}
@@ -113,7 +113,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
 	            			{
-	            				Utilities.trainUnit(RobotType.SCOUT);
+	            				BuildManager.trainUnit(RobotType.SCOUT);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}
@@ -124,7 +124,7 @@ public class Trainer extends Bot{
 	            		{
 	            			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
 	            			{
-	            				Utilities.trainUnit(RobotType.LUMBERJACK);
+	            				BuildManager.trainUnit(RobotType.LUMBERJACK);
 	            				buildIndex++;
 	            				if (buildIndex > buildLength)
 	            				{buildIndex = 0;}

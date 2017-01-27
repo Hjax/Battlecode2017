@@ -60,10 +60,6 @@ public class Archon extends Bot{
                 	trainGardener();
                     tryBuild = false;
                 }
-                
-
-
-
             } catch (Exception e) {
             	Debug.debug_print("Exception in Archon mainloop");
             	e.printStackTrace();
