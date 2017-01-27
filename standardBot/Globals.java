@@ -101,4 +101,12 @@ public class Globals extends Bot{
 	public static void setStrat(int n) throws Exception {
 		Memory.writeGlobal(20, n);
 	}
+	
+	public static void setStuckArchons(int n) throws Exception {
+		Memory.writeGlobal(21, n);
+	}
+	
+	public static int getStuckArchons() throws GameActionException {
+		return Memory.readGlobal(21);
+	}
 }

@@ -475,5 +475,4 @@ public class Utilities extends Bot{
 		Debug.debug_print("density is: " + total);
 		return total;
 	}
-	
 }

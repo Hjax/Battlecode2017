@@ -8,22 +8,16 @@ public class Archon extends Bot{
         Debug.debug_print("Starting Archon Code");
         boolean tryBuild = false;
      	
+        if (BuildManager.isStuck()) {
+        	Debug.debug_print("I am stuck!");
+        }
+        
      	try {
 			Globals.initEdges();
 			Globals.updateEdges();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-     	
-     	MapLocation[] enemyArchons = rc.getInitialArchonLocations(enemy);
-     	if (enemyArchons.length == 1 && rc.getLocation().distanceTo(enemyArchons[0]) < 32 && Utilities.getDensity() < 0.5)
-     	{
-     		try {
-				Globals.setStrat(1);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-     	}
      	
         // The code you want your robot to perform every round should be in this loop
         while (true) {
