@@ -3,7 +3,6 @@ package newMemory;
 import battlecode.common.*;
 
 public strictfp class RobotPlayer {
-    static RobotController rc;
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.

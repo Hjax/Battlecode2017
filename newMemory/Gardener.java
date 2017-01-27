@@ -95,7 +95,7 @@ public class Gardener extends Bot
     			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
     			{
     				dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
-    				if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
+    				if (!dodgeTo.equals(rc.getLocation()) && !rc.hasMoved())
     				{
     					Debug.debug_print("dodge bullet");
     					Utilities.moveTo(dodgeTo);
@@ -160,7 +160,6 @@ public class Gardener extends Bot
     					Debug.debug_print("find a place to roost");
     					Utilities.tryMove(neo());
     				} catch (GameActionException e) {
-    					// TODO Auto-generated catch block
     					e.printStackTrace();
     				}	
     			}	
@@ -203,14 +202,7 @@ public class Gardener extends Bot
                 			{
                 				if (!settled)
                 					{roost = rc.getLocation();}
-                				if (Globals.getUnitCount(UnitType.GARDENER) < 3)
-                				{
-                					if (plantSpacedTree(roost))
-                    				{
-                    					settled = true;	
-                    				}
-                				}
-                				else if (plantSpacedTree(roost))
+                				if (plantSpacedTree(roost))
                 				{
                 					settled = true;	
                 				}
@@ -337,7 +329,6 @@ public class Gardener extends Bot
 				buildIndex++;
 			}
 		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Debug.debug_bytecode_end("planting");
@@ -360,7 +351,6 @@ public class Gardener extends Bot
 				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
 				rc.water(bestTree.ID);
 			} catch (GameActionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

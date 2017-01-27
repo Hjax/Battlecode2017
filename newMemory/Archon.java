@@ -12,7 +12,6 @@ public class Archon extends Bot{
 			Globals.initEdges();
 			Globals.updateEdges();
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
      	
@@ -22,7 +21,6 @@ public class Archon extends Bot{
      		try {
 				Globals.setStrat(1);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
      	}
@@ -168,7 +166,6 @@ public class Archon extends Bot{
 				rc.hireGardener(angle);
 			}
 		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

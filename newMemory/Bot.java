@@ -34,7 +34,6 @@ public class Bot {
     	try {
 			Globals.updateEdges();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
