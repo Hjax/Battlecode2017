@@ -15,8 +15,8 @@ public class BuildManager extends Bot{
 			System.out.println("Unit ratio of 2");
 			return 2.0f;
 		}
-		System.out.println("Unit ratio of 0.2");
-		return 0.2f;
+		System.out.println("Unit ratio of 0.3");
+		return 0.3f;
 	}
 
 	public static boolean isStuck() {
@@ -75,7 +75,8 @@ public class BuildManager extends Bot{
 	}
 	
 	public static boolean shouldBuildSoldier() throws GameActionException {
-		return (treeCount <= 35) && ((treeCount < 5 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount / 2.0) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * unitRatio())));
+		System.out.println("Checking should build soldier");
+		return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * unitRatio())));
 	}
 	
 	public static boolean shouldBuildTank() throws GameActionException {
@@ -88,9 +89,19 @@ public class BuildManager extends Bot{
 	
 	public static boolean shouldBuildGardner() throws GameActionException {
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
-		return (gcount <= 1) || 
-				((treeCount / gcount)  >= 2) || 
-				(((float) treeCount / (float) gcount) > 6);
+		if (Globals.getUnitCount(UnitType.GARDENER) == 1 && Globals.getStrat() == AGGRESSIVE) {
+			return false;
+		}
+		if (rc.getRoundNum() > 30 || gcount == 0){
+			if (gcount <= 1) {
+				return true;
+			} else if (treeCount / gcount >= 2) {
+				return true;
+			} else if (((float) treeCount / (float) gcount) > 6) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static boolean buildNextUnit() throws Exception { 
@@ -103,21 +114,32 @@ public class BuildManager extends Bot{
 				}
 				return false;
 			}
-			if (shouldBuildLumberjack() && rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
-				Debug.debug_print("Trying to build Lumberjack");
-				trainUnit(RobotType.LUMBERJACK);
+			
+			if (shouldBuildSoldier()) {
+				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost){
+					Debug.debug_print("Trying to build SOLDIER");
+					trainUnit(RobotType.SOLDIER);
+				}
 				return true;
-			} else if (shouldBuildSoldier() && rc.getTeamBullets() > RobotType.SOLDIER.bulletCost) {
-				Debug.debug_print("Trying to build soldier");
-				trainUnit(RobotType.SOLDIER);
+			}
+			else if (shouldBuildLumberjack()){
+				if (rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
+					Debug.debug_print("Trying to build lumberjack");
+					trainUnit(RobotType.LUMBERJACK);
+				}
 				return true;
-			} else if (shouldBuildTank() && rc.getTeamBullets() > RobotType.TANK.bulletCost) {
-				Debug.debug_print("Trying to build tank");
-				trainUnit(RobotType.TANK);
+
+			} else if (shouldBuildTank()) {
+				if (rc.getTeamBullets() > RobotType.TANK.bulletCost){
+					Debug.debug_print("Trying to build tank");
+					trainUnit(RobotType.TANK);
+				}
 				return true;
-			} else if (shouldBuildScout() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost){
-				Debug.debug_print("Trying to build scout");
-				trainUnit(RobotType.SCOUT);
+			} else if (shouldBuildScout()){
+				if (rc.getTeamBullets() > RobotType.SCOUT.bulletCost){
+					Debug.debug_print("Trying to build scout");
+					trainUnit(RobotType.SCOUT);
+				}
 				return true;
 			}	
 		}
