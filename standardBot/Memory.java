@@ -3,8 +3,6 @@ package standardBot;
 import battlecode.common.*;
 
 public class Memory extends Bot{
-	// memory TODO
-	// update allydata and friends to avoid the sign bit
 	
 	private static int min_global = 0;
 	private static int max_global = 49;
@@ -14,8 +12,6 @@ public class Memory extends Bot{
 	private static int max_ally = 577;
 	private static int min_order = 578;
 	private static int max_order = 677;
-	private static int min_map_data = 678;
-	private static int max_map_data = 999;
 	private static long bits_zero = (long) Math.pow(2, 31);
 	
 	public static int readValue(int index) throws GameActionException {
@@ -118,6 +114,7 @@ public class Memory extends Bot{
 		System.out.println(Globals.getGardenerCount());
 		System.out.print("Trainer: ");
 		System.out.println(Globals.getTrainerCount());
+		int previous_defragger = Globals.getPreviousDefragger();
 		for (int i = min_ally; i <= max_ally; i++){
 			if (Clock.getBytecodesLeft() < 300) {
 				Clock.yield();
@@ -126,7 +123,7 @@ public class Memory extends Bot{
 				i += 32;
 				continue;
 			}
-			if (i == memory_loc + min_ally){
+			if (i == memory_loc + min_ally || previous_defragger + min_ally == i){
 				continue;
 			}
 			long current_int = readBits(i);
@@ -150,14 +147,12 @@ public class Memory extends Bot{
 		}
 	}
 	
-	public static void updateMyMemory() throws GameActionException {
-		if (Clock.getBytecodesLeft() < 250) {
+	
+	public static void updateMyMemory() throws Exception {
+		if (Clock.getBytecodesLeft() < 200) {
 			return;
 		}
-    	AllyData me = Memory.readAlly(memory_loc);
-    	me.location = rc.getLocation();
-    	me.hp = (int) rc.getHealth();  	
-    	me.alive = (rc.getRoundNum() % 2) == 1;
+    	AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), (rc.getRoundNum() % 2) == 1);
     	Memory.writeAllyData(memory_loc, me);
 	}
 	

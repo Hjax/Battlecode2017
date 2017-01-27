@@ -38,8 +38,6 @@ public class Bot {
     	// this should put a new bot into memory
     	try {
     		memory_loc = Memory.first_free_ally();
-    		System.out.print("I got assigned memory loc");
-    		System.out.println(memory_loc);
     		Memory.reserveAllyIndex(memory_loc);
     		AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 0);
 			Memory.writeAllyData(memory_loc, me);
@@ -99,13 +97,12 @@ public class Bot {
         	if (rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round)  {
         		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
         	}
-    		
-    		
     		Globals.setRoundNumber(rc.getRoundNum());
     		int start = Clock.getBytecodeNum();
     		Memory.pruneAllyMemory();
     		System.out.print("Defrag took: ");
     		System.out.println(Clock.getBytecodeNum() - start);
+    		Globals.setPreviousDefragger(memory_loc);
     		start = Clock.getBytecodeNum();
     		Memory.pruneOrders();
     		System.out.print("Orders took: ");
@@ -117,13 +114,13 @@ public class Bot {
     }
     
     protected static void endTurn() throws GameActionException {
+        Utilities.tryShake();
 		try {
 			Globals.updateEdges();
+			Memory.updateMyMemory();
 		} catch (Exception e) {
-			System.out.println("Error while updating edges");
+			System.out.println("Error while updating edges / memory");
 		}
-        Utilities.tryShake();
-    	Memory.updateMyMemory();
     	Clock.yield();
     }
     

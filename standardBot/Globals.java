@@ -173,5 +173,13 @@ public class Globals extends Bot{
 		Memory.writeGlobal(16, n);
 	}
 	
+	public static int getPreviousDefragger() throws GameActionException {
+		return Memory.readGlobal(17);
+	}
+	
+	public static void setPreviousDefragger(int n) throws Exception {
+		Memory.writeGlobal(17, n);
+	}
+	
 
 }
