@@ -1,5 +1,7 @@
 package standardBot;
 
+import battlecode.common.RobotType;
+
 public class UnitType extends Bot {
 	public static final int TRAINER 	= 0;
 	public static final int ARCHON 		= 1;
@@ -8,10 +10,9 @@ public class UnitType extends Bot {
 	public static final int LUMBERJACK 	= 4;
 	public static final int TANK 		= 5;
 	public static final int SOLDIER 	= 6;
-
 	
-	public static int getType() throws Exception{
-		switch (rc.getType()) {
+	public static int getType(RobotType r) throws Exception{
+		switch (r) {
 	        case ARCHON:
 	        	return ARCHON;
 	        case GARDENER:
@@ -30,6 +31,11 @@ public class UnitType extends Bot {
 	        default:
 	        	throw new Exception("Unexpected Robot Type: " + rc.getType()); 	
 	    }
+	}
+
+	
+	public static int getType() throws Exception{
+		return getType(rc.getType());
 	}
 	public static boolean isCombat() throws Exception {
 		return getType() >= 5;

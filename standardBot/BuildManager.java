@@ -58,11 +58,11 @@ public class BuildManager extends Bot{
      	}
 	}
 	
-	public static void executeBuild() throws GameActionException {
-		if (shouldBuildUnit()) {
-			buildNextUnit();
-		}
-		else {
+	public static void executeBuild() throws Exception {
+		if (!buildNextUnit()) {
+			if (UnitType.getType() == UnitType.TRAINER){
+				return;
+				}
 			if (rc.getTeamBullets() >= 50 && rc.isBuildReady()) {
 				Debug.debug_print("Trying to plant a tree");
 				plantSpacedTree(Gardener.roost);
@@ -70,19 +70,58 @@ public class BuildManager extends Bot{
 		}
 	}
 	
-	public static boolean shouldBuildUnit() throws GameActionException {
-		return (treeCount < 5 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount / 2.0) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount + 1) * unitRatio())) ||
-				(density > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7));
+	public static boolean shouldBuildLumberjack() throws GameActionException {
+		return (density > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7));
 	}
 	
-	public static void buildNextUnit() throws GameActionException { 
-		if ((BuildManager.getDensity() > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7)) && (Globals.getStrat() != AGGRESSIVE | rc.getRoundNum() > 350)){
-			Debug.debug_print("Trying to build Lumberjack");
-			trainUnit(RobotType.LUMBERJACK);
-		} else {
-			Debug.debug_print("Trying to build Soldier");
-			trainUnit(RobotType.SOLDIER);
+	public static boolean shouldBuildSoldier() throws GameActionException {
+		return (treeCount <= 35) && ((treeCount < 5 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount / 2.0) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * unitRatio())));
+	}
+	
+	public static boolean shouldBuildTank() throws GameActionException {
+		return (treeCount > 60 || (treeCount > 35 && Globals.getUnitCount(UnitType.TANK) < (treeCount / 4.0)));
+	}
+	
+	public static boolean shouldBuildScout() throws GameActionException {
+		return (Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 6);
+	}
+	
+	public static boolean shouldBuildGardner() throws GameActionException {
+		int gcount = Globals.getUnitCount(UnitType.GARDENER);
+		return (gcount <= 1) || 
+				((treeCount / gcount)  >= 2) || 
+				(((float) treeCount / (float) gcount) > 6);
+	}
+	
+	public static boolean buildNextUnit() throws Exception { 
+		if (rc.isBuildReady()) {
+			if (rc.getType() == RobotType.ARCHON) {
+				if (shouldBuildGardner() && rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
+					Debug.debug_print("Trying to build gardener");
+					trainGardener();
+					return true;
+				}
+				return false;
+			}
+			if (shouldBuildLumberjack() && rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
+				Debug.debug_print("Trying to build Lumberjack");
+				trainUnit(RobotType.LUMBERJACK);
+				return true;
+			} else if (shouldBuildSoldier() && rc.getTeamBullets() > RobotType.SOLDIER.bulletCost) {
+				Debug.debug_print("Trying to build soldier");
+				trainUnit(RobotType.SOLDIER);
+				return true;
+			} else if (shouldBuildTank() && rc.getTeamBullets() > RobotType.TANK.bulletCost) {
+				Debug.debug_print("Trying to build tank");
+				trainUnit(RobotType.TANK);
+				return true;
+			} else if (shouldBuildScout() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost){
+				Debug.debug_print("Trying to build scout");
+				trainUnit(RobotType.SCOUT);
+				return true;
+			}	
 		}
+		return false;
 	}
 	
 	public static void checkDonateVP() throws GameActionException {
@@ -103,7 +142,7 @@ public class BuildManager extends Bot{
     	}
 	}
 
-	public static void trainUnit(RobotType unit) throws GameActionException
+	public static void trainUnit(RobotType unit) throws Exception
 	{
 		Direction angle = new Direction(0);
 		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
@@ -125,9 +164,9 @@ public class BuildManager extends Bot{
 		}
 		try {
 			if (rc.canBuildRobot(unit,  testAngle))
+				Globals.updateUnitCounts(UnitType.getType(unit));
 				{rc.buildRobot(unit, testAngle);}
 		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -207,6 +246,100 @@ public class BuildManager extends Bot{
 		}
 		Debug.debug_bytecode_end("planting");
 		return false;
+	}
+
+	private static void trainGardener() throws GameActionException
+	{
+		Direction angle = new Direction(0);
+		float leftDist, rightDist, topDist, bottomDist;
+		leftDist = 1000;
+		rightDist = 1000;
+		topDist = 1000;
+		bottomDist = 1000;
+		
+		
+		
+		if (Globals.getLeftEdge() != -1)
+		{
+			leftDist = rc.getLocation().x - Globals.getLeftEdge();
+		}
+		if (Globals.getRightEdge() != -1)
+		{
+			rightDist = Globals.getRightEdge() - rc.getLocation().x;
+		}
+		if (Globals.getBottomEdge() != -1)
+		{
+			bottomDist =  rc.getLocation().y - Globals.getBottomEdge();
+		}
+		if (Globals.getTopEdge() != -1)
+		{
+			topDist = Globals.getTopEdge() - rc.getLocation().y;
+		}
+		
+		
+		if (leftDist < rightDist)
+		{
+			if (bottomDist < topDist)
+				{
+					if (leftDist < bottomDist)
+					{
+						angle = new Direction((float)Math.PI);
+					}
+					else
+						{
+	
+							angle = new Direction((float)Math.PI * 3 / 2);
+						}
+				}
+			else if (leftDist < topDist)
+			{
+				angle = new Direction((float)Math.PI);
+			}
+			else
+				{
+					angle = new Direction((float)Math.PI * 1 / 2);
+				}
+		}
+		else
+		{
+			if (bottomDist < topDist)
+				{
+					if (rightDist < bottomDist)
+					{
+						angle = new Direction(0);
+					}
+					else
+						{
+							angle = new Direction((float)Math.PI * 3 / 2);
+						}
+				}
+			else if (rightDist < topDist)
+			{
+				angle = new Direction(0);
+			}
+			else
+				{
+					angle = new Direction((float)Math.PI * 1 / 2);
+				}
+		}
+		
+		Debug.debug_print("building at angle " + angle.getAngleDegrees());
+		
+		int turnCount = 0;
+		while (!rc.canHireGardener(angle) && turnCount++ < 90)
+		{
+			angle = angle.rotateRightDegrees(4);
+		}
+		try {
+			if (rc.canHireGardener(angle))
+			{
+				Debug.debug_print("built gardener: " + angle.getAngleDegrees());
+				Debug.debug_print("(" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
+				rc.hireGardener(angle);
+			}
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
