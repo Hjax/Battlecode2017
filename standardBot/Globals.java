@@ -34,7 +34,11 @@ public class Globals extends Bot{
 	}
 	
 	public static void updateUnitCounts() throws Exception {
-		int location = 4 + (2 * UnitType.getType()) + (rc.getRoundNum() % 2);
+		updateUnitCounts(UnitType.getType());
+	}
+	
+	public static void updateUnitCounts(int type) throws Exception {
+		int location = 4 + (2 * type) + (rc.getRoundNum() % 2);
 		Memory.writeGlobal(location, Memory.readGlobal(location) + 1);
 	}
 	

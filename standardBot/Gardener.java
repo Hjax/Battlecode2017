@@ -80,8 +80,8 @@ public class Gardener extends Bot
         		rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
         	}
         	
+        	
         	Debug.debug_print("start turn");
-        	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
         	
         	
         	// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
@@ -102,7 +102,7 @@ public class Gardener extends Bot
     				}
     			}
         	
-    			if (rc.hasMoved() == false)
+    			if (!rc.hasMoved())
     			{
     				//run from enemies if near
     				RobotInfo enemies[] = rc.senseNearbyRobots(5, enemy);
