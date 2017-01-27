@@ -1,4 +1,4 @@
-package newMemory;
+package standardBot;
 
 import battlecode.common.*;
 

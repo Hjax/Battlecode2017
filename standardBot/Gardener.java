@@ -7,7 +7,7 @@ public class Gardener extends Bot
 	static int buildIndex = 0;
 	public static void Start(RobotController RobCon) throws Exception{
 		
-		System.out.println("I'm a gardener!");
+		Debug.debug_print("I'm a gardener!");
 		
 		//for age purposes
 		int builtOn = rc.getRoundNum();
@@ -80,7 +80,7 @@ public class Gardener extends Bot
         		rc.setIndicatorLine(rc.getLocation(), roost, 100, 0, 0);
         	}
         	
-        	System.out.println("start turn");
+        	Debug.debug_print("start turn");
         	rc.setIndicatorDot(rc.getLocation(), 100, 100, 0);
         	
         	
@@ -95,9 +95,9 @@ public class Gardener extends Bot
     			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
     			{
     				dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
-    				if (dodgeTo.equals(rc.getLocation()) == false && rc.hasMoved() == false);
+    				if (!dodgeTo.equals(rc.getLocation()) && !rc.hasMoved())
     				{
-    					System.out.println("dodge bullet");
+    					Debug.debug_print("dodge bullet");
     					Utilities.moveTo(dodgeTo);
     				}
     			}
@@ -109,7 +109,7 @@ public class Gardener extends Bot
     				dodgeTo = rc.getLocation();
             		if (enemies.length > 0)
             		{
-            			System.out.println("run from enemy");
+            			Debug.debug_print("run from enemy");
             			dodgeTo = rc.getLocation().add(enemies[0].getLocation().directionTo(rc.getLocation()), 1.0f);
             			Utilities.moveTo(dodgeTo);
             		}
@@ -140,7 +140,7 @@ public class Gardener extends Bot
     			if (openerIndex == 1 && Globals.getStrat() == 0 && rc.isBuildReady())
 				{
 					Utilities.trainUnit(RobotType.SOLDIER);
-					System.out.println("trying to build a soldier");
+					Debug.debug_print("trying to build a soldier");
 					if (!rc.isBuildReady())
 					{
 						build[2] = 3;
@@ -148,7 +148,7 @@ public class Gardener extends Bot
 					}
 					else
 					{
-						System.out.println("failed to build a soldier");
+						Debug.debug_print("failed to build a soldier");
 					}
 					
 				}
@@ -157,18 +157,17 @@ public class Gardener extends Bot
     			if (rc.getRoundNum() - builtOn < 23 && rc.hasMoved() == false && settled == false)
     			{
     				try {
-    					System.out.println("find a place to roost");
+    					Debug.debug_print("find a place to roost");
     					Utilities.tryMove(neo());
     				} catch (GameActionException e) {
-    					// TODO Auto-generated catch block
     					e.printStackTrace();
     				}	
     			}	
     			else if (settled == true && rc.getLocation().distanceTo(roost) > 1.5f && rc.hasMoved() == false)
     			{
     				//return to roost if scared away
-    				System.out.println("return to roost");
-    				System.out.println("(" + roost.x + ", " + roost.y + ")");
+    				Debug.debug_print("return to roost");
+    				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
     			}
 
@@ -178,9 +177,9 @@ public class Gardener extends Bot
 				}
     			
     			//dynamic lumberjacks
-    			if (dynamicLumberjack || (settled && rc.getRoundNum() > 4 && Globals.getStrat() == 0 && Bot.rand.nextDouble() * (1 + Globals.getLumberjackCount()) < BuildPlanner.getDensity() - 0.4))
+    			if (dynamicLumberjack || (settled && rc.getRoundNum() > 4 && Globals.getStrat() == 0 && Bot.rand.nextDouble() * (1 + Globals.getUnitCount(UnitType.LUMBERJACK)) < Utilities.getDensity() - 0.4))
     			{
-    				System.out.println("dynamically building lumberjack");
+    				Debug.debug_print("dynamically building lumberjack");
     				dynamicLumberjack = true;
     				if (rc.isBuildReady() && rc.getTeamBullets() >= 100)
     				{
@@ -194,7 +193,7 @@ public class Gardener extends Bot
         		// execute build order if possible
     			if (openerIndex != 1 && !dynamicLumberjack)
     			{
-    				System.out.println("BUILD ORDER: " + buildIndex);
+    				Debug.debug_print("BUILD ORDER: " + buildIndex);
             		switch(build[buildIndex])
             		{
                 		case 0:
@@ -203,14 +202,7 @@ public class Gardener extends Bot
                 			{
                 				if (!settled)
                 					{roost = rc.getLocation();}
-                				if (Globals.getGardenerCount() < 3)
-                				{
-                					if (plantSpacedTree(roost))
-                    				{
-                    					settled = true;	
-                    				}
-                				}
-                				else if (plantSpacedTree(roost))
+                				if (plantSpacedTree(roost))
                 				{
                 					settled = true;	
                 				}
@@ -225,7 +217,7 @@ public class Gardener extends Bot
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 100)
                 			{
-                				if (Globals.getGardenerCount() < 3)
+                				if (Globals.getUnitCount(UnitType.GARDENER) < 3)
                 				{
                 					Utilities.trainUnit(RobotType.SOLDIER);
                 				}
@@ -250,7 +242,7 @@ public class Gardener extends Bot
                 		{
                 			if (rc.isBuildReady() && rc.getTeamBullets() > 80)
                 			{
-                				System.out.println("building scout");
+                				Debug.debug_print("building scout");
                 				Utilities.trainUnit(RobotType.SCOUT);
                 				buildIndex++;
                 				if (buildIndex > buildLength)
@@ -280,18 +272,18 @@ public class Gardener extends Bot
         	}
 
         	catch (Exception e) {
-        		System.out.println("Gardener Exception");
+        		Debug.debug_print("Gardener Exception");
         		e.printStackTrace();
         	}
-    		System.out.println("end turn");
+    		Debug.debug_print("end turn");
     		if (rc.canWater() && settled)
     		{
-    			System.out.println("watering");
+    			Debug.debug_print("watering");
     			waterTrees(roost);
     		}
     		else
     		{
-    			System.out.println("can't water");
+    			Debug.debug_print("can't water");
     		}
         	endTurn();
         }
@@ -299,11 +291,11 @@ public class Gardener extends Bot
 	
 	private static boolean plantSpacedTree(MapLocation roost) throws GameActionException
 	{
-		int bytes = Clock.getBytecodeNum();
+		Debug.debug_bytecode_start();
 		Direction angle = new Direction(0);
 		int turnCount = 0;
-		System.out.println("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getGardenerCount() < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 8)
+		Debug.debug_print("trying to plant");
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 8)
 		{
 			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
 			
@@ -315,17 +307,17 @@ public class Gardener extends Bot
 			{
 				if (!rc.hasMoved())
 				{
-					System.out.println("moving to plant");
+					Debug.debug_print("moving to plant");
 					Utilities.moveTo((roost.add(angle, 2.0f)));
 				}
 				else
 				{
-					System.out.println("already moved, can't plant");
+					Debug.debug_print("already moved, can't plant");
 				}
 				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
 				{
 					buildIndex++;
-					System.out.println("Planting");
+					Debug.debug_print("Planting");
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
 				}
 				
@@ -333,43 +325,19 @@ public class Gardener extends Bot
 			}
 			else
 			{
-				System.out.println("can't plant");
+				Debug.debug_print("can't plant");
 				buildIndex++;
 			}
 		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("planting takes: " + (Clock.getBytecodeNum() - bytes));
-		return false;
-	}
-	
-	private static boolean plantTree() throws GameActionException
-	{
-		int bytes = Clock.getBytecodeNum();
-		Direction angle = new Direction(0);
-		int turnCount = 0;
-		while (!rc.canPlantTree(angle) && turnCount++ < 60 && !(Globals.getGardenerCount() > 3 || rc.isCircleOccupiedExceptByThisRobot(rc.getLocation().add(angle, 2.01f), 2.9f)))
-		{
-			angle = angle.rotateLeftDegrees(30);
-		}
-		try {
-			if (rc.canPlantTree(angle))
-			{
-				rc.plantTree(angle);
-				return true;
-			}
-		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("planting takes: " + (Clock.getBytecodeNum() - bytes));
+		Debug.debug_bytecode_end("planting");
 		return false;
 	}
 	
 	private static void waterTrees(MapLocation roost) throws GameActionException
 	{
-		int bytes = Clock.getBytecodeNum();
+		Debug.debug_bytecode_start();
 		TreeInfo[] trees = rc.senseNearbyTrees(2.0f, ally);
 		if (trees.length > 0)
 		{
@@ -383,7 +351,6 @@ public class Gardener extends Bot
 				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
 				rc.water(bestTree.ID);
 			} catch (GameActionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -404,7 +371,7 @@ public class Gardener extends Bot
 			}
 				
 		}
-		System.out.println("watering takes: " + (Clock.getBytecodeNum() - bytes));
+		Debug.debug_bytecode_end("watering");
 	}
 
 }

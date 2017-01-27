@@ -5,13 +5,7 @@ import battlecode.common.*;
 public class Memory extends Bot{
 	
 	private static int min_global = 0;
-	private static int max_global = 49;
-	private static int min_address = 50;
-	private static int max_address = 65;
-	public static int min_ally = 66;
-	private static int max_ally = 577;
-	private static int min_order = 578;
-	private static int max_order = 677;
+	private static int min_order = 50;
 	private static long bits_zero = (long) Math.pow(2, 31);
 	
 	public static int readValue(int index) throws GameActionException {
@@ -37,123 +31,6 @@ public class Memory extends Bot{
 	
 	public static void writeGlobal(int index, int value) throws Exception {
 		writeValue(min_global + index, value);
-	}
-	
-	public static int first_free_ally() throws Exception {
-		int index = 0;
-		for (int i = min_address; i <= max_address; i++){
-			long current_cell = readBits(i);
-			if (current_cell == 4294967295l){
-				index += 32;
-				continue;
-			}
-			long value = 1;
-			for (int j = 0; j < 32; j++){
-				if ((current_cell & value) == 0){
-					return index;
-				}
-				index++;
-				value *= 2;
-			}
-		}
-		throw new Exception("Out of Memory");
-	}
-	
-	public static AllyData readAlly(int index) throws GameActionException {
-		return new AllyData(readBits(index + min_ally));
-	}
-	
-	public static void reserveAllyIndex(int index) throws Exception {
-		if (index > 495) {
-			throw new Exception("Out of Memory");
-		}
-		int cell = (int) Math.floor(index / 32) + min_address;
-		int bit = index % 32;
-		writeBits(cell, readBits(cell) | (int) (Math.pow(2, bit)));
-	}
-	
-	public static void freeAllyMemory(int index) throws GameActionException {
-		writeBits(min_ally + index, 0);
-		int cell = (int) Math.floor(index / 32) + min_address;
-		int bit = index % 32;
-		writeBits(cell, Math.min(readBits(cell) ^ (int) (Math.pow(2, bit)), readBits(cell)));
-	}
-	
-	public static void writeAllyData(int index, AllyData value) throws GameActionException {
-		writeBits(min_ally + index, value.toLong());
-	}
-	
-	public static int findAllyInMemory(MapLocation loc) throws GameActionException{
-		int locNumber = Utilities.targetToInt(loc);
-		for (int i = min_ally; i <= max_ally; i++){
-			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
-				i += 32;
-						continue;
-				}
-			long current_int = readBits(i);
-			if (AllyData.getLocInt(current_int) == locNumber){
-				return i - min_ally;
-			}
-		}
-		return -1;
-	}
-	
-	public static void pruneAllyMemory() throws Exception{
-		System.out.println("Starting defrag");
-		System.out.print("Lumberjack: ");
-		System.out.println(Globals.getLumberjackCount());
-		System.out.print("Scout: ");
-		System.out.println(Globals.getScoutCount());
-		System.out.print("Tank: ");
-		System.out.println(Globals.getTankCount());
-		System.out.print("Archon: ");
-		System.out.println(Globals.getArchonCount());
-		System.out.print("Soldier: ");
-		System.out.println(Globals.getSoldierCount());
-		System.out.print("Gardener: ");
-		System.out.println(Globals.getGardenerCount());
-		System.out.print("Trainer: ");
-		System.out.println(Globals.getTrainerCount());
-		int previous_defragger = Globals.getPreviousDefragger();
-		for (int i = min_ally; i <= max_ally; i++){
-			if (Clock.getBytecodesLeft() < 300) {
-				Clock.yield();
-			}
-			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
-				i += 32;
-				continue;
-			}
-			if (i == memory_loc + min_ally || previous_defragger + min_ally == i){
-				continue;
-			}
-			long current_int = readBits(i);
-			if (current_int != 0){
-				// if the alive variable is correct for the current turn
-				// then it wasnt updated last turn
-				if (AllyData.isAlive(current_int) == ((rc.getRoundNum() % 2) == 1)){
-					System.out.print("Killing: ");
-					System.out.println(Long.toBinaryString(current_int));
-					System.out.println(i);
-					Globals.incrementUnitCount(AllyData.getType(readBits(i)), -1);
-					freeAllyMemory(i - min_ally);
-				}
-			}
-		}
-	}
-	
-	public static void clearAllies() throws GameActionException {
-		for (int i = min_ally + 1; i <= max_ally; i++){
-			writeBits(i, 0);
-		}
-	}
-	
-	
-	public static void updateMyMemory() throws Exception {
-		if (Clock.getBytecodesLeft() < 200) {
-			return;
-		}
-    	AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), (rc.getRoundNum() % 2) == 1);
-    	Memory.writeAllyData(memory_loc, me);
 	}
 	
 	public static void pruneOrders() throws Exception {

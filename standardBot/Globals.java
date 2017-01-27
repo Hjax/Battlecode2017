@@ -5,7 +5,6 @@ import battlecode.common.GameActionException;
 
 public class Globals extends Bot{
 	public static void initEdges() throws Exception {
-		System.out.println("Initializing edges");
 		setTopEdge(-1);
 		setBottomEdge(-1);
 		setLeftEdge(-1);
@@ -27,30 +26,20 @@ public class Globals extends Bot{
 		}
 	}
 	
-	public static void incrementUnitCount(int type, int amount) throws Exception{
-		switch (type){
-			case UnitType.TRAINER:
-				Globals.setTrainerCount(Globals.getTrainerCount() + amount);
-				break;
-			case UnitType.ARCHON:
-				Globals.setArchonCount(Globals.getArchonCount() + amount);
-				break;
-			case UnitType.GARDENER:
-				Globals.setGardenerCount(Globals.getGardenerCount() + amount);
-				break;
-			case UnitType.SOLDIER:
-				Globals.setSoldierCount(Globals.getSoldierCount() + amount);
-				break;
-			case UnitType.LUMBERJACK:
-				Globals.setLumberjackCount(Globals.getLumberjackCount() + amount);
-				break;
-			case UnitType.SCOUT:
-				Globals.setScoutCount(Globals.getScoutCount() + amount);
-				break;
-			case UnitType.TANK:
-				Globals.setTankCount(Globals.getTankCount() + amount);
-				break;							
+	public static void clearUnitCounts() throws Exception {
+		for (int i = 0; i <= 6; i++){
+			int location = 4 + (2 * i) + (rc.getRoundNum() % 2);
+			Memory.writeGlobal(location, 0);
+		}
 	}
+	
+	public static void updateUnitCounts() throws Exception {
+		int location = 4 + (2 * UnitType.getType()) + (rc.getRoundNum() % 2);
+		Memory.writeGlobal(location, Memory.readGlobal(location) + 1);
+	}
+	
+	public static int getUnitCount(int type) throws GameActionException {
+		return Memory.readGlobal(4 + (2 * type) + (1 - rc.getRoundNum() % 2));
 	}
 	
 	public static float getTopEdge() throws GameActionException {
@@ -69,34 +58,6 @@ public class Globals extends Bot{
 		return Memory.readGlobal(3);
 	}
 	
-	public static int getArchonCount() throws GameActionException{
-		return Memory.readGlobal(4);
-	}
-	
-	public static int getGardenerCount() throws GameActionException{
-		return Memory.readGlobal(5);
-	}
-	
-	public static int getTrainerCount() throws GameActionException{
-		return Memory.readGlobal(6);
-	}
-	
-	public static int getSoldierCount() throws GameActionException{
-		return Memory.readGlobal(7);
-	}
-	
-	public static int getLumberjackCount() throws GameActionException{
-		return Memory.readGlobal(8);
-	}
-	
-	public static int getScoutCount() throws GameActionException{
-		return Memory.readGlobal(9);
-	}
-	
-	public static int getTankCount() throws GameActionException{
-		return Memory.readGlobal(10);
-	}
-
 	public static void setTopEdge(float y) throws Exception {
 		Memory.writeGlobal(0, Math.round(y));
 	}
@@ -113,73 +74,27 @@ public class Globals extends Bot{
 		Memory.writeGlobal(3, Math.round(x));
 	}
 	
-	public static void setArchonCount(int n) throws Exception{
-		Memory.writeGlobal(4, n);
-	}
-	
-	public static void setGardenerCount(int n) throws Exception{
-		Memory.writeGlobal(5, n);
-	}
-	
-	public static void setTrainerCount(int n) throws Exception{
-		Memory.writeGlobal(6, n);
-	}
-	
-	public static void setSoldierCount(int n) throws Exception{
-		Memory.writeGlobal(7, n);
-	}
-	
-	public static void setLumberjackCount(int n) throws Exception{
-		Memory.writeGlobal(8, n);
-	}
-	
-	public static void setScoutCount(int n) throws Exception{
-		Memory.writeGlobal(9, n);
-	}
-	
-	public static void setTankCount(int n) throws Exception{
-		Memory.writeGlobal(10, n);
-	}
-	
 	public static int getOrderCount() throws GameActionException{
-		return Memory.readGlobal(11);
+		return Memory.readGlobal(18);
 	}
 	
 	public static void setOrderCount(int n) throws Exception {
-		Memory.writeGlobal(11, n);
+		Memory.writeGlobal(18, n);
 	}
 	
 	public static int getRoundNumber() throws GameActionException {
-		return Memory.readGlobal(12);
+		return Memory.readGlobal(19);
 	}
 	
 	public static void setRoundNumber(int n) throws Exception {
-		Memory.writeGlobal(12, n);
-	}
-	
-	public static void setArchonScore(int m , int n) throws Exception {
-		Memory.writeGlobal(13 + m, n);
-	}
-	
-	public static int getArchonScore(int n) throws GameActionException{
-		return Memory.readGlobal(13 + n);
+		Memory.writeGlobal(19, n);
 	}
 	
 	public static int getStrat() throws GameActionException {
-		return Memory.readGlobal(16);
+		return Memory.readGlobal(20);
 	}
 	
 	public static void setStrat(int n) throws Exception {
-		Memory.writeGlobal(16, n);
+		Memory.writeGlobal(20, n);
 	}
-	
-	public static int getPreviousDefragger() throws GameActionException {
-		return Memory.readGlobal(17);
-	}
-	
-	public static void setPreviousDefragger(int n) throws Exception {
-		Memory.writeGlobal(17, n);
-	}
-	
-
 }

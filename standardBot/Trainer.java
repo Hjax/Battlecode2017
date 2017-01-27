@@ -8,9 +8,6 @@ public class Trainer extends Bot{
 		
 		System.out.println("I'm a trainer!");
 		
-		//for age purposes
-		int builtOn = rc.getRoundNum();
-		
 		//map edges
 		
 		
@@ -53,17 +50,22 @@ public class Trainer extends Bot{
         {
         	
         	startTurn();
+        	
+        	Debug.debug_bytecode_start();
+        	OrderManager.checkCreateOrderCheap();
+        	Debug.debug_bytecode_end("create order");
+        	
         	rc.setIndicatorDot(rc.getLocation(), 0, 100, 100);
         	
 			Utilities.tryMove(neo());
 
-			if (Globals.getSoldierCount() + 3 * Globals.getTankCount() + Globals.getLumberjackCount() + Globals.getScoutCount() < 150)
+			if (Globals.getUnitCount(UnitType.SOLDIER) + 3 * Globals.getUnitCount(UnitType.TANK) + Globals.getUnitCount(UnitType.LUMBERJACK) + Globals.getUnitCount(UnitType.SCOUT) < 150)
 			{
 				// Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        	try 
 	        	{
 	        		
-	        		if (Globals.getOrderCount() == 0 && Globals.getScoutCount() < 4 && rand.nextDouble() < 0.25) {
+	        		if (Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 4 && rand.nextDouble() < 0.25) {
 	        			if (rc.isBuildReady() && rc.getTeamBullets() > RobotType.SCOUT.bulletCost) {
 	        				Utilities.trainUnit(RobotType.SCOUT);
 	        			}
@@ -74,9 +76,9 @@ public class Trainer extends Bot{
 	        		{
 	            		case 1:
 	            		{
-	            			if (Globals.getGardenerCount() < 10)
+	            			if (Globals.getUnitCount(UnitType.GARDENER) < 10)
 	            			{
-	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100 && (Globals.getSoldierCount() * 1 < rc.getTreeCount()))
+	            				if (rc.isBuildReady() && rc.getTeamBullets() > 100 && (Globals.getUnitCount(UnitType.SOLDIER) * 1 < rc.getTreeCount()))
 	            				{
 	            					Utilities.trainUnit(RobotType.SOLDIER);
 	            					buildIndex++;

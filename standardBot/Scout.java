@@ -19,10 +19,9 @@ public class Scout extends Bot{
             {
             	startTurn();
             	
-            	int start = Clock.getBytecodeNum();
+            	Debug.debug_bytecode_start();
             	OrderManager.checkCreateOrderCheap();
-            	System.out.print("Order checking used: ");
-            	System.out.println(Clock.getBytecodeNum() - start);
+            	Debug.debug_bytecode_end("create order");
             	
             	TreeInfo trees[] = rc.senseNearbyTrees();
             	if (trees.length > 0){

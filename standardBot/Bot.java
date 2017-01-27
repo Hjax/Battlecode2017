@@ -1,7 +1,6 @@
 package standardBot;
 
 import java.util.Random;
-
 import battlecode.common.*;
 
 
@@ -9,7 +8,6 @@ public class Bot {
 	public static RobotController rc;
     protected static Team ally;
     protected static Team enemy;
-    protected static int memory_loc = -1;
 	public static MapLocation[] allyArchons;
 	public static MapLocation[] enemyArchons;
 	public static int behaviorType = 0;
@@ -28,60 +26,29 @@ public class Bot {
     	
     	rand = new Random(rc.getID());
     	
-    	if (rc.getType() == RobotType.GARDENER && Globals.getTrainerCount() < Math.floor((Globals.getGardenerCount())/3))
+    	if (rc.getType() == RobotType.GARDENER && Globals.getUnitCount(UnitType.TRAINER) < Math.floor((Globals.getUnitCount(UnitType.GARDENER))/3))
     	{
-    		System.out.println(Globals.getTrainerCount());
-    		System.out.println(Globals.getGardenerCount());
     		behaviorType = 1;
     	}
-    	
-    	// this should put a new bot into memory
-    	try {
-    		memory_loc = Memory.first_free_ally();
-    		Memory.reserveAllyIndex(memory_loc);
-    		AllyData me = new AllyData(UnitType.getType(), rc.getLocation(), (int) rc.getHealth(), rc.getRoundNum() % 2 == 0);
-			Memory.writeAllyData(memory_loc, me);
-			Globals.incrementUnitCount(me.type, 1);
-		} catch (Exception e) {
-			System.out.println("Weird error while updating our location in memory");
-			e.printStackTrace();
-		}
     	
     	try {
 			Globals.updateEdges();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
     
     protected static void startTurn() throws Exception 
     {
-    	
-    	
-    	System.out.println("I live at: " + Integer.toString(memory_loc + Memory.min_ally));
-    	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
-    	{
-    		// NOTE we only set this for units that need it
-    		enemiesMaxRange = rc.senseNearbyRobots(-1, enemy);
-    		OrderManager.updateOrders();
-        	if (OrderManager.shouldMove()){
-        		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
-        	}
-    	}
-    	
-    	Memory.updateMyMemory();
-    	if (rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 100){
-    		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
-    	}
-    	
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
+    		Globals.setRoundNumber(rc.getRoundNum());
+    		Globals.clearUnitCounts();
+    		
     		if (rc.getRoundNum() == 1) {
     			// we went first on the first round, add enemy archon spawns as orders
     			for (int i = 0; i < enemyArchons.length; i++){
     				Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
     			}
-    			Memory.clearAllies();
     		}
     		
         	int win_round = Math.min(100, rc.getRoundLimit() - rc.getRoundNum());
@@ -89,44 +56,56 @@ public class Bot {
         	float victory_point_cost = (float) ((7.5 + (rc.getRoundNum() * 12.5 / 3000)) + (7.5 + ((rc.getRoundNum() + win_round)* 12.5 / 3000))) / 2;
         	float bullets_to_win = (GameConstants.VICTORY_POINTS_TO_WIN - rc.getTeamVictoryPoints()) * victory_point_cost;
         	if (rc.getTreeCount() > 0) {
-        		System.out.println("Winning from vp in " + Float.toString((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()));
-        		System.out.println("Needed bullets: " + Float.toString(bullets_to_win));
-        		System.out.println("Current vp cost: " + Float.toString(victory_point_cost));
+        		Debug.debug_print("Winning from vp in " + Float.toString((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()));
+        		Debug.debug_print("Needed bullets: " + Float.toString(bullets_to_win));
+        		Debug.debug_print("Current vp cost: " + Float.toString(victory_point_cost));
         	}
 
-        	if (rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round)  {
+        	// donate bullets if we can win in 100 rounds, or if we have 1000 bullets, or if theres 150 rounds or less until the end of the game
+        	if ((rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round) || 
+        		(rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 150))  {
         		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
         	}
-    		Globals.setRoundNumber(rc.getRoundNum());
-    		int start = Clock.getBytecodeNum();
-    		Memory.pruneAllyMemory();
-    		System.out.print("Defrag took: ");
-    		System.out.println(Clock.getBytecodeNum() - start);
-    		Globals.setPreviousDefragger(memory_loc);
-    		start = Clock.getBytecodeNum();
+    		
+    		Debug.debug_bytecode_start();
     		Memory.pruneOrders();
-    		System.out.print("Orders took: ");
-    		System.out.println(Clock.getBytecodeNum() - start);
+    		Debug.debug_bytecode_end("orders");
+    		
     		isFirst = true;
     	} else {
     		isFirst = false;
     	}
+    	
+    	
+    	Globals.updateUnitCounts();
+
+    	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
+    	{
+    		// NOTE we only set this for units that need it
+    		enemiesMaxRange = rc.senseNearbyRobots(-1, enemy);
+    		
+    		OrderManager.updateOrders();
+    		
+        	if (OrderManager.shouldMove()){
+        		rc.setIndicatorLine(rc.getLocation(), OrderManager.getTarget(), 255, 255, 255);
+        	}
+    	}
+ 
     }
     
     protected static void endTurn() throws GameActionException {
         Utilities.tryShake();
 		try {
 			Globals.updateEdges();
-			Memory.updateMyMemory();
 		} catch (Exception e) {
-			System.out.println("Error while updating edges / memory");
+			Debug.debug_print("Error while updating edges / memory");
 		}
     	Clock.yield();
     }
     
     public static Direction neo() throws GameActionException
     {
-    	int bytecodeUsed = Clock.getBytecodeNum();
+    	Debug.debug_bytecode_start();
     	
     	double xPressure = (float) (rand.nextDouble() - 0.5) * 20;
     	double yPressure = (float) (rand.nextDouble() - 0.5) * 20;
@@ -161,15 +140,15 @@ public class Bot {
         		if (pathDistance > -0.2 && pathDistance < 4)
         		{
         			double timeToDodge = pathDistance/bullets[bulletCount].getSpeed();
-        			System.out.println("PathOffset: " + pathOffset);
-        			System.out.println("bulletXVel: " + bulletXVel);
-        			System.out.println("relativeX: " + relativeX);
+        			Debug.debug_print("PathOffset: " + pathOffset);
+        			Debug.debug_print("bulletXVel: " + bulletXVel);
+        			Debug.debug_print("relativeX: " + relativeX);
         			xPressure += (bullets[bulletCount].damage * -500 * bulletYVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
         			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
         		}
         	}
-        	System.out.println("AX: " + xPressure);
-        	System.out.println("AY: " + yPressure);
+        	Debug.debug_print("AX: " + xPressure);
+        	Debug.debug_print("AY: " + yPressure);
     	}
     	
     	
@@ -203,8 +182,8 @@ public class Bot {
         		
         	}
     	}
-    	System.out.println("BX: " + xPressure);
-    	System.out.println("BY: " + yPressure);
+    	Debug.debug_print("BX: " + xPressure);
+    	Debug.debug_print("BY: " + yPressure);
     	
     	
     	//don't get too close to other bots
@@ -242,8 +221,8 @@ public class Bot {
 	
     		}
     	}
-    	System.out.println("CX: " + xPressure);
-    	System.out.println("CY: " + yPressure);
+    	Debug.debug_print("CX: " + xPressure);
+    	Debug.debug_print("CY: " + yPressure);
     	
     	//avoid friendly gardeners a lot if not soldier all inning
     	if (Globals.getStrat() != 1)
@@ -260,15 +239,15 @@ public class Bot {
         			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
         		}
         	}
-        	System.out.println("DX: " + xPressure);
-        	System.out.println("DY: " + yPressure);
+        	Debug.debug_print("DX: " + xPressure);
+        	Debug.debug_print("DY: " + yPressure);
     	}
     	
     	
     	//if gardener or archon, avoid trees
     	if (rc.getType() == RobotType.GARDENER && behaviorType == 0 || rc.getType() == RobotType.ARCHON)
     	{
-    		int treeCost = Clock.getBytecodeNum();
+    		Debug.debug_bytecode_start();
     		TreeInfo[] avoidTrees = rc.senseNearbyTrees(7);
         	for (int treeCount = 0; treeCount < avoidTrees.length; treeCount++)
         	{
@@ -278,8 +257,7 @@ public class Bot {
         		xPressure += -40 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
         		yPressure += -40 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
         	} 
-        	treeCost = Clock.getBytecodeNum() - treeCost;
-        	System.out.println("tree pathing costs: " + treeCost);
+        	Debug.debug_bytecode_end("Tree pathing");
     	}
     	
     	//if gardener, move toward nearest edge
@@ -299,7 +277,7 @@ public class Bot {
     				{yPressure += -30;}
     			else if (distFromHighBound > 5)
     				{yPressure += 150;}	
-    			System.out.println("D1Y: " + yPressure);
+    			Debug.debug_print("D1Y: " + yPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
@@ -307,7 +285,7 @@ public class Bot {
     				{yPressure += 30;}
     			else if (distFromLowBound > 5)
     				{yPressure += -150;}	
-    			System.out.println("D2Y: " + yPressure);
+    			Debug.debug_print("D2Y: " + yPressure);
     		}
     		
     		distFromLowBound = 1000;
@@ -319,22 +297,22 @@ public class Bot {
     		
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
-    			System.out.println("right edge at " + Globals.getRightEdge());
+    			Debug.debug_print("right edge at " + Globals.getRightEdge());
     			if (distFromHighBound < 4)
     				{xPressure += -30;}
     			else if (distFromHighBound > 5)
     				{xPressure += 150;}	
-    			System.out.println("D1X: " + xPressure);
+    			Debug.debug_print("D1X: " + xPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
-    			System.out.println("left edge at " + Globals.getLeftEdge());
-    			System.out.println("D2startX: " + xPressure);
+    			Debug.debug_print("left edge at " + Globals.getLeftEdge());
+    			Debug.debug_print("D2startX: " + xPressure);
     			if (distFromLowBound < 4)
     				{xPressure += 30;}
     			else if (distFromLowBound > 5)
     				{xPressure += -150;}	
-    			System.out.println("D2X: " + xPressure);
+    			Debug.debug_print("D2X: " + xPressure);
     		}
     	}
     	
@@ -345,26 +323,26 @@ public class Bot {
     		{
     			relativeY = Globals.getTopEdge() - rc.getLocation().y;
     			yPressure += -4000/(relativeY * relativeY);
-    			System.out.println("D1Y: " + yPressure);
+    			Debug.debug_print("D1Y: " + yPressure);
     		}
     		if (Globals.getBottomEdge() != -1)
     		{
     			relativeY = rc.getLocation().y - Globals.getBottomEdge();
     			yPressure += 4000/(relativeY * relativeY);
-    			System.out.println("D2Y: " + yPressure);
+    			Debug.debug_print("D2Y: " + yPressure);
     		}
     		
     		if (Globals.getRightEdge() != -1)
     		{
     			relativeX = Globals.getRightEdge() - rc.getLocation().x;
     			xPressure += -4000/(relativeX * relativeX);	
-    			System.out.println("D1X: " + xPressure);
+    			Debug.debug_print("D1X: " + xPressure);
     		}
     		if (Globals.getLeftEdge() != -1)
     		{
     			relativeX = rc.getLocation().x - Globals.getLeftEdge();
     			xPressure += 4000/(relativeX * relativeX);
-    			System.out.println("D2X: " + xPressure);
+    			Debug.debug_print("D2X: " + xPressure);
     		}
     	}
     	
@@ -378,8 +356,8 @@ public class Bot {
     		yPressure += 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
     	}
     	
-    	System.out.println("EX: " + xPressure);
-    	System.out.println("EY: " + yPressure);
+    	Debug.debug_print("EX: " + xPressure);
+    	Debug.debug_print("EY: " + yPressure);
     	
     	//avoid previous location - AKA pressure bug
     	if (rc.senseNearbyTrees(1 + rc.getType().bodyRadius, Team.NEUTRAL).length > 0 || rc.senseNearbyTrees(1 + rc.getType().bodyRadius, ally).length > 0)
@@ -396,8 +374,8 @@ public class Bot {
     			float rotateX = (float) (relativeX * Math.cos(Math.PI / 36) - relativeY * Math.sin(Math.PI / 36));
     			float rotateY = (float) (relativeX * Math.sin(Math.PI / 36) + relativeY * Math.cos(Math.PI / 36));
         	
-    			System.out.println("Rotate left x: " + rotateX);
-    			System.out.println("Rotate left y: " + rotateY);
+    			Debug.debug_print("Rotate left x: " + rotateX);
+    			Debug.debug_print("Rotate left y: " + rotateY);
         		
 	        	double perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
 	        	double straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
@@ -408,8 +386,8 @@ public class Bot {
 	        	rotateX = (float) (relativeX * Math.cos(Math.PI / -36) - relativeY * Math.sin(Math.PI / -36));
 	        	rotateY = (float) (relativeX * Math.sin(Math.PI / -36) + relativeY * Math.cos(Math.PI / -36));
 	        	
-	        	System.out.println("Rotate right x: " + rotateX);
-	        	System.out.println("Rotate right y: " + rotateY);
+	        	Debug.debug_print("Rotate right x: " + rotateX);
+	        	Debug.debug_print("Rotate right y: " + rotateY);
 	        		
 	        	perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
 	        	straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
@@ -417,25 +395,24 @@ public class Bot {
 	        	xPressure = straight * relativeX - perp * relativeY;
 	        	yPressure = perp * relativeX + straight * relativeY;
 	        	
-	        	System.out.println("BugX: " + xPressure);
-	        	System.out.println("BugY: " + yPressure);
+	        	Debug.debug_print("BugX: " + xPressure);
+	        	Debug.debug_print("BugY: " + yPressure);
 	        	
 	        	xPressure += -30 * relativeX;
 	        	yPressure += -30 * relativeY;
 	        	
-	        	System.out.println("Relative X: " + relativeX);
-	        	System.out.println("Relative Y: " + relativeY);
+	        	Debug.debug_print("Relative X: " + relativeX);
+	        	Debug.debug_print("Relative Y: " + relativeY);
 	        	
-	        	System.out.println("repelX: " + xPressure);
-	        	System.out.println("repelY: " + yPressure);
+	        	Debug.debug_print("repelX: " + xPressure);
+	        	Debug.debug_print("repelY: " + yPressure);
     		}
     		
         		
         	
     	}
     	
-    	bytecodeUsed = Clock.getBytecodeNum() - bytecodeUsed;
-    	System.out.println("pathing takes: " + bytecodeUsed);
+    	Debug.debug_bytecode_end("neo");
     			
 
     	

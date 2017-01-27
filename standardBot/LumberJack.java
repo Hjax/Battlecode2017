@@ -5,23 +5,20 @@ import battlecode.common.*;
 public class LumberJack extends Bot {
 	public static void Start(RobotController RobCon) throws Exception{
 		
-	    System.out.println("I'm a lumberjack!");
+	    Debug.debug_print("Starting lumberjack code");
 
 	    // The code you want your robot to perform every round should be in this loop
 	    while (true) {
 
 	    	startTurn();
 	    	
-        	int start = Clock.getBytecodeNum();
+        	Debug.debug_bytecode_start();
         	OrderManager.checkCreateOrderCheap();
-        	System.out.print("Order checking used: ");
-        	System.out.println(Clock.getBytecodeNum() - start);
-        	
+        	Debug.debug_bytecode_end("create order");
 	    	
 	        // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
 	        try {
 	        	TreeInfo enemyTrees[] = rc.senseNearbyTrees(-1, enemy);
-	        	RobotInfo gardeners[] = rc.senseNearbyRobots(-1, ally);
 	        	
 	        	TreeInfo neutralTrees[];
 	        	
@@ -39,7 +36,7 @@ public class LumberJack extends Bot {
 	        	{
 	        		Utilities.moveTo(Utilities.melee(neutralTrees[0].getLocation(), 1 + neutralTrees[0].radius));
 	        		neutralTrees = rc.senseNearbyTrees(2, Team.NEUTRAL);
-	        		System.out.println("try to chop neutral tree");
+	        		Debug.debug_print("try to chop neutral tree");
 	        		if (neutralTrees.length != 0) {
 		        		rc.setIndicatorDot(neutralTrees[0].getLocation(), 0, 0, 0);
 		        		if (rc.canChop(neutralTrees[0].ID))
@@ -56,7 +53,7 @@ public class LumberJack extends Bot {
 	        	}
 
 	        } catch (Exception e) {
-	            System.out.println("Lumberjack Exception");
+	            Debug.debug_print("Lumberjack Exception");
 	            e.printStackTrace();
 
 	        }
