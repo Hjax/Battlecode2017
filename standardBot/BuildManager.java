@@ -12,8 +12,10 @@ public class BuildManager extends Bot{
 	
 	private static float unitRatio() throws GameActionException {
 		if (Globals.getStrat() == 2) {
+			System.out.println("Unit ratio of 2");
 			return 2.0f;
 		}
+		System.out.println("Unit ratio of 0.2");
 		return 0.2f;
 	}
 
@@ -69,12 +71,12 @@ public class BuildManager extends Bot{
 	}
 	
 	public static boolean shouldBuildUnit() throws GameActionException {
-		return (treeCount < 5 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount / 2.0) || (Globals.getUnitCount(UnitType.SOLDIER) < (treeCount * unitRatio())) ||
+		return (treeCount < 5 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount / 2.0) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount + 1) * unitRatio())) ||
 				(density > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7));
 	}
 	
 	public static void buildNextUnit() throws GameActionException { 
-		if (BuildManager.getDensity() > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7) && (Globals.getStrat() != AGGRESSIVE | rc.getRoundNum() > 350)){
+		if ((BuildManager.getDensity() > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7)) && (Globals.getStrat() != AGGRESSIVE | rc.getRoundNum() > 350)){
 			Debug.debug_print("Trying to build Lumberjack");
 			trainUnit(RobotType.LUMBERJACK);
 		} else {

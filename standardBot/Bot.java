@@ -52,6 +52,9 @@ public class Bot {
     		}
     	
     		BuildManager.checkDonateVP();
+    		if (Globals.getStrat() == BuildManager.UNDECIDED && rc.getRoundNum() >= 2) {
+    			BuildManager.decideBuild();
+    		}
     		
     		Debug.debug_bytecode_start();
     		Memory.pruneOrders();

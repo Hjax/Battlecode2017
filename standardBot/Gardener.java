@@ -88,16 +88,20 @@ public class Gardener extends Bot
     				Debug.debug_print("return to roost");
     				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
-    			} else if (roost != null) {
-    				BuildManager.executeBuild();
     			} else {
     				roost = rc.getLocation();
+    			}
+    			
+    			if (roost != null) {
+    				BuildManager.executeBuild();
     			}
     		}
         	catch (Exception e) {
         		Debug.debug_print("Gardener Exception");
         		e.printStackTrace();
         	}
+    		
+    		
     		
     		Debug.debug_print("end turn");
     		
