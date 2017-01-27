@@ -13,7 +13,6 @@ public class Globals extends Bot{
 	}
 	
 	public static void updateEdges() throws Exception {
-		System.out.println("Updating edges");
 		if (getTopEdge() == -1){
 			setTopEdge(Utilities.edgeInDirection(Direction.getNorth()));
 		}

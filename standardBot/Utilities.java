@@ -219,17 +219,13 @@ public class Utilities extends Bot{
 	// returns the closest edge in a given direction, -1 otherwise 
 	public static float edgeInDirection(Direction dir) throws GameActionException {
 		float max_dist = rc.getType().sensorRadius - 0.01f;
-		System.out.println("map check1");
-		System.out.println(dir.getAngleDegrees());
 		if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
 			return -1;
 		}
-		System.out.println("map check1 done");
 		float resolution = rc.getType().sensorRadius / 2;
 		max_dist -= resolution;
 		while (resolution > 0.125) {
 			resolution /= 2;
-			System.out.println("map check2+");
 			if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
 				max_dist += resolution;
 			} else {
@@ -282,6 +278,7 @@ public class Utilities extends Bot{
 			if (rc.canShake(trees[countTree].ID) && trees[countTree].containedBullets > 0)
 			{
 				rc.shake(trees[countTree].ID);
+				return;
 			}
 		}
 	}

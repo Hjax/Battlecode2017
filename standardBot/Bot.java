@@ -117,13 +117,13 @@ public class Bot {
     }
     
     protected static void endTurn() throws GameActionException {
-    	Memory.updateMyMemory();
 		try {
 			Globals.updateEdges();
 		} catch (Exception e) {
 			System.out.println("Error while updating edges");
 		}
         Utilities.tryShake();
+    	Memory.updateMyMemory();
     	Clock.yield();
     }
     

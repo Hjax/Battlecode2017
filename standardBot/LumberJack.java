@@ -52,9 +52,6 @@ public class LumberJack extends Bot {
 	        	{
 	        		 rc.strike();
 	        	}
-	            
-
-
 
 	        } catch (Exception e) {
 	            System.out.println("Lumberjack Exception");

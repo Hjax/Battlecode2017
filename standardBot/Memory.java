@@ -119,6 +119,9 @@ public class Memory extends Bot{
 		System.out.print("Trainer: ");
 		System.out.println(Globals.getTrainerCount());
 		for (int i = min_ally; i <= max_ally; i++){
+			if (Clock.getBytecodesLeft() < 300) {
+				Clock.yield();
+			}
 			if (readBits(min_address + (int) Math.floor((i - min_ally) / 32)) == bits_zero){
 				i += 32;
 				continue;
@@ -130,7 +133,6 @@ public class Memory extends Bot{
 			if (current_int != 0){
 				// if the alive variable is correct for the current turn
 				// then it wasnt updated last turn
-				// NOTE freeing memory does not write zeroes to the old location
 				if (AllyData.isAlive(current_int) == ((rc.getRoundNum() % 2) == 1)){
 					System.out.print("Killing: ");
 					System.out.println(Long.toBinaryString(current_int));
@@ -149,10 +151,13 @@ public class Memory extends Bot{
 	}
 	
 	public static void updateMyMemory() throws GameActionException {
+		if (Clock.getBytecodesLeft() < 250) {
+			return;
+		}
     	AllyData me = Memory.readAlly(memory_loc);
     	me.location = rc.getLocation();
-    	me.alive = (rc.getRoundNum() % 2) == 1;
     	me.hp = (int) rc.getHealth();  	
+    	me.alive = (rc.getRoundNum() % 2) == 1;
     	Memory.writeAllyData(memory_loc, me);
 	}
 	
@@ -167,8 +172,6 @@ public class Memory extends Bot{
 		for (int i = min_order; i <= min_order + old_orders; i++){
 			total_orders++;
 			long current = readBits(i);
-			System.out.print("looking at :");
-			System.out.println(Long.toBinaryString(current));
 			if (current == bits_zero){
 				break;
 			}
