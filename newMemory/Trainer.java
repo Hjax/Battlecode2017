@@ -8,9 +8,6 @@ public class Trainer extends Bot{
 		
 		System.out.println("I'm a trainer!");
 		
-		//for age purposes
-		int builtOn = rc.getRoundNum();
-		
 		//map edges
 		
 		

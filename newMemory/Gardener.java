@@ -344,28 +344,6 @@ public class Gardener extends Bot
 		return false;
 	}
 	
-	private static boolean plantTree() throws GameActionException
-	{
-		Direction angle = new Direction(0);
-		int turnCount = 0;
-		while (!rc.canPlantTree(angle) && turnCount++ < 60 && !(Globals.getUnitCount(UnitType.GARDENER) > 3 || rc.isCircleOccupiedExceptByThisRobot(rc.getLocation().add(angle, 2.01f), 2.9f)))
-		{
-			angle = angle.rotateLeftDegrees(30);
-		}
-		try {
-			if (rc.canPlantTree(angle))
-			{
-				rc.plantTree(angle);
-				return true;
-			}
-		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Debug.debug_bytecode_end("planting");
-		return false;
-	}
-	
 	private static void waterTrees(MapLocation roost) throws GameActionException
 	{
 		Debug.debug_bytecode_start();

@@ -7,26 +7,6 @@ public class Archon extends Bot{
 		
         Debug.debug_print("Starting Archon Code");
         boolean tryBuild = false;
-        
-        // define build order
-     	// 0 = gardener
-     	// 1 = trainer
-     	int build[] = new int[11];
-     	build[0] = 0;
-     	build[1] = 0;
-     	build[2] = 1;
-     	build[3] = 0;
-     	build[4] = 0;
-     	build[5] = 0;
-     	build[6] = 1;
-     	build[7] = 0;
-     	build[8] = 1;
-     	build[9] = 1;
-     	build[10] = 1;
-     	
-     	int buildLength = 10;
-     	int buildIndex = 0;
-     	
      	
      	try {
 			Globals.initEdges();

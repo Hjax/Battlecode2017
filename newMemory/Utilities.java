@@ -37,7 +37,6 @@ public class Utilities extends Bot{
         }
 
         // Now try a bunch of similar angles
-        boolean moved = false;
         int currentCheck = 1;
         Direction tryLeft = dir;
         Direction tryRight = dir;
