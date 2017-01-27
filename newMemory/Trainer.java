@@ -53,6 +53,11 @@ public class Trainer extends Bot{
         {
         	
         	startTurn();
+        	
+        	Debug.debug_bytecode_start();
+        	OrderManager.checkCreateOrderCheap();
+        	Debug.debug_bytecode_end("create order");
+        	
         	rc.setIndicatorDot(rc.getLocation(), 0, 100, 100);
         	
 			Utilities.tryMove(neo());

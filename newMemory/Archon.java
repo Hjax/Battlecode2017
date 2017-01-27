@@ -5,7 +5,7 @@ import battlecode.common.*;
 public class Archon extends Bot{
 	public static void Start(RobotController RobCon) throws GameActionException{
 		
-        System.out.println("I'm an archon!");
+        Debug.debug_print("Starting Archon Code");
         boolean tryBuild = false;
         
         // define build order
@@ -55,11 +55,9 @@ public class Archon extends Bot{
             {
             	startTurn();
             	
-            	int start = Clock.getBytecodeNum();
+            	Debug.debug_bytecode_start();
             	OrderManager.checkCreateOrderCheap();
-            	System.out.print("Order checking used: ");
-            	System.out.println(Clock.getBytecodeNum() - start);
-            	
+            	Debug.debug_bytecode_end("create orders");
             	
             	TreeInfo trees[] = rc.senseNearbyTrees();
             	if (trees.length > 0){
@@ -93,7 +91,7 @@ public class Archon extends Bot{
 
 
             } catch (Exception e) {
-            	System.out.println("Archon Exception");
+            	Debug.debug_print("Exception in Archon mainloop");
             	e.printStackTrace();
             	}
             endTurn();
@@ -128,11 +126,6 @@ public class Archon extends Bot{
 			topDist = Globals.getTopEdge() - rc.getLocation().y;
 		}
 		
-		System.out.println("left = " + leftDist);
-		System.out.println("right = " + rightDist);
-		System.out.println("top = " + topDist);
-		System.out.println("bottom = " + bottomDist);
-		
 		
 		if (leftDist < rightDist)
 		{
@@ -140,23 +133,20 @@ public class Archon extends Bot{
 				{
 					if (leftDist < bottomDist)
 					{
-						System.out.println("a");
 						angle = new Direction((float)Math.PI);
 					}
 					else
 						{
-							System.out.println("b");
+
 							angle = new Direction((float)Math.PI * 3 / 2);
 						}
 				}
 			else if (leftDist < topDist)
 			{
-				System.out.println("c");
 				angle = new Direction((float)Math.PI);
 			}
 			else
 				{
-				System.out.println("d");
 					angle = new Direction((float)Math.PI * 1 / 2);
 				}
 		}
@@ -166,33 +156,24 @@ public class Archon extends Bot{
 				{
 					if (rightDist < bottomDist)
 					{
-						System.out.println("e");
 						angle = new Direction(0);
 					}
 					else
 						{
-							System.out.println("f");
 							angle = new Direction((float)Math.PI * 3 / 2);
 						}
 				}
 			else if (rightDist < topDist)
 			{
-				System.out.println("g");
 				angle = new Direction(0);
 			}
 			else
 				{
-					System.out.println("h");
 					angle = new Direction((float)Math.PI * 1 / 2);
 				}
 		}
 		
-		System.out.println("building at angle " + angle.getAngleDegrees());
-			
-			
-			
-		
-		
+		Debug.debug_print("building at angle " + angle.getAngleDegrees());
 		
 		int turnCount = 0;
 		while (!rc.canHireGardener(angle) && turnCount++ < 90)
@@ -202,8 +183,8 @@ public class Archon extends Bot{
 		try {
 			if (rc.canHireGardener(angle))
 			{
-				System.out.println("built gardener: " + angle.getAngleDegrees());
-				System.out.println("(" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
+				Debug.debug_print("built gardener: " + angle.getAngleDegrees());
+				Debug.debug_print("(" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
 				rc.hireGardener(angle);
 			}
 		} catch (GameActionException e) {

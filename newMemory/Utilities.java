@@ -26,7 +26,7 @@ public class Utilities extends Bot{
      * @throws GameActionException
      */
     static boolean tryMove(Direction dir, float degreeOffset, int checksPerSide) throws GameActionException {
-    	int bytes = Clock.getBytecodeNum();
+    	Debug.debug_bytecode_start();
     	float distance = rc.getType().strideRadius;
         // First, try intended direction
         if (rc.canMove(dir) && rc.senseNearbyBullets(rc.getLocation().add(dir, distance), rc.getType().bodyRadius).length == 0) 
@@ -53,8 +53,7 @@ public class Utilities extends Bot{
         		{
         			Bot.lastPosition = rc.getLocation();
         			rc.move(tryLeft);
-        			bytes = Clock.getBytecodeNum() - bytes;
-        			System.out.println("moving used " + bytes);
+        			Debug.debug_bytecode_end("moving");
         			return true;
         		}
         		// Try the offset on the right side
@@ -63,8 +62,7 @@ public class Utilities extends Bot{
         		{
         			Bot.lastPosition = rc.getLocation();
         			rc.move(tryRight);
-        			bytes = Clock.getBytecodeNum() - bytes;
-        			System.out.println("moving used " + bytes);
+        			Debug.debug_bytecode_end("moving");
         			return true;
         		}
         		// No move performed, try slightly further
@@ -76,9 +74,7 @@ public class Utilities extends Bot{
         }
 
         // A move never happened, so return false.
-        bytes = Clock.getBytecodeNum() - bytes;
-		System.out.println("moving used " + bytes);
-		tryShake();
+        Debug.debug_bytecode_end("moving");
         return false;
     }
 
@@ -100,7 +96,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < friend.getType().bodyRadius) {
-            	System.out.println("hitting ally");
+            	Debug.debug_print("hitting ally");
             	return true;
             }
     	}
@@ -119,7 +115,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
-            	System.out.println("hitting allied tree");
+            	Debug.debug_print("hitting allied tree");
 
 					rc.setIndicatorDot(friend.getLocation(), 0, 0, 0);
 
@@ -142,7 +138,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
-            	System.out.println("hitting neutral tree");
+            	Debug.debug_print("hitting neutral tree");
 
 					rc.setIndicatorDot(friend.getLocation(), 255, 255, 255);
 
@@ -234,7 +230,7 @@ public class Utilities extends Bot{
 		}
 		if (Math.round(dir.getAngleDegrees()) == Math.round(Direction.getNorth().getAngleDegrees()) ||
 				Math.round(dir.getAngleDegrees()) == Math.round(Direction.getSouth().getAngleDegrees())) {
-			System.out.println(max_dist);
+			Debug.debug_print(max_dist);
 			return rc.getLocation().add(dir, max_dist).y;
 		}
 		return rc.getLocation().add(dir, max_dist).x;
@@ -308,8 +304,8 @@ public class Utilities extends Bot{
 	
 	public static MapLocation magnitudePressureDodge(BulletInfo[] allBullets, MapLocation destination)
 	{
-		System.out.println("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
-		System.out.println("BULLETS PASSED: " + allBullets.length);
+		Debug.debug_print("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		Debug.debug_print("BULLETS PASSED: " + allBullets.length);
 		
 		BulletInfo[] bullets = new BulletInfo[allBullets.length];
 		int relevantBullets = 0;
@@ -334,8 +330,8 @@ public class Utilities extends Bot{
 			}
 		}
 		
-		System.out.println("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
-		System.out.println("BULLETS LEFT: " + relevantBullets);
+		Debug.debug_print("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		Debug.debug_print("BULLETS LEFT: " + relevantBullets);
 		
 		
 		
@@ -413,8 +409,8 @@ public class Utilities extends Bot{
 				y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
 			}
 			pressureMultiplier = pressureMultiplier * 0.95f;
-			System.out.println("bytes left: " + Clock.getBytecodesLeft());
-			System.out.println((Clock.getBytecodesLeft() - 1000) / bullets.length);
+			Debug.debug_print("bytes left: " + Clock.getBytecodesLeft());
+			Debug.debug_print((Clock.getBytecodesLeft() - 1000) / bullets.length);
 		}
 		return new MapLocation(x, y);
 	}
@@ -450,7 +446,7 @@ public class Utilities extends Bot{
 	}
 
 	public static float getDensity() throws GameActionException{
-		int bytes = Clock.getBytecodeNum();
+		Debug.debug_bytecode_start();
 		float total = 0;
 		TreeInfo blockingTree = null;
 		for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
@@ -476,8 +472,8 @@ public class Utilities extends Bot{
 				}
 			}
 		}
-		System.out.println("checking density: " + (Clock.getBytecodeNum() - bytes));
-		System.out.println("density is: " + total);
+		Debug.debug_bytecode_end("Tree density");
+		Debug.debug_print("density is: " + total);
 		return total;
 	}
 	
