@@ -7,7 +7,7 @@ public class Debug {
 	public static int bytecode;
 
 	public static void debug_print(String output) {
-		System.out.println(output);
+		System.out.println("[s]\t" + output);
 	}
 	
 	public static void debug_print(int output) {
@@ -23,7 +23,7 @@ public class Debug {
 	}
 	
 	public static void debug_bytecode_end(String message) {
-		System.out.println("Timer with label: " + message + " used " + Integer.toString(Clock.getBytecodeNum() - bytecode) + " bytecode.");
+		System.out.println("[b]\t" + message + " used: " + Integer.toString(Clock.getBytecodeNum() - bytecode) + " bytecode.");
 	}
 	
 	
