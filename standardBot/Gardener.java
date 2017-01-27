@@ -31,7 +31,7 @@ public class Gardener extends Bot
 		// 0 = greedy/standard
 		// 1 = soldier aggro into fast tank
 		
-		if (Globals.getStrat() == 1)
+		if (Globals.getStrat() == BuildManager.AGGRESSIVE)
 		{
 			build[0] = 1;
 			build[1] = 1;
@@ -125,7 +125,7 @@ public class Gardener extends Bot
     						roost = rc.getLocation().add(neo(), 1.0f);
     					}
     					
-    					if (Globals.getStrat() == 0)
+    					if (Globals.getStrat() == BuildManager.STANDARD)
     					{
     						plantSpacedTree(roost);
     						buildIndex = 0;
@@ -137,7 +137,7 @@ public class Gardener extends Bot
     					}
     					
     				}
-    			if (openerIndex == 1 && Globals.getStrat() == 0 && rc.isBuildReady())
+    			if (openerIndex == 1 && Globals.getStrat() == BuildManager.STANDARD && rc.isBuildReady())
 				{
 					Utilities.trainUnit(RobotType.SOLDIER);
 					Debug.debug_print("trying to build a soldier");
@@ -177,7 +177,7 @@ public class Gardener extends Bot
 				}
     			
     			//dynamic lumberjacks
-    			if (dynamicLumberjack || (settled && rc.getRoundNum() > 4 && Globals.getStrat() == 0 && Bot.rand.nextDouble() * (1 + Globals.getUnitCount(UnitType.LUMBERJACK)) < Utilities.getDensity() - 0.4))
+    			if (dynamicLumberjack || (settled && rc.getRoundNum() > 4 && Globals.getStrat() == BuildManager.STANDARD && Bot.rand.nextDouble() * (1 + Globals.getUnitCount(UnitType.LUMBERJACK)) < Utilities.getDensity() - 0.4))
     			{
     				Debug.debug_print("dynamically building lumberjack");
     				dynamicLumberjack = true;

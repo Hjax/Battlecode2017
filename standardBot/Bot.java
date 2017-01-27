@@ -225,7 +225,7 @@ public class Bot {
     	Debug.debug_print("CY: " + yPressure);
     	
     	//avoid friendly gardeners a lot if not soldier all inning
-    	if (Globals.getStrat() != 1)
+    	if (Globals.getStrat() != BuildManager.AGGRESSIVE)
     	{
     		avoidBots = rc.senseNearbyRobots(2 + rc.getType().bodyRadius);
         	for (int botCount = 0; botCount < avoidBots.length; botCount++)

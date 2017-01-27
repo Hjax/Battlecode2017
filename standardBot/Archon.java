@@ -12,7 +12,9 @@ public class Archon extends Bot{
         	Debug.debug_print("I am stuck!");
         }
         
+        
      	try {
+            BuildManager.decideBuild();
 			Globals.initEdges();
 			Globals.updateEdges();
 		} catch (Exception e1) {
