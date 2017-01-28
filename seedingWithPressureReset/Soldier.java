@@ -42,7 +42,7 @@ public class Soldier extends Bot{
                         // And we have enough bullets, and haven't attacked yet this turn...;
                 		if (!Utilities.willHitAlly(target)) 
                 		{
-                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 4.5f)))
+                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 6.5f)))
                 			{
                     			rc.firePentadShot(rc.getLocation().directionTo(target));
                     			break;

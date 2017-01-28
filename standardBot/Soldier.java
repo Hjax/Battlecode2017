@@ -15,7 +15,7 @@ public class Soldier extends Bot{
             	startTurn();
                 
             	// dodge
-            	BulletInfo[] bullets = rc.senseNearbyBullets(4);
+            	BulletInfo[] bullets = rc.senseNearbyBullets(9);
             	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
             		{
             			if (enemiesMaxRange.length > 0)
@@ -42,13 +42,25 @@ public class Soldier extends Bot{
                         // And we have enough bullets, and haven't attacked yet this turn...;
                 		if (!Utilities.willHitAlly(target)) 
                 		{
-                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 4.5f)))
+                			Direction angle = rc.getLocation().directionTo(target);
+                			angle = angle.rotateRightRads((float) (Math.asin(0.1 / rc.getLocation().distanceTo(target))));
+                			target = rc.getLocation().add(angle, rc.getLocation().distanceTo(target));
+                			rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
+                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 6.5f)))
                 			{
-                    			rc.firePentadShot(rc.getLocation().directionTo(target));
+                				if (rc.getTeamBullets() < 7)
+                				{
+                					rc.fireTriadShot(angle);
+                				}
+                				else
+                				{
+                					rc.firePentadShot(angle);
+                				}
+                    			
                     			break;
                     		} else {
                             	// ...Then fire a bullet in the direction of the enemy.
-                            	rc.fireSingleShot(rc.getLocation().directionTo(target));
+                            	rc.fireSingleShot(angle);
                             	break;
                     		}
                 		}

@@ -13,7 +13,7 @@ public class Utilities extends Bot{
      */
     static boolean tryMove(Direction dir) throws GameActionException 
     {    	
-        return tryMove(dir,1,20);
+        return tryMove(dir,1,15);
     }
 
     /**
@@ -28,6 +28,8 @@ public class Utilities extends Bot{
     static boolean tryMove(Direction dir, float degreeOffset, int checksPerSide) throws GameActionException {
     	Debug.debug_bytecode_start();
     	float distance = rc.getType().strideRadius;
+    	
+    	rc.setIndicatorLine(rc.getLocation(), rc.getLocation().add(dir, distance + rc.getType().bodyRadius), 0, 255, 0);
         // First, try intended direction
         if (rc.canMove(dir) && rc.senseNearbyBullets(rc.getLocation().add(dir, distance), rc.getType().bodyRadius).length == 0) 
         {
@@ -48,25 +50,31 @@ public class Utilities extends Bot{
         	{
         		// Try the offset of the left side
         		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
+        		rc.setIndicatorDot(rc.getLocation().add(tryLeft, distance + rc.getType().bodyRadius), 0, 0, 255);
         		if(rc.canMove(tryLeft) && rc.senseNearbyBullets(rc.getLocation().add(tryLeft, distance), rc.getType().bodyRadius).length == 0) 
         		{
         			Bot.lastPosition = rc.getLocation();
+      
         			rc.move(tryLeft);
         			Debug.debug_bytecode_end("moving");
+
         			return true;
         		}
         		// Try the offset on the right side
         		tryRight = tryRight.rotateRightDegrees(degreeOffset);
+        		rc.setIndicatorDot(rc.getLocation().add(tryRight, distance + rc.getType().bodyRadius), 0, 0, 255);
         		if(rc.canMove(tryRight) && rc.senseNearbyBullets(rc.getLocation().add(tryRight, distance), rc.getType().bodyRadius).length == 0) 
         		{
         			Bot.lastPosition = rc.getLocation();
+        			
         			rc.move(tryRight);
         			Debug.debug_bytecode_end("moving");
+        			
         			return true;
         		}
         		// No move performed, try slightly further
         		currentCheck++;
-        		degreeOffset = degreeOffset * 1.15f;
+        		degreeOffset = degreeOffset * 1.1f;
         	}
         	distance -= 0.4f;
         	currentCheck = 1;
@@ -152,7 +160,7 @@ public class Utilities extends Bot{
     public static boolean canMoveInto(BulletInfo bullet)
     {
     	
-    	float checkRadius = rc.getType().bodyRadius + rc.getType().strideRadius;
+    	float checkRadius = rc.getType().bodyRadius + rc.getType().strideRadius + 0.5f;
     	
     	//clean out false positives preemptively
     	 Direction directionToRobot = bullet.getLocation().directionTo(rc.getLocation());
@@ -296,12 +304,12 @@ public class Utilities extends Bot{
 		return rc.getLocation();
 	}
 	
-	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets)
+	public static MapLocation magnitudePressureDodge(BulletInfo[] bullets) throws GameActionException
 	{
 		return magnitudePressureDodge(bullets, null);
 	}
 	
-	public static MapLocation magnitudePressureDodge(BulletInfo[] allBullets, MapLocation destination)
+	public static MapLocation magnitudePressureDodge(BulletInfo[] allBullets, MapLocation destination) throws GameActionException
 	{
 		Debug.debug_print("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
 		Debug.debug_print("BULLETS PASSED: " + allBullets.length);
@@ -373,7 +381,7 @@ public class Utilities extends Bot{
 				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
 				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
 				
-				if (pathOffset > -1.2 && pathOffset < 1.2 && pathDistance > -0.5)
+				if (pathOffset > -1 && pathOffset < 1 && pathDistance > -0.5)
 				{
 					if (pathDistance > 0)
 					{
@@ -382,11 +390,11 @@ public class Utilities extends Bot{
 						yPres += bulletYVel * 2.5f / cubed;
 					}
 					
-					if (pathOffset > -1 && pathOffset < 1 && pathDistance < 1.5 && Math.abs(pathOffset) > 0.00)
+					if (pathOffset > -0.5 && pathOffset < 0.5 && pathDistance < 3 && Math.abs(pathOffset) > 0.05)
 					{
 						cubed = (float) Math.pow((pathOffset + Math.copySign(0.4, pathOffset)), 3);
-						xPres += bulletYVel * -1 / cubed / (Math.abs(pathDistance) + 0.8);
-						yPres += bulletXVel / cubed / (Math.abs(pathDistance) + 0.8);
+						xPres += bulletYVel * -2 / cubed / (Math.abs(pathDistance) + 0.1) / (Math.abs(pathDistance) + 0.8);
+						yPres += bulletXVel * 2 / cubed / (Math.abs(pathDistance) + 0.1) / (Math.abs(pathDistance) + 0.8);
 					}
 				}
 				
@@ -394,8 +402,8 @@ public class Utilities extends Bot{
 			}
 			if (destination != null)
 			{
-				xPres += Math.copySign(0.1, destX - x);
-				yPres += Math.copySign(0.1, destY - y);
+				xPres += Math.copySign(0.0, destX - x);
+				yPres += Math.copySign(0.0, destY - y);
 			}
 			if (xPres != 0 || yPres != 0)
 			{
@@ -420,6 +428,7 @@ public class Utilities extends Bot{
 					y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
 				}
 				pressureMultiplier = pressureMultiplier * 0.6f;
+				rc.setIndicatorDot(new MapLocation(x,y), 133, 133, 133);
 			}
 			else
 			{
