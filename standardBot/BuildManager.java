@@ -62,87 +62,100 @@ public class BuildManager extends Bot{
 		}
 	}
 	
-	public static boolean shouldBuildLumberjack() throws GameActionException {
-		return (density > 0.4 || (rc.getTreeCount() >= 20 && Globals.getUnitCount(UnitType.LUMBERJACK) < treeCount / 7));
+	public static float scoreLumberjack() throws GameActionException {
+		return density * 0.8f + (Globals.getUnitCount(UnitType.LUMBERJACK) / 20) * 0.2f;
 	}
 	
-	public static boolean shouldBuildSoldier() throws GameActionException {
+	public static float scoreSoldier() throws GameActionException {
+		if (Globals.getUnitCount(UnitType.SOLDIER) == 0) {
+			return 1.0f;
+		}
 		if (Globals.getStrat() == AGGRESSIVE) {
-			return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount + 1) * 2)));
+			return Math.min(((float) treeCount + 4) / Globals.getUnitCount(UnitType.SOLDIER), 1.0f);
 		} else {
-			return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * 0.3)));
+			return Math.min(((float) treeCount / 2.0f) / Globals.getUnitCount(UnitType.SOLDIER), 1.0f);
 		}
-		
 	}
 	
-	public static boolean shouldBuildTank() throws GameActionException {
-		return (treeCount > 60 || (treeCount > 35 && Globals.getUnitCount(UnitType.TANK) < (treeCount / 4.0)));
+	public static float scoreTank() throws GameActionException {
+		return (Math.min(treeCount / 60.0f, 1.0f));
 	}
 	
-	public static boolean shouldBuildScout() throws GameActionException {
-		return (Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 6);
+	public static float scoreScout() throws GameActionException {
+		return ((Globals.getUnitCount(UnitType.SCOUT)== 0) ? 1:0) * 0.1f + ((Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 6) ? 1:0) * 0.9f;
 	}
 	
-	public static boolean shouldBuildGardner() throws GameActionException {
+	public static float scoreGardener() throws GameActionException {
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
-		if (Globals.getUnitCount(UnitType.GARDENER) == 1 && Globals.getStrat() == AGGRESSIVE && rc.getRoundNum() < 500) {
-			return false;
+		if (gcount == 0) {
+			return 1.0f;
 		}
-		if (rc.getRoundNum() > 30 || (gcount == 0 && isFirst)){
-			if (gcount < 1) {
-				return true;
-			} else if ((treeCount / gcount >= 2) && gcount < 8) {
-				return true;
-			} else if (((float) treeCount / (float) gcount) > 6) {
-				return true;
-			}
-		}
-		return false;
+		return (Math.min(((float) treeCount) / (gcount * 4), 1.0f));
 	}
+	
 	
 	public static boolean buildNextUnit() throws Exception { 
+		
+		float soldier_score = scoreSoldier();
+		float tank_score = scoreTank();
+		float scout_score = scoreScout();
+		float lumberjack_score = scoreLumberjack();
+		float gardener_score = scoreGardener();
+		
+		Debug.debug_print("Soldier score: " + Float.toString(soldier_score));
+		Debug.debug_print("Tank score: " + Float.toString(tank_score));
+		Debug.debug_print("Scout score: " + Float.toString(scout_score));
+		Debug.debug_print("Lumberjack score: " + Float.toString(lumberjack_score));
+		Debug.debug_print("Gardener score: " + Float.toString(gardener_score));
+		
+		float max_score = Math.max(Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score), gardener_score);
+
 		Debug.debug_print("Trying to build a unit");
+		
 		if (rc.isBuildReady() && treesPlanted < 8) {
 			Debug.debug_print("Ready to build");
+			
 			if (rc.getType() == RobotType.ARCHON) {
-				if ((Globals.getUnitCount(UnitType.GARDENER) < 1) || (!shouldBuildSoldier() && !shouldBuildTank() && !shouldBuildLumberjack() && !shouldBuildScout())){
+				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) {
 					Debug.debug_print("we need a gardener");
-					if (shouldBuildGardner() && rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
+					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
 						Debug.debug_print("Trying to build gardener");
 						trainGardener();
 						return true;
 					}
 				}
 				return false;
-			}
+				}
 			
-			if (shouldBuildSoldier()) {
+			if (Math.abs(Math.max(max_score, soldier_score) - soldier_score) < 0.001f) {
 				System.out.println("I want to build a soldier");
 				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost){
 					Debug.debug_print("Trying to build SOLDIER");
 					trainUnit(RobotType.SOLDIER);
+					return true;
 				}
-				return true;
 			}
-			else if (shouldBuildLumberjack()){
-				if (rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
-					Debug.debug_print("Trying to build lumberjack");
-					trainUnit(RobotType.LUMBERJACK);
-				}
-				return true;
-
-			} else if (shouldBuildTank()) {
-				if (rc.getTeamBullets() > RobotType.TANK.bulletCost){
-					Debug.debug_print("Trying to build tank");
-					trainUnit(RobotType.TANK);
-				}
-				return true;
-			} else if (shouldBuildScout()){
+			else if (Math.abs(Math.max(max_score, scout_score) - scout_score) < 0.001f) {
 				if (rc.getTeamBullets() > RobotType.SCOUT.bulletCost){
 					Debug.debug_print("Trying to build scout");
 					trainUnit(RobotType.SCOUT);
+					return true;
 				}
-				return true;
+			}
+			else if (Math.abs(Math.max(max_score, lumberjack_score) - lumberjack_score) < 0.001f) {
+				if (rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
+					Debug.debug_print("Trying to build lumberjack");
+					trainUnit(RobotType.LUMBERJACK);
+					return true;
+				}
+			}
+
+			else if (Math.abs(Math.max(max_score, tank_score) - tank_score) < 0.001f) {
+				if (rc.getTeamBullets() > RobotType.TANK.bulletCost){
+					Debug.debug_print("Trying to build tank");
+					trainUnit(RobotType.TANK);
+					return true;
+				}
 			}	
 		}
 		return false;
