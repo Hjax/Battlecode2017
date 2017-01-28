@@ -47,9 +47,13 @@ public class LumberJack extends Bot {
 
 	           //make sure there are no allies in strike range
 	        	RobotInfo[] allies = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, ally);
+	        	TreeInfo[] allyTrees = rc.senseNearbyTrees(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, ally);
+	        	RobotInfo[] enemies = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
 	        	if (allies.length == 0 && rc.canStrike())
 	        	{
-	        		 rc.strike();
+	        		if (allyTrees.length == 0 || enemies.length > 0){
+	        			rc.strike();
+	        		}
 	        	}
 
 	        } catch (Exception e) {
