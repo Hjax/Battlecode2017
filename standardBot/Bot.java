@@ -65,7 +65,10 @@ public class Bot {
     		isFirst = false;
     	}
     	
-    	BuildManager.update();
+    	if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.GARDENER) {
+    		BuildManager.update();
+    	}
+
     	Globals.updateUnitCounts();
 
     	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
