@@ -9,6 +9,7 @@ public class BuildManager extends Bot{
 	public static int AGGRESSIVE = 2;
 	private static int treeCount = 0;
 	private static float density = 0;
+	private static int treesPlanted = 0;
 
 	public static boolean isStuck() {
 		Direction angle = new Direction(0);
@@ -51,7 +52,7 @@ public class BuildManager extends Bot{
 	
 	public static void executeBuild() throws Exception {
 		if (!buildNextUnit()) {
-			if (UnitType.getType() == UnitType.TRAINER){
+			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
 				}
 			if (rc.getTeamBullets() >= 50 && rc.isBuildReady()) {
@@ -84,13 +85,13 @@ public class BuildManager extends Bot{
 	
 	public static boolean shouldBuildGardner() throws GameActionException {
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
-		if (Globals.getUnitCount(UnitType.GARDENER) == 1 && Globals.getStrat() == AGGRESSIVE) {
+		if (Globals.getUnitCount(UnitType.GARDENER) == 1 && Globals.getStrat() == AGGRESSIVE && rc.getRoundNum() < 500) {
 			return false;
 		}
-		if (rc.getRoundNum() > 30 || gcount == 0){
-			if (gcount <= 1) {
+		if (rc.getRoundNum() > 30 || (gcount == 0 && isFirst)){
+			if (gcount < 1) {
 				return true;
-			} else if (treeCount / gcount >= 2) {
+			} else if ((treeCount / gcount >= 2) && gcount < 8) {
 				return true;
 			} else if (((float) treeCount / (float) gcount) > 6) {
 				return true;
@@ -100,12 +101,17 @@ public class BuildManager extends Bot{
 	}
 	
 	public static boolean buildNextUnit() throws Exception { 
-		if (rc.isBuildReady()) {
+		Debug.debug_print("Trying to build a unit");
+		if (rc.isBuildReady() && treesPlanted < 8) {
+			Debug.debug_print("Ready to build");
 			if (rc.getType() == RobotType.ARCHON) {
-				if (shouldBuildGardner() && rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
-					Debug.debug_print("Trying to build gardener");
-					trainGardener();
-					return true;
+				if ((Globals.getUnitCount(UnitType.GARDENER) < 1) || (!shouldBuildSoldier() && !shouldBuildTank() && !shouldBuildLumberjack() && !shouldBuildScout())){
+					Debug.debug_print("we need a gardener");
+					if (shouldBuildGardner() && rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
+						Debug.debug_print("Trying to build gardener");
+						trainGardener();
+						return true;
+					}
 				}
 				return false;
 			}
@@ -250,6 +256,7 @@ public class BuildManager extends Bot{
 					Gardener.buildIndex++;
 					Debug.debug_print("Planting");
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
+					treesPlanted++;
 				}
 				
 				return true;
