@@ -1,4 +1,4 @@
-package standardBot;
+package seedingWithPressureReset;
 
 import battlecode.common.*;
 
@@ -26,7 +26,7 @@ public class Utilities extends Bot{
      * @throws GameActionException
      */
     static boolean tryMove(Direction dir, float degreeOffset, int checksPerSide) throws GameActionException {
-    	Debug.debug_bytecode_start();
+    	int bytes = Clock.getBytecodeNum();
     	float distance = rc.getType().strideRadius;
         // First, try intended direction
         if (rc.canMove(dir) && rc.senseNearbyBullets(rc.getLocation().add(dir, distance), rc.getType().bodyRadius).length == 0) 
@@ -37,6 +37,7 @@ public class Utilities extends Bot{
         }
 
         // Now try a bunch of similar angles
+        boolean moved = false;
         int currentCheck = 1;
         Direction tryLeft = dir;
         Direction tryRight = dir;
@@ -52,7 +53,8 @@ public class Utilities extends Bot{
         		{
         			Bot.lastPosition = rc.getLocation();
         			rc.move(tryLeft);
-        			Debug.debug_bytecode_end("moving");
+        			bytes = Clock.getBytecodeNum() - bytes;
+        			System.out.println("moving used " + bytes);
         			return true;
         		}
         		// Try the offset on the right side
@@ -61,7 +63,8 @@ public class Utilities extends Bot{
         		{
         			Bot.lastPosition = rc.getLocation();
         			rc.move(tryRight);
-        			Debug.debug_bytecode_end("moving");
+        			bytes = Clock.getBytecodeNum() - bytes;
+        			System.out.println("moving used " + bytes);
         			return true;
         		}
         		// No move performed, try slightly further
@@ -73,7 +76,9 @@ public class Utilities extends Bot{
         }
 
         // A move never happened, so return false.
-        Debug.debug_bytecode_end("moving");
+        bytes = Clock.getBytecodeNum() - bytes;
+		System.out.println("moving used " + bytes);
+		tryShake();
         return false;
     }
 
@@ -95,7 +100,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < friend.getType().bodyRadius) {
-            	Debug.debug_print("hitting ally");
+            	System.out.println("hitting ally");
             	return true;
             }
     	}
@@ -114,7 +119,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
-            	Debug.debug_print("hitting allied tree");
+            	System.out.println("hitting allied tree");
 
 					rc.setIndicatorDot(friend.getLocation(), 0, 0, 0);
 
@@ -137,7 +142,7 @@ public class Utilities extends Bot{
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
             if (perpendicularDist < 1) {
-            	Debug.debug_print("hitting neutral tree");
+            	System.out.println("hitting neutral tree");
 
 					rc.setIndicatorDot(friend.getLocation(), 255, 255, 255);
 
@@ -214,13 +219,17 @@ public class Utilities extends Bot{
 	// returns the closest edge in a given direction, -1 otherwise 
 	public static float edgeInDirection(Direction dir) throws GameActionException {
 		float max_dist = rc.getType().sensorRadius - 0.01f;
+		System.out.println("map check1");
+		System.out.println(dir.getAngleDegrees());
 		if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
 			return -1;
 		}
+		System.out.println("map check1 done");
 		float resolution = rc.getType().sensorRadius / 2;
 		max_dist -= resolution;
 		while (resolution > 0.125) {
 			resolution /= 2;
+			System.out.println("map check2+");
 			if (rc.onTheMap(rc.getLocation().add(dir, max_dist))){
 				max_dist += resolution;
 			} else {
@@ -229,7 +238,7 @@ public class Utilities extends Bot{
 		}
 		if (Math.round(dir.getAngleDegrees()) == Math.round(Direction.getNorth().getAngleDegrees()) ||
 				Math.round(dir.getAngleDegrees()) == Math.round(Direction.getSouth().getAngleDegrees())) {
-			Debug.debug_print(max_dist);
+			System.out.println(max_dist);
 			return rc.getLocation().add(dir, max_dist).y;
 		}
 		return rc.getLocation().add(dir, max_dist).x;
@@ -273,7 +282,6 @@ public class Utilities extends Bot{
 			if (rc.canShake(trees[countTree].ID) && trees[countTree].containedBullets > 0)
 			{
 				rc.shake(trees[countTree].ID);
-				return;
 			}
 		}
 	}
@@ -303,8 +311,8 @@ public class Utilities extends Bot{
 	
 	public static MapLocation magnitudePressureDodge(BulletInfo[] allBullets, MapLocation destination)
 	{
-		Debug.debug_print("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
-		Debug.debug_print("BULLETS PASSED: " + allBullets.length);
+		System.out.println("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		System.out.println("BULLETS PASSED: " + allBullets.length);
 		
 		BulletInfo[] bullets = new BulletInfo[allBullets.length];
 		int relevantBullets = 0;
@@ -329,8 +337,8 @@ public class Utilities extends Bot{
 			}
 		}
 		
-		Debug.debug_print("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
-		Debug.debug_print("BULLETS LEFT: " + relevantBullets);
+		System.out.println("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		System.out.println("BULLETS LEFT: " + relevantBullets);
 		
 		
 		
@@ -345,7 +353,7 @@ public class Utilities extends Bot{
 		}
 		float x = rc.getLocation().x;
 		float y = rc.getLocation().y;
-		float pressureMultiplier = rc.getType().strideRadius * 0.9f;
+		float pressureMultiplier = 0.7f;
 		float xPres = 0f;
 		float yPres = 0f;
 		float bulletXVel = 0f;
@@ -357,7 +365,7 @@ public class Utilities extends Bot{
 		float bulletYOverX = 0f;
 		float cubed = 0f;
 		double angle = 0;
-		while ((Clock.getBytecodesLeft() -2750) / relevantBullets > 150)
+		while ((Clock.getBytecodesLeft() -2750) / bullets.length > 150)
 		{
 			xPres = 0;
 			yPres = 0;
@@ -373,103 +381,77 @@ public class Utilities extends Bot{
 				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
 				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
 				
-				if (pathOffset > -1.2 && pathOffset < 1.2 && pathDistance > -0.5)
+				if (pathDistance > 0.2 && pathDistance < 2.2)
 				{
-					if (pathDistance > 0)
-					{
-						cubed = (float) Math.pow((pathDistance + Math.copySign(0.4, pathDistance)), 3);
-						xPres += bulletXVel * 2.5f / cubed;
-						yPres += bulletYVel * 2.5f / cubed;
-					}
-					
-					if (pathOffset > -1 && pathOffset < 1 && pathDistance < 1.5 && Math.abs(pathOffset) > 0.00)
-					{
-						cubed = (float) Math.pow((pathOffset + Math.copySign(0.4, pathOffset)), 3);
-						xPres += bulletYVel * -1 / cubed / (Math.abs(pathDistance) + 0.8);
-						yPres += bulletXVel / cubed / (Math.abs(pathDistance) + 0.8);
-					}
+					cubed = (float) Math.pow((pathOffset + Math.copySign(0.22, pathOffset)), 3);
+					xPres += bulletYVel * -0.012f / cubed;
+					yPres += bulletXVel * 0.012f / cubed;
 				}
 				
-				
+				if (pathOffset > -1.0 && pathOffset < 1.0)
+				{
+					cubed = (float) Math.pow((pathDistance + Math.copySign(0.5, pathDistance)), 3);
+					xPres += bulletXVel * 0.04f / cubed;
+					yPres += bulletYVel * 0.04f / cubed;
+				}
 			}
 			if (destination != null)
 			{
 				xPres += Math.copySign(0.1, destX - x);
 				yPres += Math.copySign(0.1, destY - y);
 			}
-			if (xPres != 0 || yPres != 0)
+			
+			
+			x += pressureMultiplier * xPres;
+			y += pressureMultiplier * yPres;
+			
+			relativeX = x - rc.getLocation().x;
+			relativeY = y - rc.getLocation().y;
+			if (relativeX * relativeX + relativeY * relativeY > rc.getType().strideRadius * rc.getType().strideRadius)
 			{
-				angle = Math.atan(yPres / xPres);
-				if (xPres < 0)
+				angle = Math.atan(relativeY / relativeX);
+				if (relativeX < 0)
 				{
 					angle = Math.PI - angle;
 				}
-				x += pressureMultiplier * Math.cos(angle);
-				y += pressureMultiplier * Math.sin(angle);
-				
-				relativeX = x - rc.getLocation().x;
-				relativeY = y - rc.getLocation().y;
-				if (relativeX * relativeX + relativeY * relativeY > rc.getType().strideRadius * rc.getType().strideRadius)
-				{
-					angle = Math.atan(relativeY / relativeX);
-					if (relativeX < 0)
-					{
-						angle = Math.PI - angle;
-					}
-					x = (float) (rc.getLocation().x + rc.getType().strideRadius * Math.cos(angle));
-					y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
-				}
-				pressureMultiplier = pressureMultiplier * 0.6f;
+				x = (float) (rc.getLocation().x + rc.getType().strideRadius * Math.cos(angle));
+				y = (float) (rc.getLocation().y + rc.getType().strideRadius * Math.sin(angle));
 			}
-			else
-			{
-				Debug.debug_print("returning early: " + Clock.getBytecodesLeft());
-				return (new MapLocation(x,y));
-			}
-			
-			
-			Debug.debug_print("bytes left: " + Clock.getBytecodesLeft());
-			Debug.debug_print((Clock.getBytecodesLeft() - 1000) / bullets.length);
+			pressureMultiplier = pressureMultiplier * 0.95f;
+			System.out.println("bytes left: " + Clock.getBytecodesLeft());
+			System.out.println((Clock.getBytecodesLeft() - 1000) / bullets.length);
 		}
 		return new MapLocation(x, y);
 	}
-
-	static void waterTrees(MapLocation roost) throws GameActionException
+	
+	
+	public static void trainUnit(RobotType unit) throws GameActionException
 	{
-		Debug.debug_bytecode_start();
-		TreeInfo[] trees = rc.senseNearbyTrees(2.0f, ally);
-		if (trees.length > 0)
+		Direction angle = new Direction(0);
+		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
 		{
-			TreeInfo bestTree = trees[0];
-			for (int treeCount = 1; treeCount < trees.length; treeCount++)
+			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
+		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
+			angle = rc.getLocation().directionTo(Order.getLocation(Memory.getOrder(0)));
+		}
+		int turnCount = 0;
+		Direction testAngle = angle;
+		while (!rc.canBuildRobot(unit, testAngle) && turnCount++ < 60)
+		{
+			testAngle = angle.rotateRightDegrees(3 * turnCount);
+			if (!rc.canBuildRobot(unit, testAngle))
 			{
-				if (trees[treeCount].health < bestTree.health)
-				{bestTree = trees[treeCount];}
-			}
-			try {
-				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
-				rc.water(bestTree.ID);
-			} catch (GameActionException e) {
-				e.printStackTrace();
+				testAngle = angle.rotateLeftDegrees(3 * turnCount);
 			}
 		}
-			
-		if (!rc.hasMoved())
-		{
-			trees = rc.senseNearbyTrees(roost, 3, ally);
-			if (trees.length > 0)
-			{
-				TreeInfo bestTree = trees[0];
-				for (int treeCount = 1; treeCount < trees.length; treeCount++)
-				{
-					if (trees[treeCount].health < bestTree.health)
-					{bestTree = trees[treeCount];}
-				}
-				rc.setIndicatorDot(bestTree.getLocation(), 0, 255, 0);
-				moveTo(melee(bestTree.getLocation(), 2.01f));
-			}
-				
+		try {
+			if (rc.canBuildRobot(unit,  testAngle))
+				{rc.buildRobot(unit, testAngle);}
+		} catch (GameActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		Debug.debug_bytecode_end("watering");
 	}
+	
 }
