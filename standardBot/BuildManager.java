@@ -9,15 +9,6 @@ public class BuildManager extends Bot{
 	public static int AGGRESSIVE = 2;
 	private static int treeCount = 0;
 	private static float density = 0;
-	
-	private static float unitRatio() throws GameActionException {
-		if (Globals.getStrat() == 2) {
-			System.out.println("Unit ratio of 2");
-			return 2.0f;
-		}
-		System.out.println("Unit ratio of 0.3");
-		return 0.3f;
-	}
 
 	public static boolean isStuck() {
 		Direction angle = new Direction(0);
@@ -75,8 +66,12 @@ public class BuildManager extends Bot{
 	}
 	
 	public static boolean shouldBuildSoldier() throws GameActionException {
-		System.out.println("Checking should build soldier");
-		return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * unitRatio())));
+		if (Globals.getStrat() == AGGRESSIVE) {
+			return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount + 1) * 2)));
+		} else {
+			return (treeCount <= 35) && ((treeCount < 3 && Globals.getUnitCount(UnitType.SOLDIER) < treeCount) || (Globals.getUnitCount(UnitType.SOLDIER) < ((treeCount) * 0.3)));
+		}
+		
 	}
 	
 	public static boolean shouldBuildTank() throws GameActionException {
@@ -116,6 +111,7 @@ public class BuildManager extends Bot{
 			}
 			
 			if (shouldBuildSoldier()) {
+				System.out.println("I want to build a soldier");
 				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost){
 					Debug.debug_print("Trying to build SOLDIER");
 					trainUnit(RobotType.SOLDIER);
@@ -270,7 +266,7 @@ public class BuildManager extends Bot{
 		return false;
 	}
 
-	private static void trainGardener() throws GameActionException
+	private static void trainGardener() throws Exception
 	{
 		Direction angle = new Direction(0);
 		float leftDist, rightDist, topDist, bottomDist;
@@ -357,6 +353,7 @@ public class BuildManager extends Bot{
 			{
 				Debug.debug_print("built gardener: " + angle.getAngleDegrees());
 				Debug.debug_print("(" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
+				Globals.updateUnitCounts(UnitType.GARDENER);
 				rc.hireGardener(angle);
 			}
 		} catch (GameActionException e) {
