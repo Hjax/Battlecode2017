@@ -413,66 +413,43 @@ public class Utilities extends Bot{
 		}
 		return new MapLocation(x, y);
 	}
-	
-	
-	public static void trainUnit(RobotType unit) throws GameActionException
-	{
-		Direction angle = new Direction(0);
-		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
-		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
-		{
-			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
-		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
-			angle = rc.getLocation().directionTo(Order.getLocation(Memory.getOrder(0)));
-		}
-		int turnCount = 0;
-		Direction testAngle = angle;
-		while (!rc.canBuildRobot(unit, testAngle) && turnCount++ < 60)
-		{
-			testAngle = angle.rotateRightDegrees(3 * turnCount);
-			if (!rc.canBuildRobot(unit, testAngle))
-			{
-				testAngle = angle.rotateLeftDegrees(3 * turnCount);
-			}
-		}
-		try {
-			if (rc.canBuildRobot(unit,  testAngle))
-				{rc.buildRobot(unit, testAngle);}
-		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
-	public static float getDensity() throws GameActionException{
+	static void waterTrees(MapLocation roost) throws GameActionException
+	{
 		Debug.debug_bytecode_start();
-		float total = 0;
-		TreeInfo blockingTree = null;
-		for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
-			MapLocation clone = rc.getLocation().add(i, rc.getType().bodyRadius - 0.01f);
-			for (int j = 1; j <= 5; j++) 
+		TreeInfo[] trees = rc.senseNearbyTrees(2.0f, ally);
+		if (trees.length > 0)
+		{
+			TreeInfo bestTree = trees[0];
+			for (int treeCount = 1; treeCount < trees.length; treeCount++)
 			{
-				clone = clone.add(i, (rc.getType().sensorRadius - rc.getType().bodyRadius) / 5);
-				rc.setIndicatorDot(clone, 75, 75, 255);
-				blockingTree = rc.senseTreeAtLocation(clone);
-				if (!rc.onTheMap(clone) || (blockingTree != null && blockingTree.getTeam() != rc.getTeam())) 
-				{ 
-					if (!rc.onTheMap(clone))
-					{
-						total += (6 - j)/180f;
-					}
-					else
-					{
-						total += (6 - j)/60f;
-					}
-					
-	
-					break;
-				}
+				if (trees[treeCount].health < bestTree.health)
+				{bestTree = trees[treeCount];}
+			}
+			try {
+				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
+				rc.water(bestTree.ID);
+			} catch (GameActionException e) {
+				e.printStackTrace();
 			}
 		}
-		Debug.debug_bytecode_end("Tree density");
-		Debug.debug_print("density is: " + total);
-		return total;
+			
+		if (!rc.hasMoved())
+		{
+			trees = rc.senseNearbyTrees(roost, 3, ally);
+			if (trees.length > 0)
+			{
+				TreeInfo bestTree = trees[0];
+				for (int treeCount = 1; treeCount < trees.length; treeCount++)
+				{
+					if (trees[treeCount].health < bestTree.health)
+					{bestTree = trees[treeCount];}
+				}
+				rc.setIndicatorDot(bestTree.getLocation(), 0, 255, 0);
+				moveTo(melee(bestTree.getLocation(), 2.01f));
+			}
+				
+		}
+		Debug.debug_bytecode_end("watering");
 	}
 }

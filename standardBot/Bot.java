@@ -50,22 +50,11 @@ public class Bot {
     				Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
     			}
     		}
-    		
-        	int win_round = Math.min(100, rc.getRoundLimit() - rc.getRoundNum());
-        	// averaged over the rounds we want to win 
-        	float victory_point_cost = (float) ((7.5 + (rc.getRoundNum() * 12.5 / 3000)) + (7.5 + ((rc.getRoundNum() + win_round)* 12.5 / 3000))) / 2;
-        	float bullets_to_win = (GameConstants.VICTORY_POINTS_TO_WIN - rc.getTeamVictoryPoints()) * victory_point_cost;
-        	if (rc.getTreeCount() > 0) {
-        		Debug.debug_print("Winning from vp in " + Float.toString((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()));
-        		Debug.debug_print("Needed bullets: " + Float.toString(bullets_to_win));
-        		Debug.debug_print("Current vp cost: " + Float.toString(victory_point_cost));
-        	}
-
-        	// donate bullets if we can win in 100 rounds, or if we have 1000 bullets, or if theres 150 rounds or less until the end of the game
-        	if ((rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round) || 
-        		(rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 150))  {
-        		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
-        	}
+    	
+    		BuildManager.checkDonateVP();
+    		if (Globals.getStrat() == BuildManager.UNDECIDED && rc.getRoundNum() >= 2) {
+    			BuildManager.decideBuild();
+    		}
     		
     		Debug.debug_bytecode_start();
     		Memory.pruneOrders();
@@ -76,7 +65,7 @@ public class Bot {
     		isFirst = false;
     	}
     	
-    	
+    	BuildManager.update();
     	Globals.updateUnitCounts();
 
     	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
