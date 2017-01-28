@@ -63,7 +63,7 @@ public class BuildManager extends Bot{
 	}
 	
 	public static float scoreLumberjack() throws GameActionException {
-		return density * 0.8f + (Globals.getUnitCount(UnitType.LUMBERJACK) / 20) * 0.2f;
+		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 20.0f), 1.0f) * 0.4f + density * 0.4f + (Globals.getUnitCount(UnitType.LUMBERJACK) / 20) * 0.2f;
 	}
 	
 	public static float scoreSoldier() throws GameActionException {
