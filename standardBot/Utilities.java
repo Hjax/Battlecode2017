@@ -256,7 +256,7 @@ public class Utilities extends Bot{
 			float speed = rc.getType().strideRadius;
 			float distance = rc.getLocation().distanceTo(destination);
 			
-			if (distance < speed && rc.canMove(destination))
+			if (distance <= speed && rc.canMove(destination))
 			{
 				Bot.lastPosition = rc.getLocation();
 				rc.move(rc.getLocation().directionTo(destination), distance);
