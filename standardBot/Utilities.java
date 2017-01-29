@@ -571,6 +571,30 @@ public class Utilities extends Bot{
 				xPres += Math.copySign(0.05, destination.x - currentLoc.x);
 				yPres += Math.copySign(0.05, destination.y - currentLoc.y);
 			}
+			
+
+	    	if (Globals.getTopEdge() != -1)
+	    	{
+	    		relativeY = Globals.getTopEdge() - rc.getLocation().y;
+	    		yPres += -10/(relativeY * relativeY);
+	    	}
+	    	if (Globals.getBottomEdge() != -1)
+	    	{
+	    		relativeY = rc.getLocation().y - Globals.getBottomEdge();
+	    		yPres += 10/(relativeY * relativeY);
+	    	}
+	    		
+	    	if (Globals.getRightEdge() != -1)
+	    	{
+	    		relativeX = Globals.getRightEdge() - rc.getLocation().x;
+	    		xPres += -10/(relativeX * relativeX);	
+	    	}
+	    	if (Globals.getLeftEdge() != -1)
+	    	{
+	    		relativeX = rc.getLocation().x - Globals.getLeftEdge();
+	    		xPres += 10/(relativeX * relativeX);
+	    	}
+			
 			currentLoc = currentLoc.add(new Direction(xPres, yPres), pressureMultiplier);
 			
 			if (rc.getLocation().distanceTo(currentLoc) > rc.getType().strideRadius)
