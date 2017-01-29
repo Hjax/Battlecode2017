@@ -484,7 +484,7 @@ public class Utilities extends Bot{
 		Debug.debug_bytecode_end("watering");
 	}
 	
-	public static MapLocation naivePressureDodge(BulletInfo[] allBullets, MapLocation destination)
+	public static MapLocation naivePressureDodge(BulletInfo[] allBullets, MapLocation destination) throws GameActionException
 	{
 		Debug.debug_print("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
 		Debug.debug_print("BULLETS PASSED: " + allBullets.length);
@@ -517,23 +517,53 @@ public class Utilities extends Bot{
 		float pressureMultiplier = rc.getType().strideRadius * 0.9f;
 		float xPres = 0f;
 		float yPres = 0f;
+		float relativeX = 0f;
+		float relativeY = 0f;
 		MapLocation bulletLoc = null;
 		MapLocation currentLoc = rc.getLocation();
+		TreeInfo[] trees = rc.senseNearbyTrees(rc.getType().bodyRadius + rc.getType().strideRadius);
 		
-		while ((Clock.getBytecodesLeft() -3000) / relevantBullets > 150)
+		while (Clock.getBytecodesLeft() >  3000)
 		{
 			xPres = 0;
 			yPres = 0;
+			//dodge bullets
 			for (int countBullets = 0; countBullets < relevantBullets; countBullets++)
 			{
-				bulletLoc = bullets[countBullets].location;
-				xPres += (bulletLoc.x - currentLoc.x) / (currentLoc.distanceTo(bulletLoc) * currentLoc.distanceTo(bulletLoc));
-				yPres += (bulletLoc.y - currentLoc.y) / (currentLoc.distanceTo(bulletLoc) * currentLoc.distanceTo(bulletLoc));
-				for (int bulletStep = 0; bulletStep < 6; bulletStep++)
+				if (Clock.getBytecodesLeft() > 3000)
 				{
-					bulletLoc = bulletLoc.add(bullets[countBullets].dir, bullets[countBullets].speed / 5);
-					xPres += (currentLoc.x - bulletLoc.x) / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
-					yPres += (currentLoc.y - bulletLoc.y) / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+					
+					bulletLoc = bullets[countBullets].location;
+					relativeX = currentLoc.x - bulletLoc.x;
+					relativeX += Math.copySign(0.5, relativeX);
+					relativeY = currentLoc.y - bulletLoc.y;
+					relativeY += Math.copySign(0.5, relativeY);
+					xPres += relativeX / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+					yPres += relativeY / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+					for (int bulletStep = 0; bulletStep < 5; bulletStep++)
+					{
+						bulletLoc = bulletLoc.add(bullets[countBullets].dir, bullets[countBullets].speed / 4);
+						relativeX = currentLoc.x - bulletLoc.x;
+						relativeX += Math.copySign(0.5, relativeX);
+						relativeY = currentLoc.y - bulletLoc.y;
+						relativeY += Math.copySign(0.5, relativeY);
+						xPres += relativeX / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+						yPres += relativeY / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+					}
+				}
+				else
+				{
+					break;
+				}
+				//avoid trees
+				for (int countTrees = 0; countTrees < trees.length; countTrees++)
+				{
+					relativeX = currentLoc.x - trees[countTrees].location.x;
+					relativeX += Math.copySign(0.5, relativeX);
+					relativeY = currentLoc.y - trees[countTrees].location.y;
+					relativeY += Math.copySign(0.5, relativeY);
+					xPres += relativeX * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
+					yPres += relativeY * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
 				}
 			}
 			if (destination != null)
@@ -542,6 +572,7 @@ public class Utilities extends Bot{
 				yPres += Math.copySign(0.05, destination.y - currentLoc.y);
 			}
 			currentLoc = currentLoc.add(new Direction(xPres, yPres), pressureMultiplier);
+			
 			if (rc.getLocation().distanceTo(currentLoc) > rc.getType().strideRadius)
 			{
 				currentLoc = rc.getLocation().add(rc.getLocation().directionTo(currentLoc), rc.getType().strideRadius);

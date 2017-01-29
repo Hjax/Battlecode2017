@@ -43,12 +43,11 @@ public class Soldier extends Bot{
                 		if (!Utilities.willHitAlly(target)) 
                 		{
                 			Direction angle = rc.getLocation().directionTo(target);
-                			angle = angle.rotateRightRads((float) (Math.asin(0.1 / rc.getLocation().distanceTo(target))));
+                			angle = angle.rotateRightRads((float) (Math.asin(0.2 / rc.getLocation().distanceTo(target))));
                 			target = rc.getLocation().add(angle, rc.getLocation().distanceTo(target));
                 			rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
-                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 6.5f)))
+                			if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)))
                 			{
-                				if (rc.getTeamBullets() < 7)
                 				{
                 					rc.fireTriadShot(angle);
                 				}
