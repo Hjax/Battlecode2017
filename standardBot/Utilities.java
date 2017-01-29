@@ -48,43 +48,37 @@ public class Utilities extends Bot{
         	// Try the offset of the left side
     		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
     		rc.setIndicatorDot(rc.getLocation().add(tryLeft, distance + rc.getType().bodyRadius), 0, 0, 255);
-    		if(rc.canMove(tryLeft, distance)) 
-    		{
-    			Bot.lastPosition = rc.getLocation();
-    			while (distance >= 0.1f)
-    			{
-    				rc.move(tryLeft, distance);
-    				distance -= 0.35f;
-    			}
-    			distance = rc.getType().strideRadius;
-    			
-    			
-    			Debug.debug_bytecode_end("moving");
-
-    			return true;
-    		}
+			while (distance >= 0.1f)
+			{
+				if(rc.canMove(tryLeft, distance)) 
+	    		{
+					Bot.lastPosition = rc.getLocation();
+					rc.move(tryLeft, distance);
+					Debug.debug_bytecode_end("moving");
+					return true;
+	    		}
+				distance -= 0.4f;
+			}
+    		distance = rc.getType().strideRadius; 			
     		// Try the offset on the right side
     		tryRight = tryRight.rotateRightDegrees(degreeOffset);
     		rc.setIndicatorDot(rc.getLocation().add(tryRight, distance + rc.getType().bodyRadius), 0, 0, 255);
-    		if(rc.canMove(tryRight, distance)) 
-    		{
-    			Bot.lastPosition = rc.getLocation();
-    			
-    			while (distance >= 0.1f)
-    			{
+    		while (distance >= 0.1f)
+			{
+    			if(rc.canMove(tryRight, distance)) 
+        		{
+    				Bot.lastPosition = rc.getLocation();
     				rc.move(tryRight, distance);
-    				distance -= 0.35f;
-    			}
-    			distance = rc.getType().strideRadius;
-    			
-    			
-    			Debug.debug_bytecode_end("moving");
-    			
-    			return true;
-    		}
+    				Debug.debug_bytecode_end("moving");
+    				return true;
+        		}
+    			distance -= 0.35f;
+				
+			}
+    		distance = rc.getType().strideRadius;	
     		// No move performed, try slightly further
     		currentCheck++;
-    		degreeOffset = degreeOffset * 1.15f;
+    		degreeOffset = degreeOffset * 1.175f;
         }
 
         // A move never happened, so return false.
