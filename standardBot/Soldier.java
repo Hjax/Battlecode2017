@@ -15,16 +15,16 @@ public class Soldier extends Bot{
             	startTurn();
                 
             	// dodge
-            	BulletInfo[] bullets = rc.senseNearbyBullets(9);
+            	BulletInfo[] bullets = rc.senseNearbyBullets(6);
             	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
             		{
             			if (enemiesMaxRange.length > 0)
             			{
-            				Utilities.moveTo(Utilities.magnitudePressureDodge(bullets, enemiesMaxRange[0].getLocation()));
+            				Utilities.moveTo(Utilities.naivePressureDodge(bullets, enemiesMaxRange[0].getLocation()));
             			}
             			else
             			{
-            				Utilities.moveTo(Utilities.magnitudePressureDodge(bullets));
+            				Utilities.moveTo(Utilities.naivePressureDodge(bullets, rc.getLocation().add(neo(), rc.getType().strideRadius)));
             			}
             			
             		}
@@ -60,7 +60,11 @@ public class Soldier extends Bot{
                     			break;
                     		} else {
                             	// ...Then fire a bullet in the direction of the enemy.
-                            	rc.fireSingleShot(angle);
+                    			if (rc.canFireSingleShot())
+                    			{
+                    				rc.fireSingleShot(angle);
+                    			}
+                            	
                             	break;
                     		}
                 		}

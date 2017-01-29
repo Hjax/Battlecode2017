@@ -13,7 +13,7 @@ public class Utilities extends Bot{
      */
     static boolean tryMove(Direction dir) throws GameActionException 
     {    	
-        return tryMove(dir,1,15);
+        return tryMove(dir,1.5f,20);
     }
 
     /**
@@ -43,41 +43,48 @@ public class Utilities extends Bot{
         Direction tryLeft = dir;
         Direction tryRight = dir;
         
-        while (distance >= 0.1f)
+        while (currentCheck<=checksPerSide)
         {
+        	// Try the offset of the left side
+    		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
+    		rc.setIndicatorDot(rc.getLocation().add(tryLeft, distance + rc.getType().bodyRadius), 0, 0, 255);
+    		if(rc.canMove(tryLeft, distance)) 
+    		{
+    			Bot.lastPosition = rc.getLocation();
+    			while (distance >= 0.1f)
+    			{
+    				rc.move(tryLeft, distance);
+    				distance -= 0.35f;
+    			}
+    			distance = rc.getType().strideRadius;
+    			
+    			
+    			Debug.debug_bytecode_end("moving");
 
-        	while(currentCheck<=checksPerSide) 
-        	{
-        		// Try the offset of the left side
-        		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
-        		rc.setIndicatorDot(rc.getLocation().add(tryLeft, distance + rc.getType().bodyRadius), 0, 0, 255);
-        		if(rc.canMove(tryLeft) && rc.senseNearbyBullets(rc.getLocation().add(tryLeft, distance), rc.getType().bodyRadius).length == 0) 
-        		{
-        			Bot.lastPosition = rc.getLocation();
-      
-        			rc.move(tryLeft);
-        			Debug.debug_bytecode_end("moving");
-
-        			return true;
-        		}
-        		// Try the offset on the right side
-        		tryRight = tryRight.rotateRightDegrees(degreeOffset);
-        		rc.setIndicatorDot(rc.getLocation().add(tryRight, distance + rc.getType().bodyRadius), 0, 0, 255);
-        		if(rc.canMove(tryRight) && rc.senseNearbyBullets(rc.getLocation().add(tryRight, distance), rc.getType().bodyRadius).length == 0) 
-        		{
-        			Bot.lastPosition = rc.getLocation();
-        			
-        			rc.move(tryRight);
-        			Debug.debug_bytecode_end("moving");
-        			
-        			return true;
-        		}
-        		// No move performed, try slightly further
-        		currentCheck++;
-        		degreeOffset = degreeOffset * 1.1f;
-        	}
-        	distance -= 0.4f;
-        	currentCheck = 1;
+    			return true;
+    		}
+    		// Try the offset on the right side
+    		tryRight = tryRight.rotateRightDegrees(degreeOffset);
+    		rc.setIndicatorDot(rc.getLocation().add(tryRight, distance + rc.getType().bodyRadius), 0, 0, 255);
+    		if(rc.canMove(tryRight, distance)) 
+    		{
+    			Bot.lastPosition = rc.getLocation();
+    			
+    			while (distance >= 0.1f)
+    			{
+    				rc.move(tryRight, distance);
+    				distance -= 0.35f;
+    			}
+    			distance = rc.getType().strideRadius;
+    			
+    			
+    			Debug.debug_bytecode_end("moving");
+    			
+    			return true;
+    		}
+    		// No move performed, try slightly further
+    		currentCheck++;
+    		degreeOffset = degreeOffset * 1.15f;
         }
 
         // A move never happened, so return false.
@@ -160,7 +167,7 @@ public class Utilities extends Bot{
     public static boolean canMoveInto(BulletInfo bullet)
     {
     	
-    	float checkRadius = rc.getType().bodyRadius + rc.getType().strideRadius + 0.5f;
+    	float checkRadius = rc.getType().bodyRadius + rc.getType().strideRadius;
     	
     	//clean out false positives preemptively
     	 Direction directionToRobot = bullet.getLocation().directionTo(rc.getLocation());
@@ -356,45 +363,46 @@ public class Utilities extends Bot{
 		float pressureMultiplier = rc.getType().strideRadius * 0.9f;
 		float xPres = 0f;
 		float yPres = 0f;
-		float bulletXVel = 0f;
-		float bulletYVel = 0f;
 		float relativeX = 0f;
 		float relativeY = 0f;
 		float pathOffset = 0f;
 		float pathDistance = 0f;
-		float bulletYOverX = 0f;
 		float cubed = 0f;
 		double angle = 0;
-		while ((Clock.getBytecodesLeft() -2750) / relevantBullets > 150)
+		float[][] bulletVels = new float[relevantBullets][3]; //0 = x, 1 = y, 2 = y/x
+		for (int bulletCount = 0; bulletCount < relevantBullets; bulletCount++)
+		{
+			bulletVels[bulletCount][0] = (float) (bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].dir.radians));
+			bulletVels[bulletCount][1] = (float) (bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].dir.radians));
+			bulletVels[bulletCount][2] = (float) Math.tan(bullets[bulletCount].dir.radians);
+		}
+		
+		while ((Clock.getBytecodesLeft() -3000) / relevantBullets > 150)
 		{
 			xPres = 0;
 			yPres = 0;
 			for (int bulletCount = 0; bulletCount < relevantBullets; bulletCount++)
-			{
-				bulletXVel = (float) (bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].dir.radians));
-				bulletYVel = (float) (bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].dir.radians));
-				bulletYOverX = bulletYVel / bulletXVel;
-				
+			{				
 				relativeX = x - bullets[bulletCount].getLocation().x;
 				relativeY = y - bullets[bulletCount].getLocation().y;
 				
-				pathOffset = (relativeY - relativeX * bulletYOverX)/(bulletXVel + bulletYVel * bulletYOverX) + 0.001f;
-				pathDistance = relativeX/bulletXVel + pathOffset * bulletYOverX + 0.001f;
+				pathOffset = (relativeY - relativeX * bulletVels[bulletCount][2])/(bulletVels[bulletCount][0] + bulletVels[bulletCount][1] * bulletVels[bulletCount][2]) + 0.001f;
+				pathDistance = relativeX/bulletVels[bulletCount][0] + pathOffset * bulletVels[bulletCount][2] + 0.001f;
 				
-				if (pathOffset > -1 && pathOffset < 1 && pathDistance > -0.5)
+				if (pathOffset > -2 && pathOffset < 2 && pathDistance > 0)
 				{
 					if (pathDistance > 0)
 					{
-						cubed = (float) Math.pow((pathDistance + Math.copySign(0.4, pathDistance)), 3);
-						xPres += bulletXVel * 2.5f / cubed;
-						yPres += bulletYVel * 2.5f / cubed;
+						cubed = (float) Math.pow((pathDistance + Math.copySign(0.3, pathDistance)), 3);
+						xPres += bulletVels[bulletCount][0] * 36f / cubed;
+						yPres += bulletVels[bulletCount][1] * 36f / cubed;
 					}
 					
-					if (pathOffset > -0.5 && pathOffset < 0.5 && pathDistance < 3 && Math.abs(pathOffset) > 0.05)
+					if (pathOffset > -1.5 && pathOffset < 1.5 && pathDistance < 5 && (Math.abs(pathOffset) > 0.1 || pathDistance > 1))
 					{
-						cubed = (float) Math.pow((pathOffset + Math.copySign(0.4, pathOffset)), 3);
-						xPres += bulletYVel * -2 / cubed / (Math.abs(pathDistance) + 0.1) / (Math.abs(pathDistance) + 0.8);
-						yPres += bulletXVel * 2 / cubed / (Math.abs(pathDistance) + 0.1) / (Math.abs(pathDistance) + 0.8);
+						cubed = (float) Math.pow((pathOffset + Math.copySign(0.1, pathOffset)), 3);
+						xPres += bulletVels[bulletCount][1] * -1 / cubed;
+						yPres += bulletVels[bulletCount][0] * 1 / cubed;
 					}
 				}
 				
@@ -402,8 +410,8 @@ public class Utilities extends Bot{
 			}
 			if (destination != null)
 			{
-				xPres += Math.copySign(0.0, destX - x);
-				yPres += Math.copySign(0.0, destY - y);
+				xPres += Math.copySign(0.05, destX - x);
+				yPres += Math.copySign(0.05, destY - y);
 			}
 			if (xPres != 0 || yPres != 0)
 			{
@@ -438,7 +446,7 @@ public class Utilities extends Bot{
 			
 			
 			Debug.debug_print("bytes left: " + Clock.getBytecodesLeft());
-			Debug.debug_print((Clock.getBytecodesLeft() - 1000) / bullets.length);
+			Debug.debug_print((Clock.getBytecodesLeft() - 3000) / bullets.length);
 		}
 		return new MapLocation(x, y);
 	}
@@ -480,5 +488,77 @@ public class Utilities extends Bot{
 				
 		}
 		Debug.debug_bytecode_end("watering");
+	}
+	
+	public static MapLocation naivePressureDodge(BulletInfo[] allBullets, MapLocation destination)
+	{
+		Debug.debug_print("STARTING DODGE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		Debug.debug_print("BULLETS PASSED: " + allBullets.length);
+		
+		BulletInfo[] bullets = new BulletInfo[allBullets.length];
+		int relevantBullets = 0;
+		
+		for (int countBullets = 0; countBullets < allBullets.length; countBullets++)
+		{
+			if (canMoveInto(allBullets[countBullets]))
+			{
+				bullets[relevantBullets++] = allBullets[countBullets];
+			}
+		}
+		
+		if (relevantBullets == 0)
+		{
+			if (destination == null)
+			{
+				return rc.getLocation();
+			}
+			else
+			{
+				return destination;
+			}
+		}
+		Debug.debug_print("CLEANUP DONE BYTECODES LEFT: " + Clock.getBytecodesLeft());
+		Debug.debug_print("BULLETS LEFT: " + relevantBullets);
+		Debug.debug_bytecode_start();
+		float pressureMultiplier = rc.getType().strideRadius * 0.9f;
+		float xPres = 0f;
+		float yPres = 0f;
+		MapLocation bulletLoc = null;
+		MapLocation currentLoc = rc.getLocation();
+		
+		while ((Clock.getBytecodesLeft() -3000) / relevantBullets > 150)
+		{
+			xPres = 0;
+			yPres = 0;
+			for (int countBullets = 0; countBullets < relevantBullets; countBullets++)
+			{
+				bulletLoc = bullets[countBullets].location;
+				xPres += (bulletLoc.x - currentLoc.x) / (currentLoc.distanceTo(bulletLoc) * currentLoc.distanceTo(bulletLoc));
+				yPres += (bulletLoc.y - currentLoc.y) / (currentLoc.distanceTo(bulletLoc) * currentLoc.distanceTo(bulletLoc));
+				for (int bulletStep = 0; bulletStep < 6; bulletStep++)
+				{
+					bulletLoc = bulletLoc.add(bullets[countBullets].dir, bullets[countBullets].speed / 5);
+					xPres += (currentLoc.x - bulletLoc.x) / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+					yPres += (currentLoc.y - bulletLoc.y) / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
+				}
+			}
+			if (destination != null)
+			{
+				xPres += Math.copySign(0.05, destination.x - currentLoc.x);
+				yPres += Math.copySign(0.05, destination.y - currentLoc.y);
+			}
+			currentLoc = currentLoc.add(new Direction(xPres, yPres), pressureMultiplier);
+			if (rc.getLocation().distanceTo(currentLoc) > rc.getType().strideRadius)
+			{
+				currentLoc = rc.getLocation().add(rc.getLocation().directionTo(currentLoc), rc.getType().strideRadius);
+			}
+			pressureMultiplier *= 0.6;
+			Debug.debug_print("bytes left: " + Clock.getBytecodesLeft());
+			Debug.debug_print((Clock.getBytecodesLeft() - 3000) / bullets.length);
+		}
+		Debug.debug_bytecode_end("naive dodging ");
+		return currentLoc;
+		
+		
 	}
 }
