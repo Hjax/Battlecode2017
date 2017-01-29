@@ -102,11 +102,20 @@ public class Globals extends Bot{
 		Memory.writeGlobal(20, n);
 	}
 	
-	public static void setStuckArchons(int n) throws Exception {
+	public static void setLastUnit(int n) throws Exception {
 		Memory.writeGlobal(21, n);
 	}
 	
-	public static int getStuckArchons() throws GameActionException {
+	public static int getLastUnit() throws GameActionException {
 		return Memory.readGlobal(21);
 	}
+	
+	public static void setLastUnitRound(int n) throws Exception {
+		Memory.writeGlobal(22, n);
+	}
+	
+	public static int getLastUnitRound() throws GameActionException {
+		return Memory.readGlobal(22);
+	}
+	
 }
