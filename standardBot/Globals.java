@@ -118,4 +118,13 @@ public class Globals extends Bot{
 		return Memory.readGlobal(22);
 	}
 	
+	public static void updateStuckGardeners() throws Exception {
+		int location = 23 + (rc.getRoundNum() % 2);
+		Memory.writeGlobal(location, Memory.readGlobal(location) + 1);
+	}
+	
+	public static int getStuckGardeners() throws GameActionException {
+		return Memory.readGlobal(23 + (1 - rc.getRoundNum() % 2));
+	}
+	
 }

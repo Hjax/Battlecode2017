@@ -6,6 +6,7 @@ public class Gardener extends Bot
 {
 	static int buildIndex = 0;
 	static MapLocation roost = null;
+	static boolean isStuck = false;
 	public static void Start(RobotController RobCon) throws Exception{
 		
 		Debug.debug_print("I'm a gardener!");
@@ -112,6 +113,10 @@ public class Gardener extends Bot
     		else
     		{
     			Debug.debug_print("can't water");
+    		}
+    		
+    		if (isStuck) {
+    			Globals.updateStuckGardeners();
     		}
         	endTurn();
         }

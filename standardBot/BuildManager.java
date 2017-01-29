@@ -50,7 +50,7 @@ public class BuildManager extends Bot{
 		if (Globals.getLastUnit() == UnitType.LUMBERJACK && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 lcount++;
 		}
-		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 20.0f), 1.0f) * 0.40f + density * 0.25f + (20.0f - lcount) / 20.0f * 0.35f;
+		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.35f + (20.0f - lcount) / 20.0f * 0.20f;
 	}
 	
 	public static float scoreSoldier() throws GameActionException {
@@ -61,7 +61,6 @@ public class BuildManager extends Bot{
 		if (scount == 0) {
 			return 1.0f;
 		}
-		Debug.debug_print("Soldier count: " + Integer.toString(scount));
 		if (Globals.getStrat() == AGGRESSIVE) {
 			return Math.min(((float) treeCount + 4) / scount, 1.0f);
 		} else {
@@ -78,7 +77,7 @@ public class BuildManager extends Bot{
 		if (Globals.getLastUnit() == UnitType.SCOUT && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 scount++;
 		}
-		return ((scount == 0) ? 1:0) * 0.3f + ((Globals.getOrderCount() == 0 && scount < 6) ? 1:0) * 0.7f;
+		return ((scount == 0) ? 1:0) * 0.2f + ((Globals.getOrderCount() == 0 && scount < 6) ? 1:0) * 0.8f;
 	}
 	
 	public static float scoreGardener() throws GameActionException {
@@ -86,10 +85,11 @@ public class BuildManager extends Bot{
 		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 gcount++;
 		}
-		if (gcount == 0) {
-			return 1.0f;
-		} else if (gcount > 14) {
+		if (gcount > 14) {
 			return 0.0f;
+		}
+		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) < 21)) {
+			return 1.0f;
 		}
 		return (Math.min(((float) treeCount) / (gcount * 4), 1.0f));
 	}
@@ -269,6 +269,7 @@ public class BuildManager extends Bot{
 				}
 				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
 				{
+					Gardener.isStuck = false;
 					Gardener.buildIndex++;
 					Debug.debug_print("Planting");
 					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
@@ -279,6 +280,7 @@ public class BuildManager extends Bot{
 			}
 			else
 			{
+				Gardener.isStuck = true;
 				Debug.debug_print("can't plant");
 				Gardener.buildIndex++;
 			}
