@@ -3,7 +3,6 @@ package standardBot;
 import battlecode.common.*;
 
 public class BuildManager extends Bot{
-	private static boolean stuck = false;
 	public static int UNDECIDED = 0;
 	public static int STANDARD = 1;
 	public static int AGGRESSIVE = 2;
@@ -22,26 +21,8 @@ public class BuildManager extends Bot{
 		return true;
 	}
 	
-	public static void update() throws Exception {
-		treeCount = rc.getTreeCount();
-		density = getDensity();
-		boolean is_stuck = isStuck();
-		if (is_stuck && !stuck) {
-			stuck = true;
-			if (UnitType.getType() == UnitType.ARCHON) {
-				Globals.setStuckArchons(Globals.getStuckArchons() + 1);
-			}
-		}
-		else if (!is_stuck && stuck) {
-			stuck = false;
-			if (UnitType.getType() == UnitType.ARCHON) {
-				Globals.setStuckArchons(Globals.getStuckArchons() - 1);
-			}
-		}
-	}
-	
-	
 	public static void decideBuild() throws Exception {
+		density = getDensity();
      	if (enemyArchons.length == 1 && rc.getLocation().distanceTo(enemyArchons[0]) < 32 && density < 0.5)
      	{
      		Globals.setStrat(AGGRESSIVE);
@@ -51,6 +32,8 @@ public class BuildManager extends Bot{
 	}
 	
 	public static void executeBuild() throws Exception {
+		treeCount = rc.getTreeCount();
+		density = getDensity();
 		if (!buildNextUnit()) {
 			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
@@ -63,17 +46,26 @@ public class BuildManager extends Bot{
 	}
 	
 	public static float scoreLumberjack() throws GameActionException {
-		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 20.0f), 1.0f) * 0.4f + density * 0.4f + (Globals.getUnitCount(UnitType.LUMBERJACK) / 20) * 0.2f;
+		int lcount = Globals.getUnitCount(UnitType.LUMBERJACK);
+		if (Globals.getLastUnit() == UnitType.LUMBERJACK && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+			 lcount++;
+		}
+		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 20.0f), 1.0f) * 0.40f + density * 0.25f + (20.0f - lcount) / 20.0f * 0.35f;
 	}
 	
 	public static float scoreSoldier() throws GameActionException {
-		if (Globals.getUnitCount(UnitType.SOLDIER) == 0) {
+		int scount = Globals.getUnitCount(UnitType.SOLDIER);
+		if (Globals.getLastUnit() == UnitType.SOLDIER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+			 scount++;
+		}
+		if (scount == 0) {
 			return 1.0f;
 		}
+		Debug.debug_print("Soldier count: " + Integer.toString(scount));
 		if (Globals.getStrat() == AGGRESSIVE) {
-			return Math.min(((float) treeCount + 4) / Globals.getUnitCount(UnitType.SOLDIER), 1.0f);
+			return Math.min(((float) treeCount + 4) / scount, 1.0f);
 		} else {
-			return Math.min(((float) treeCount / 2.0f) / Globals.getUnitCount(UnitType.SOLDIER), 1.0f);
+			return Math.min(((float) treeCount / 2.0f) / scount, 1.0f);
 		}
 	}
 	
@@ -82,13 +74,22 @@ public class BuildManager extends Bot{
 	}
 	
 	public static float scoreScout() throws GameActionException {
-		return ((Globals.getUnitCount(UnitType.SCOUT)== 0) ? 1:0) * 0.1f + ((Globals.getOrderCount() == 0 && Globals.getUnitCount(UnitType.SCOUT) < 6) ? 1:0) * 0.9f;
+		int scount = Globals.getUnitCount(UnitType.SCOUT);
+		if (Globals.getLastUnit() == UnitType.SCOUT && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+			 scount++;
+		}
+		return ((scount == 0) ? 1:0) * 0.3f + ((Globals.getOrderCount() == 0 && scount < 6) ? 1:0) * 0.7f;
 	}
 	
 	public static float scoreGardener() throws GameActionException {
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
+		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+			 gcount++;
+		}
 		if (gcount == 0) {
 			return 1.0f;
+		} else if (gcount > 14) {
+			return 0.0f;
 		}
 		return (Math.min(((float) treeCount) / (gcount * 4), 1.0f));
 	}
@@ -202,6 +203,8 @@ public class BuildManager extends Bot{
 		try {
 			if (rc.canBuildRobot(unit,  testAngle))
 				Globals.updateUnitCounts(UnitType.getType(unit));
+				Globals.setLastUnit(UnitType.getType(unit));
+				Globals.setLastUnitRound(rc.getRoundNum());
 				{rc.buildRobot(unit, testAngle);}
 		} catch (GameActionException e) {
 			e.printStackTrace();
@@ -374,6 +377,8 @@ public class BuildManager extends Bot{
 				Debug.debug_print("built gardener: " + angle.getAngleDegrees());
 				Debug.debug_print("(" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
 				Globals.updateUnitCounts(UnitType.GARDENER);
+				Globals.setLastUnit(UnitType.GARDENER);
+				Globals.setLastUnitRound(rc.getRoundNum());
 				rc.hireGardener(angle);
 			}
 		} catch (GameActionException e) {
