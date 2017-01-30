@@ -38,7 +38,7 @@ public class BuildManager extends Bot{
 			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
 				}
-			if (rc.getTeamBullets() >= 50 && rc.isBuildReady()) {
+			if (rc.getTeamBullets() >= 50 && rc.isBuildReady() && Gardener.roost != null) {
 				Debug.debug_print("Trying to plant a tree");
 				plantSpacedTree(Gardener.roost);
 			}
@@ -50,7 +50,7 @@ public class BuildManager extends Bot{
 		if (Globals.getLastUnit() == UnitType.LUMBERJACK && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 lcount++;
 		}
-		return Math.min((rc.senseNearbyTrees(-1, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.35f + (20.0f - lcount) / 20.0f * 0.20f;
+		return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * 0.20f;
 	}
 	
 	public static float scoreSoldier() throws GameActionException {
@@ -82,16 +82,18 @@ public class BuildManager extends Bot{
 	
 	public static float scoreGardener() throws GameActionException {
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
+		Debug.debug_print("gardener count: " + gcount);
+		Debug.debug_print("stuck gardener count: " + Globals.getStuckGardeners());
 		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 gcount++;
 		}
 		if (gcount > 14) {
 			return 0.0f;
 		}
-		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) < 21)) {
+		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
 			return 1.0f;
 		}
-		return (Math.min(((float) treeCount) / (gcount * 4), 1.0f));
+		return (Math.min(((float) treeCount) / ((gcount) * 4.0f), 1.0f));
 	}
 	
 	
@@ -109,7 +111,7 @@ public class BuildManager extends Bot{
 		Debug.debug_print("Lumberjack score: " + Float.toString(lumberjack_score));
 		Debug.debug_print("Gardener score: " + Float.toString(gardener_score));
 		
-		float max_score = Math.max(Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score), gardener_score);
+		float max_score = Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score);
 
 		Debug.debug_print("Trying to build a unit");
 		
@@ -119,7 +121,7 @@ public class BuildManager extends Bot{
 			if (rc.getType() == RobotType.ARCHON) {
 				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) {
 					Debug.debug_print("we need a gardener");
-					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
+					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost + 5) {
 						Debug.debug_print("Trying to build gardener");
 						trainGardener();
 						return true;
@@ -130,7 +132,7 @@ public class BuildManager extends Bot{
 			
 			if (Math.abs(Math.max(max_score, soldier_score) - soldier_score) < 0.001f) {
 				System.out.println("I want to build a soldier");
-				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost){
+				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost + 5){
 					Debug.debug_print("Trying to build SOLDIER");
 					trainUnit(RobotType.SOLDIER);
 					return true;
@@ -202,10 +204,12 @@ public class BuildManager extends Bot{
 		}
 		try {
 			if (rc.canBuildRobot(unit,  testAngle))
+			{
 				Globals.updateUnitCounts(UnitType.getType(unit));
 				Globals.setLastUnit(UnitType.getType(unit));
 				Globals.setLastUnitRound(rc.getRoundNum());
-				{rc.buildRobot(unit, testAngle);}
+				rc.buildRobot(unit, testAngle);
+			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
@@ -215,21 +219,21 @@ public class BuildManager extends Bot{
 		Debug.debug_bytecode_start();
 		float total = 0;
 		TreeInfo blockingTree = null;
-		for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
+		for (float i = 0; i < 2 * Math.PI; i += Math.PI / 3) {
 			MapLocation clone = rc.getLocation().add(i, rc.getType().bodyRadius - 0.01f);
-			for (int j = 1; j <= 5; j++) 
+			for (int j = 1; j <= 15; j++) 
 			{
-				clone = clone.add(i, (rc.getType().sensorRadius - rc.getType().bodyRadius) / 5);
+				clone = clone.add(i, (rc.getType().sensorRadius - rc.getType().bodyRadius) / 15);
 				blockingTree = rc.senseTreeAtLocation(clone);
 				if (!rc.onTheMap(clone) || (blockingTree != null && blockingTree.getTeam() != rc.getTeam())) 
 				{ 
 					if (!rc.onTheMap(clone))
 					{
-						total += (6 - j)/180f;
+						total += (16 - j)/360f;
 					}
 					else
 					{
-						total += (6 - j)/60f;
+						total += (16 - j)/90f;
 					}
 					
 	
@@ -247,33 +251,40 @@ public class BuildManager extends Bot{
 		Debug.debug_bytecode_start();
 		Direction angle = new Direction(0);
 		int turnCount = 0;
+		float spacing = 2.1f;
 		Debug.debug_print("trying to plant");
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, 3.0f), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 2 && (rc.senseNearbyTrees(roost.add(angle, 3.0f), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, 3.0f), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, 3.0f), 2.5f))) || !rc.onTheMap(roost.add(angle, 3.0f), 1.05f)) && turnCount++ < 8)
+		roost = rc.getLocation();
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 2 && (rc.senseNearbyTrees(roost.add(angle, spacing), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, spacing), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, spacing), 2.5f))) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
 		{
-			rc.setIndicatorDot(roost.add(angle, 3.0f), 155, 155, 155);
+			rc.setIndicatorDot(roost.add(angle, spacing), 155, 155, 155);
 			
-			angle = angle.rotateLeftDegrees(45);
+			angle = angle.rotateLeftDegrees(60);
 		}
 		try 
 		{
-			if (turnCount < 8)
+			if (turnCount < 6)
 			{
 				if (!rc.hasMoved())
 				{
 					Debug.debug_print("moving to plant");
-					Utilities.moveTo((roost.add(angle, 2.0f)));
+					Utilities.moveTo((roost.add(angle, spacing - 2)));
 				}
 				else
 				{
 					Debug.debug_print("already moved, can't plant");
 				}
-				if (rc.getLocation().distanceTo(roost.add(angle, 3.0f)) <= 2.0f)
+				if (rc.getLocation().distanceTo(roost.add(angle, spacing)) <= 2.0f || true)
 				{
 					Gardener.isStuck = false;
 					Gardener.buildIndex++;
 					Debug.debug_print("Planting");
-					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, 3.0f)));
+					rc.plantTree(rc.getLocation().directionTo(roost.add(angle, spacing)));
 					treesPlanted++;
+				}
+				else
+				{
+					Gardener.isStuck = true;
+					return false;
 				}
 				
 				return true;

@@ -5,7 +5,7 @@ import battlecode.common.*;
 public class Gardener extends Bot
 {
 	static int buildIndex = 0;
-	static MapLocation roost = null;
+	public static MapLocation roost = null;
 	static boolean isStuck = false;
 	public static void Start(RobotController RobCon) throws Exception{
 		
@@ -62,19 +62,11 @@ public class Gardener extends Bot
     			}
         	
         	
-    			//if start of game, settle immediately
-    			if (rc.getRoundNum() < 45 && !rc.hasMoved() && rc.isBuildReady())
-					{
-    					if (roost == null)
-    					{
-    						roost = rc.getLocation().add(neo(), 1.0f);
-    					}    					
-    				}
     			
     			
     			
     			//find a place to settle
-    			if (rc.getRoundNum() - builtOn < 23 && !rc.hasMoved() && roost == null)
+    			if (roost == null)
     			{
     				try {
     					Debug.debug_print("find a place to roost");
@@ -83,17 +75,29 @@ public class Gardener extends Bot
     					e.printStackTrace();
     				}	
     			}	
-    			else if (roost != null && rc.getLocation().distanceTo(roost) > 1.5f && !rc.hasMoved())
+    			
+    			if (!rc.hasMoved() && roost != null && rc.getLocation().distanceTo(roost) > 0.1f)
     			{
     				//return to roost if scared away
     				Debug.debug_print("return to roost");
     				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
-        		} else if (roost != null) {
-    				BuildManager.executeBuild();
-    			} else {
-    				roost = rc.getLocation();
+        		}
+    			if (roost == null)
+    			{
+    				TreeInfo[] alliedTrees = rc.senseNearbyTrees(6, ally);
+    				if (alliedTrees.length == 0)
+    				{
+    					roost = rc.getLocation();
+    				}
+    				
     			}
+    			
+    			
+    			if (true) {
+    				BuildManager.executeBuild();
+    			}
+
     			
     		}
         	catch (Exception e) {
@@ -115,7 +119,8 @@ public class Gardener extends Bot
     			Debug.debug_print("can't water");
     		}
     		
-    		if (isStuck) {
+    		if (isStuck) 
+    		{
     			Globals.updateStuckGardeners();
     		}
         	endTurn();

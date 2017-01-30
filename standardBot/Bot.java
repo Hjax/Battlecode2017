@@ -185,8 +185,8 @@ public class Bot {
     			relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
     			
-    			//gardeners should avoid archons and gardeners more
-    			if (rc.getType() == RobotType.GARDENER && (avoidBots[botCount].getType() == RobotType.ARCHON || avoidBots[botCount].getType() == RobotType.GARDENER))
+    			//gardeners should avoid archons and gardeners more FALSED OUT
+    			if (false && rc.getType() == RobotType.GARDENER && (avoidBots[botCount].getType() == RobotType.ARCHON || avoidBots[botCount].getType() == RobotType.GARDENER))
     			{
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
@@ -242,9 +242,27 @@ public class Bot {
         	{
         		relativeX = avoidTrees[treeCount].getLocation().x - rc.getLocation().x;
         		relativeY = avoidTrees[treeCount].getLocation().y - rc.getLocation().y;
+        		
+        		if ((rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.GARDENER) && avoidTrees[treeCount].team == rc.getTeam())
+        		{
+        			xPressure += -120 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+            		yPressure += -120 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        		}
+        		else
+        		{
+        			if (avoidTrees[treeCount].containedBullets > 0 && rc.getType() == RobotType.ARCHON)
+        			{
+        				xPressure += 100 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+                		yPressure += 100 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        			}
+        			else
+        			{
+        				xPressure += -40 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+                		yPressure += -40 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        			}
         			
-        		xPressure += -40 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
-        		yPressure += -40 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        		}
+        		
         	} 
         	Debug.debug_bytecode_end("Tree pathing");
     	}
@@ -262,18 +280,18 @@ public class Bot {
     		
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
-    			if (distFromHighBound < 4)
-    				{yPressure += -30;}
-    			else if (distFromHighBound > 5)
-    				{yPressure += 150;}	
+    			if (distFromHighBound < 10)
+    				{yPressure += -10;}
+    			else if (distFromHighBound > 11)
+    				{yPressure += 10;}	
     			Debug.debug_print("D1Y: " + yPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
-    			if (distFromLowBound < 4)
-    				{yPressure += 30;}
-    			else if (distFromLowBound > 5)
-    				{yPressure += -150;}	
+    			if (distFromLowBound < 10)
+    				{yPressure += 10;}
+    			else if (distFromLowBound > 11)
+    				{yPressure += -10;}	
     			Debug.debug_print("D2Y: " + yPressure);
     		}
     		
@@ -287,20 +305,20 @@ public class Bot {
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
     			Debug.debug_print("right edge at " + Globals.getRightEdge());
-    			if (distFromHighBound < 4)
-    				{xPressure += -30;}
-    			else if (distFromHighBound > 5)
-    				{xPressure += 150;}	
+    			if (distFromHighBound < 10)
+    				{xPressure += -10;}
+    			else if (distFromHighBound > 11)
+    				{xPressure += 10;}	
     			Debug.debug_print("D1X: " + xPressure);
     		}
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
     			Debug.debug_print("left edge at " + Globals.getLeftEdge());
     			Debug.debug_print("D2startX: " + xPressure);
-    			if (distFromLowBound < 4)
-    				{xPressure += 30;}
-    			else if (distFromLowBound > 5)
-    				{xPressure += -150;}	
+    			if (distFromLowBound < 10)
+    				{xPressure += 10;}
+    			else if (distFromLowBound > 11)
+    				{xPressure += -10;}	
     			Debug.debug_print("D2X: " + xPressure);
     		}
     	}
@@ -349,7 +367,7 @@ public class Bot {
     	Debug.debug_print("EY: " + yPressure);
     	
     	//avoid previous location - AKA pressure bug
-    	if (rc.senseNearbyTrees(2 + rc.getType().bodyRadius, Team.NEUTRAL).length > 0 || rc.senseNearbyTrees(1 + rc.getType().bodyRadius, ally).length > 0)
+    	if (rc.senseNearbyTrees(2 + rc.getType().bodyRadius, Team.NEUTRAL).length > 0 || rc.senseNearbyTrees(2 + rc.getType().bodyRadius, ally).length > 0)
     	{
     		rc.setIndicatorDot(lastPosition, 50, 150, 250);
     		if (lastPosition.equals(rc.getLocation()) == false)

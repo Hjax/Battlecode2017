@@ -33,15 +33,6 @@ public class Archon extends Bot{
             	OrderManager.checkCreateOrderCheap();
             	Debug.debug_bytecode_end("create orders");
             	
-            	TreeInfo trees[] = rc.senseNearbyTrees();
-            	if (trees.length > 0){
-            		for (TreeInfo tree: trees){
-            			if (tree.getContainedBullets() >= 10){
-            				Utilities.moveTo(tree.location);
-            				break;
-            			}
-            		}
-            	}
             	
                 // dodge
             	if (!rc.hasMoved())

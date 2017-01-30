@@ -13,7 +13,7 @@ public class Utilities extends Bot{
      */
     static boolean tryMove(Direction dir) throws GameActionException 
     {    	
-        return tryMove(dir,1.5f,20);
+        return tryMove(dir,2.5f,20);
     }
 
     /**
@@ -78,7 +78,7 @@ public class Utilities extends Bot{
     		distance = rc.getType().strideRadius;	
     		// No move performed, try slightly further
     		currentCheck++;
-    		degreeOffset = degreeOffset * 1.175f;
+    		degreeOffset = degreeOffset * 1.10f;
         }
 
         // A move never happened, so return false.
@@ -145,7 +145,7 @@ public class Utilities extends Bot{
             // line that is the path of the bullet.
             float perpendicularDist = (float)Math.abs(distToRobot * Math.sin(theta)); // soh cah toa :)
 
-            if (perpendicularDist < 1) {
+            if (perpendicularDist < friend.radius) {
             	Debug.debug_print("hitting neutral tree");
 
 					rc.setIndicatorDot(friend.getLocation(), 255, 255, 255);
