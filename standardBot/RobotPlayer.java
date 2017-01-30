@@ -20,10 +20,7 @@ public strictfp class RobotPlayer {
                 Archon.Start(rc);
                 break;
             case GARDENER:
-            	if (Bot.behaviorType == 0)
-            		{Gardener.Start(rc);}
-            	else 
-            		{Trainer.Start(rc);}
+            	Gardener.Start(rc);
                 break;
             case SOLDIER:
                 Soldier.Start(rc);

@@ -16,10 +16,7 @@ public class UnitType extends Bot {
 	        case ARCHON:
 	        	return ARCHON;
 	        case GARDENER:
-	        	if (behaviorType == 0){
-	        		return GARDENER;
-	        	}
-	        	return TRAINER;
+	        	return GARDENER;
 	        case SOLDIER:
 	        	return SOLDIER;
 	        case LUMBERJACK:
