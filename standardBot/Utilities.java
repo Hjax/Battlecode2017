@@ -43,7 +43,7 @@ public class Utilities extends Bot{
         Direction tryLeft = dir;
         Direction tryRight = dir;
         
-        while (currentCheck<=checksPerSide)
+        while (currentCheck<=checksPerSide && Clock.getBytecodesLeft() > 750)
         {
         	// Try the offset of the left side
     		tryLeft = tryLeft.rotateLeftDegrees(degreeOffset);
@@ -521,16 +521,17 @@ public class Utilities extends Bot{
 		float relativeY = 0f;
 		MapLocation bulletLoc = null;
 		MapLocation currentLoc = rc.getLocation();
+		TreeInfo treeCollision = null;
 		TreeInfo[] trees = rc.senseNearbyTrees(rc.getType().bodyRadius + rc.getType().strideRadius);
 		
-		while (Clock.getBytecodesLeft() >  3000)
+		while (Clock.getBytecodesLeft() >  3500)
 		{
 			xPres = 0;
 			yPres = 0;
 			//dodge bullets
 			for (int countBullets = 0; countBullets < relevantBullets; countBullets++)
 			{
-				if (Clock.getBytecodesLeft() > 3000)
+				if (Clock.getBytecodesLeft() > 3500)
 				{
 					
 					bulletLoc = bullets[countBullets].location;
@@ -542,6 +543,11 @@ public class Utilities extends Bot{
 					yPres += relativeY / ((currentLoc.distanceTo(bulletLoc) + 0.05) * (currentLoc.distanceTo(bulletLoc) + 0.05));
 					for (int bulletStep = 0; bulletStep < 5; bulletStep++)
 					{
+						treeCollision = rc.senseTreeAtLocation(bulletLoc);
+						if (treeCollision != null)
+						{
+							break;
+						}
 						bulletLoc = bulletLoc.add(bullets[countBullets].dir, bullets[countBullets].speed / 4);
 						relativeX = currentLoc.x - bulletLoc.x;
 						relativeX += Math.copySign(0.5, relativeX);
@@ -603,7 +609,7 @@ public class Utilities extends Bot{
 			}
 			pressureMultiplier *= 0.6;
 			Debug.debug_print("bytes left: " + Clock.getBytecodesLeft());
-			Debug.debug_print((Clock.getBytecodesLeft() - 3000) / bullets.length);
+			Debug.debug_print((Clock.getBytecodesLeft() - 3500) / bullets.length);
 		}
 		Debug.debug_bytecode_end("naive dodging ");
 		return currentLoc;

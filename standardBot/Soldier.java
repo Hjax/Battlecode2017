@@ -50,6 +50,7 @@ public class Soldier extends Bot{
             	MapLocation hug = rc.getLocation();
             	if (enemiesMaxRange.length > 0)
     			{
+            		Debug.debug_print("enemy in vision");
     				for (int i = 0; i < enemiesMaxRange.length; i++)
     				{
     					if (enemiesMaxRange[i].getType() != RobotType.ARCHON)
@@ -103,10 +104,6 @@ public class Soldier extends Bot{
             		Utilities.moveTo(moveDesire);
                 		
             	}
-            	if (!rc.hasAttacked())
-            	{
-            		System.out.println("did not fire this turn");
-            	}
 
             } catch (Exception e) {
                 System.out.println("Soldier Exception");
@@ -120,7 +117,7 @@ public class Soldier extends Bot{
 	{
 		if (angle != null && target != null)
     	{
-    		if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)))
+    		if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getTreeCount() > 4 || rc.getTeamBullets() > 50 || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)))
 			{
 				if (rc.getTeamBullets() < 8)
 				{

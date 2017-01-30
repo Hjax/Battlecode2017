@@ -94,7 +94,7 @@ public class BuildManager extends Bot{
 		if (gcount > 14) {
 			return 0.0f;
 		}
-		if (gcount <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
+		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
 			return 1.0f;
 		}
 		return (Math.min(((float) treeCount) / ((gcount  - Globals.getStuckGardeners()/2) * 5.0f), 1.0f));
@@ -115,7 +115,7 @@ public class BuildManager extends Bot{
 		Debug.debug_print("Lumberjack score: " + Float.toString(lumberjack_score));
 		Debug.debug_print("Gardener score: " + Float.toString(gardener_score));
 		
-		float max_score = Math.max(Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score), gardener_score);
+		float max_score = Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score);
 
 		Debug.debug_print("Trying to build a unit");
 		
@@ -124,15 +124,20 @@ public class BuildManager extends Bot{
 			
 			if (rc.getType() == RobotType.ARCHON) 
 			{
-				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) 
+				RobotInfo[] allies = rc.senseNearbyRobots(6, ally);
+				int countAlly = 0;
+				for (countAlly = 0; countAlly < allies.length; countAlly++)
 				{
-					Debug.debug_print("we need a gardener");
-					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) 
+					if (allies[countAlly].getType() == RobotType.GARDENER)
 					{
-						Debug.debug_print("Trying to build gardener");
-						trainGardener();
-						return true;
+						break;
 					}
+				}
+				if (countAlly >= allies.length && rc.getTeamBullets() > 105 && gardener_score == 1)
+				{
+					Debug.debug_print("Trying to build gardener");
+					trainGardener();
+					return true;
 				}
 				return false;
 			}
@@ -141,21 +146,21 @@ public class BuildManager extends Bot{
 				System.out.println("I want to build a soldier");
 				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost + 5){
 					Debug.debug_print("Trying to build SOLDIER");
-					trainUnit(RobotType.SOLDIER);
+					trainUnit(RobotType.SOLDIER, Gardener.roost);
 					return true;
 				}
 			}
 			else if (Math.abs(Math.max(max_score, scout_score) - scout_score) < 0.001f) {
 				if (rc.getTeamBullets() > RobotType.SCOUT.bulletCost){
 					Debug.debug_print("Trying to build scout");
-					trainUnit(RobotType.SCOUT);
+					trainUnit(RobotType.SCOUT, Gardener.roost);
 					return true;
 				}
 			}
 			else if (Math.abs(Math.max(max_score, lumberjack_score) - lumberjack_score) < 0.001f) {
 				if (rc.getTeamBullets() > RobotType.LUMBERJACK.bulletCost){
 					Debug.debug_print("Trying to build lumberjack");
-					trainUnit(RobotType.LUMBERJACK);
+					trainUnit(RobotType.LUMBERJACK, Gardener.roost);
 					return true;
 				}
 			}
@@ -163,7 +168,7 @@ public class BuildManager extends Bot{
 			else if (Math.abs(Math.max(max_score, tank_score) - tank_score) < 0.001f) {
 				if (rc.getTeamBullets() > RobotType.TANK.bulletCost){
 					Debug.debug_print("Trying to build tank");
-					trainUnit(RobotType.TANK);
+					trainUnit(RobotType.TANK, Gardener.roost);
 					return true;
 				}
 			}	
@@ -189,8 +194,13 @@ public class BuildManager extends Bot{
     	}
 	}
 
-	public static void trainUnit(RobotType unit) throws Exception
+	public static void trainUnit(RobotType unit, MapLocation roost) throws Exception
 	{
+		if (roost == null)
+		{
+			roost = rc.getLocation();
+		}
+		Debug.debug_print("training unit");
 		Direction angle = new Direction(0);
 		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
 		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
@@ -201,14 +211,23 @@ public class BuildManager extends Bot{
 		}
 		int turnCount = 0;
 		Direction testAngle = angle;
-		while (!rc.canBuildRobot(unit, testAngle) && turnCount++ < 60)
+		float spacing = 2.1f;
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 60)
 		{
+			rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
+			
 			testAngle = angle.rotateRightDegrees(3 * turnCount);
-			if (!rc.canBuildRobot(unit, testAngle))
+			if ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)))
 			{
+				rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
 				testAngle = angle.rotateLeftDegrees(3 * turnCount);
 			}
 		}
+		if (unit == RobotType.TANK)
+		{
+			Utilities.moveTo(rc.getLocation().add(testAngle, spacing - 1));
+		}
+
 		try {
 			if (rc.canBuildRobot(unit,  testAngle))
 			{
@@ -261,7 +280,7 @@ public class BuildManager extends Bot{
 		float spacing = 2.1f;
 		Debug.debug_print("trying to plant");
 		roost = rc.getLocation();
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 1 && (rc.senseNearbyTrees(roost.add(angle, spacing), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, spacing), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, spacing), 2.5f))) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
 		{
 			rc.setIndicatorDot(roost.add(angle, spacing), 155, 155, 155);
 			
@@ -289,7 +308,7 @@ public class BuildManager extends Bot{
 				{
 					Debug.debug_print("already moved, can't plant");
 				}
-				if (rc.getLocation().distanceTo(roost.add(angle, spacing)) <= 2.0f || true)
+				if (rc.getLocation().distanceTo(roost.add(angle, spacing)) <= 2.05f)
 				{
 					Gardener.isStuck = false;
 					Gardener.buildIndex++;

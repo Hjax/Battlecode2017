@@ -359,33 +359,40 @@ public class Bot {
     	
     	Debug.debug_print("EX: " + xPressure);
     	Debug.debug_print("EY: " + yPressure);
-    	
+    	TreeInfo[] bugTrees = rc.senseNearbyTrees(2 + rc.getType().bodyRadius);
     	//avoid previous location - AKA pressure bug
-    	if (rc.senseNearbyTrees(2 + rc.getType().bodyRadius, Team.NEUTRAL).length > 0 || rc.senseNearbyTrees(2 + rc.getType().bodyRadius, ally).length > 0)
+    	if (bugTrees.length > 0)
     	{
     		rc.setIndicatorDot(lastPosition, 50, 150, 250);
     		if (lastPosition.equals(rc.getLocation()) == false)
     		{
-    			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateLeftRads((float) (Math.PI / 2 - Math.PI / 10)), 3), 0,0,0);
-    			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateRightRads((float) (Math.PI / 2 - Math.PI / 10)), 3), 0,0,0);
     			
+    			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateLeftRads((float) (Math.PI / 2 - Math.PI / 36)), 3), 0,0,0);
+    			rc.setIndicatorLine(lastPosition, lastPosition.add(lastPosition.directionTo(rc.getLocation()).rotateRightRads((float) (Math.PI / 2 - Math.PI / 36)), 3), 0,0,0);
+    			
+    			float rotateX = 0;
+    			float rotateY = 0;
+    			
+    			double perp = 0;
+    			double straight = 0;
+	        			
     			relativeX = lastPosition.x - rc.getLocation().x;
     			relativeY = lastPosition.y - rc.getLocation().y;
         	
-    			float rotateX = (float) (relativeX * Math.cos(Math.PI / 10) - relativeY * Math.sin(Math.PI / 10));
-    			float rotateY = (float) (relativeX * Math.sin(Math.PI / 10) + relativeY * Math.cos(Math.PI / 10));
+    			rotateX = (float) (relativeX * Math.cos(Math.PI / 36) - relativeY * Math.sin(Math.PI / 36));
+    			rotateY = (float) (relativeX * Math.sin(Math.PI / 36) + relativeY * Math.cos(Math.PI / 36));
         	
     			Debug.debug_print("Rotate left x: " + rotateX);
     			Debug.debug_print("Rotate left y: " + rotateY);
         		
-	        	double perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
-	        	double straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
+	        	perp = (yPressure - xPressure * rotateY / (rotateX + Math.copySign(0.01, rotateX)))/ ((rotateX + (rotateY * rotateY) + Math.copySign(0.01, rotateX + (rotateY * rotateY)))/(rotateX + Math.copySign(0.01, rotateX)));
+	        	straight = Math.min(0,  xPressure / (rotateX + Math.copySign(0.01, rotateX)) + rotateY * perp/(rotateX + Math.copySign(0.01, rotateX)));
 	        		
 	        	xPressure = straight * relativeX - perp * relativeY;
 	        	yPressure = perp * relativeX + straight * relativeY;
 	        	
-	        	rotateX = (float) (relativeX * Math.cos(Math.PI / -10) - relativeY * Math.sin(Math.PI / -10));
-	        	rotateY = (float) (relativeX * Math.sin(Math.PI / -10) + relativeY * Math.cos(Math.PI / -10));
+	        	rotateX = (float) (relativeX * Math.cos(Math.PI / -36) - relativeY * Math.sin(Math.PI / -36));
+	        	rotateY = (float) (relativeX * Math.sin(Math.PI / -36) + relativeY * Math.cos(Math.PI / -36));
 	        	
 	        	Debug.debug_print("Rotate right x: " + rotateX);
 	        	Debug.debug_print("Rotate right y: " + rotateY);
@@ -399,14 +406,19 @@ public class Bot {
 	        	Debug.debug_print("BugX: " + xPressure);
 	        	Debug.debug_print("BugY: " + yPressure);
 	        	
-	        	xPressure += -30 * relativeX;
-	        	yPressure += -30 * relativeY;
+	        	xPressure += -30 * relativeX / rc.getLocation().distanceTo(lastPosition);
+	        	yPressure += -30 * relativeY / rc.getLocation().distanceTo(lastPosition);
 	        	
 	        	Debug.debug_print("Relative X: " + relativeX);
 	        	Debug.debug_print("Relative Y: " + relativeY);
 	        	
 	        	Debug.debug_print("repelX: " + xPressure);
 	        	Debug.debug_print("repelY: " + yPressure);
+	        	
+	        	
+	        	
+
+	        	
     		}
     		
         		
