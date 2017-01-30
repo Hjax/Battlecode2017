@@ -1,4 +1,4 @@
-package standardBot;
+package frozenStandard;
 
 import battlecode.common.*;
 
@@ -88,15 +88,7 @@ public class Soldier extends Bot{
             	float angleDiff = 0;
             	if (angle != null)
             	{
-            		if (moveDesire.equals(rc.getLocation()))
-            		{
-            			angleDiff = 0;
-            		}
-            		else
-            		{
-            			angleDiff = Math.abs(rc.getLocation().directionTo(moveDesire).degreesBetween(angle));
-            		}
-            		
+            		angleDiff = Math.abs(rc.getLocation().directionTo(moveDesire).degreesBetween(angle));
             	}
             	Debug.debug_print("angleDiff: " + angleDiff);
             	if (angleDiff < 90)
