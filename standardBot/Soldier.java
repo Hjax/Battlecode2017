@@ -15,6 +15,12 @@ public class Soldier extends Bot{
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
             	startTurn();
+            	
+            	if (Globals.getOrderCount() == 0) {
+                	Debug.debug_bytecode_start();
+                	OrderManager.checkCreateOrderCheap();
+                	Debug.debug_bytecode_end("create orders");
+            	}
 
                 MapLocation target = null;
                 Direction angle = null;
