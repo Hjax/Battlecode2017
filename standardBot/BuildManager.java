@@ -196,7 +196,7 @@ public class BuildManager extends Bot{
 
     	// donate bullets if we can win in 100 rounds, or if we have 1000 bullets, or if theres 150 rounds or less until the end of the game
     	if ((rc.getTreeCount() > 0 && ((bullets_to_win - rc.getTeamBullets()) / rc.getTreeCount()) <= win_round) || 
-    		(rc.getTeamBullets() > 1000 || rc.getRoundLimit() - rc.getRoundNum() < 150))  {
+    		((rc.getTeamBullets() > 1000 && rc.getRoundNum() > 200) || rc.getRoundLimit() - rc.getRoundNum() < 150))  {
     		rc.donate((float) (rc.getTeamBullets() - rc.getTeamBullets() % (7.5 + (rc.getRoundNum() * 12.5 / 3000))));
     	}
 	}
