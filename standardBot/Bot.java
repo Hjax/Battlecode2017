@@ -246,8 +246,8 @@ public class Bot {
         		{
         			if (avoidTrees[treeCount].containedBullets > 0 && rc.getType() == RobotType.ARCHON)
         			{
-        				xPressure += 100 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
-                		yPressure += 100 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
+        				xPressure += avoidTrees[treeCount].containedBullets * 5 * avoidTrees[treeCount].radius / (relativeX + Math.copySign(1,  relativeX));
+                		yPressure += avoidTrees[treeCount].containedBullets * 5 * avoidTrees[treeCount].radius / (relativeY + Math.copySign(1, relativeY));
         			}
         			else
         			{

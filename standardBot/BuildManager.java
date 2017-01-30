@@ -64,7 +64,7 @@ public class BuildManager extends Bot{
 		if (Globals.getStrat() == AGGRESSIVE) {
 			return Math.min(((float) treeCount + 4) / scount, 1.0f);
 		} else {
-			return Math.min(((float) treeCount / 2.0f) / scount, 1.0f);
+			return Math.min(((float) (treeCount + 2) / 2.0f) / scount, 1.0f);
 		}
 	}
 	
@@ -84,16 +84,20 @@ public class BuildManager extends Bot{
 		int gcount = Globals.getUnitCount(UnitType.GARDENER);
 		Debug.debug_print("gardener count: " + gcount);
 		Debug.debug_print("stuck gardener count: " + Globals.getStuckGardeners());
+		if (Globals.getUnitCount(UnitType.ARCHON) == 0)
+		{
+			return 0;
+		}
 		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 gcount++;
 		}
 		if (gcount > 14) {
 			return 0.0f;
 		}
-		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
+		if (gcount <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
 			return 1.0f;
 		}
-		return (Math.min(((float) treeCount) / ((gcount) * 4.0f), 1.0f));
+		return (Math.min(((float) treeCount) / ((gcount  - Globals.getStuckGardeners()/2) * 5.0f), 1.0f));
 	}
 	
 	
@@ -111,24 +115,27 @@ public class BuildManager extends Bot{
 		Debug.debug_print("Lumberjack score: " + Float.toString(lumberjack_score));
 		Debug.debug_print("Gardener score: " + Float.toString(gardener_score));
 		
-		float max_score = Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score);
+		float max_score = Math.max(Math.max(Math.max(Math.max(soldier_score, tank_score), scout_score), lumberjack_score), gardener_score);
 
 		Debug.debug_print("Trying to build a unit");
 		
 		if (rc.isBuildReady() && treesPlanted < 8) {
 			Debug.debug_print("Ready to build");
 			
-			if (rc.getType() == RobotType.ARCHON) {
-				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) {
+			if (rc.getType() == RobotType.ARCHON) 
+			{
+				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) 
+				{
 					Debug.debug_print("we need a gardener");
-					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
+					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) 
+					{
 						Debug.debug_print("Trying to build gardener");
 						trainGardener();
 						return true;
 					}
 				}
 				return false;
-				}
+			}
 			
 			if (Math.abs(Math.max(max_score, soldier_score) - soldier_score) < 0.001f) {
 				System.out.println("I want to build a soldier");
