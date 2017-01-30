@@ -43,6 +43,7 @@ public class Bot {
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		Globals.setRoundNumber(rc.getRoundNum());
     		Globals.clearUnitCounts();
+    		Globals.clearStuckGardeners();
     		
     		if (rc.getRoundNum() == 1) {
     			// we went first on the first round, add enemy archon spawns as orders

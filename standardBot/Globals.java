@@ -127,4 +127,9 @@ public class Globals extends Bot{
 		return Memory.readGlobal(23 + (1 - rc.getRoundNum() % 2));
 	}
 	
+	public static void clearStuckGardeners() throws Exception {
+		int location = 23 + (rc.getRoundNum() % 2);
+		Memory.writeGlobal(location, 0);
+	}
+	
 }
