@@ -66,7 +66,7 @@ public class Gardener extends Bot
     			
     			
     			//find a place to settle
-    			if (roost == null)
+    			if (roost == null || BuildManager.treesPlanted == 0)
     			{
     				try {
     					Debug.debug_print("find a place to roost");
@@ -76,14 +76,7 @@ public class Gardener extends Bot
     				}	
     			}	
     			
-    			if (!rc.hasMoved() && roost != null && rc.getLocation().distanceTo(roost) > 0.1f)
-    			{
-    				//return to roost if scared away
-    				Debug.debug_print("return to roost");
-    				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
-    				Utilities.moveTo(roost);
-        		}
-    			if (roost == null)
+    			if (roost == null || BuildManager.treesPlanted == 0)
     			{
     				TreeInfo[] alliedTrees = rc.senseNearbyTrees(6, ally);
     				if (alliedTrees.length == 0)
@@ -92,6 +85,13 @@ public class Gardener extends Bot
     				}
     				
     			}
+    			if (!rc.hasMoved() && roost != null && rc.getLocation().distanceTo(roost) > 0.1f)
+    			{
+    				//return to roost if scared away
+    				Debug.debug_print("return to roost");
+    				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
+    				Utilities.moveTo(roost);
+        		}
     			
     			
     			if (true) {

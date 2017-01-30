@@ -10,7 +10,6 @@ public class Bot {
     protected static Team enemy;
 	public static MapLocation[] allyArchons;
 	public static MapLocation[] enemyArchons;
-	public static int behaviorType = 0;
 	public static boolean isFirst = false;
 	public static Random rand;
 	public static MapLocation lastPosition;
@@ -25,11 +24,6 @@ public class Bot {
     	lastPosition = rc.getLocation();
     	
     	rand = new Random(rc.getID());
-    	
-    	if (rc.getType() == RobotType.GARDENER && Globals.getUnitCount(UnitType.TRAINER) < Math.floor((Globals.getUnitCount(UnitType.GARDENER))/3))
-    	{
-    		behaviorType = 1;
-    	}
     	
     	try {
 			Globals.updateEdges();
@@ -68,7 +62,7 @@ public class Bot {
 
     	Globals.updateUnitCounts();
 
-    	if (rc.getType() != RobotType.GARDENER || behaviorType == 1)
+    	if (rc.getType() != RobotType.GARDENER)
     	{
     		// NOTE we only set this for units that need it
     		enemiesMaxRange = rc.senseNearbyRobots(-1, enemy);
@@ -234,7 +228,7 @@ public class Bot {
     	
     	
     	//if gardener or archon, avoid trees
-    	if (rc.getType() == RobotType.GARDENER && behaviorType == 0 || rc.getType() == RobotType.ARCHON)
+    	if (rc.getType() == RobotType.GARDENER || rc.getType() == RobotType.ARCHON)
     	{
     		Debug.debug_bytecode_start();
     		TreeInfo[] avoidTrees = rc.senseNearbyTrees(7);
@@ -268,7 +262,7 @@ public class Bot {
     	}
     	
     	//if gardener, move toward nearest edge
-    	if (rc.getType() == RobotType.GARDENER && behaviorType == 0)
+    	if (rc.getType() == RobotType.GARDENER)
     	{
     		
     		double distFromLowBound = 1000;

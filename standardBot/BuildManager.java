@@ -8,7 +8,7 @@ public class BuildManager extends Bot{
 	public static int AGGRESSIVE = 2;
 	private static int treeCount = 0;
 	private static float density = 0;
-	private static int treesPlanted = 0;
+	public static int treesPlanted = 0;
 
 	public static boolean isStuck() {
 		Direction angle = new Direction(0);
@@ -121,7 +121,7 @@ public class BuildManager extends Bot{
 			if (rc.getType() == RobotType.ARCHON) {
 				if (Math.abs(Math.max(max_score, gardener_score) - gardener_score) < 0.001f) {
 					Debug.debug_print("we need a gardener");
-					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost + 5) {
+					if (rc.getTeamBullets() > RobotType.GARDENER.bulletCost) {
 						Debug.debug_print("Trying to build gardener");
 						trainGardener();
 						return true;
@@ -254,9 +254,18 @@ public class BuildManager extends Bot{
 		float spacing = 2.1f;
 		Debug.debug_print("trying to plant");
 		roost = rc.getLocation();
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 2 && (rc.senseNearbyTrees(roost.add(angle, spacing), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, spacing), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, spacing), 2.5f))) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 1 && (rc.senseNearbyTrees(roost.add(angle, spacing), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, spacing), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, spacing), 2.5f))) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
 		{
 			rc.setIndicatorDot(roost.add(angle, spacing), 155, 155, 155);
+			
+			angle = angle.rotateLeftDegrees(60);
+		}
+		rc.setIndicatorDot(roost.add(angle, spacing), 0, 255, 0);
+		angle = angle.rotateLeftDegrees(60);
+		turnCount++;
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || (Globals.getUnitCount(UnitType.GARDENER) < 2 && (rc.senseNearbyTrees(roost.add(angle, spacing), 1.05f, ally).length + rc.senseNearbyTrees(roost.add(angle, spacing), 2.5f, Team.NEUTRAL).length > 0 || !rc.onTheMap(roost.add(angle, spacing), 2.5f))) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)
+		{
+			rc.setIndicatorDot(roost.add(angle, spacing), 255, 255, 255);
 			
 			angle = angle.rotateLeftDegrees(60);
 		}
