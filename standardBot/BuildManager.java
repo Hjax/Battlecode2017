@@ -58,7 +58,14 @@ public class BuildManager extends Bot{
 		if (Globals.getLastUnit() == UnitType.SOLDIER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
 			 scount++;
 		}
-		if (scount == 0) {
+		boolean needsSoldiers = false;
+		for (int i = 0; i < enemiesMaxRange.length; i++) {
+			if ((enemiesMaxRange[i].type != RobotType.ARCHON && enemiesMaxRange[i].type != RobotType.SCOUT) || (enemiesMaxRange[i].location.distanceTo(rc.getLocation()) <= 3 && enemiesMaxRange[i].type == RobotType.SCOUT)) {
+				needsSoldiers = true;
+				break;
+			}
+		}
+		if (scount == 0 || needsSoldiers) {
 			return 1.0f;
 		}
 		if (Globals.getStrat() == AGGRESSIVE) {
