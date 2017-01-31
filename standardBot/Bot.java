@@ -183,7 +183,7 @@ public class Bot {
         		}	
         		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
-        			if (rc.getRoundNum() > 300 || !OrderManager.isStuckArchon(enemiesMaxRange[botCount].location))
+        			if (rc.getRoundNum() > 500 || !OrderManager.isStuckArchon(enemiesMaxRange[botCount].location))
         			{
         				//be very attracted to enemy archons
         				xPressure += relativeX * 20 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);

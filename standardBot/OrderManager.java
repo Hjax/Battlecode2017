@@ -73,7 +73,7 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 			}
 		}
 		for (int i = 0; i < enemiesMaxRange.length; i++) {
-			if (enemiesMaxRange[i].getType() != RobotType.SCOUT && (enemiesMaxRange[i].getType() != RobotType.ARCHON || (rc.getRoundNum() > 300 || !isStuckArchon(enemiesMaxRange[i].location)))) {
+			if (enemiesMaxRange[i].getType() != RobotType.SCOUT && (enemiesMaxRange[i].getType() != RobotType.ARCHON || (rc.getRoundNum() > 500 || !isStuckArchon(enemiesMaxRange[i].location)))) {
 				Memory.addOrder(new Order(0, enemiesMaxRange[i].location, 3000, -1));
 				return;
 			}
