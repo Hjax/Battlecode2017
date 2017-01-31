@@ -7,42 +7,43 @@ public class Archon extends Bot{
 		
         Debug.debug_print("Starting Archon Code");    
         
-        if (BuildManager.isWalledInArchon() && rc.getRoundNum() == 1) {
-        	Globals.setWalledInArchons(Globals.getWalledInArchons() + 1);
-        	Debug.debug_print("We are walled in on this map");
+        if (rc.getRoundNum() == 1) {
+            if (BuildManager.isWalledInArchon()) {
+            	Globals.setWalledInArchons(Globals.getWalledInArchons() + 1);
+            	Debug.debug_print("We are walled in on this map");
+            }
+            
+            try {
+    			Globals.setSuicide(0);
+    		} catch (Exception e2) {
+    			// TODO Auto-generated catch block
+    			e2.printStackTrace();
+    		}
+            
+            int archonNum = 0;
+         	for (archonNum = 0; archonNum < allyArchons.length; archonNum++)
+         	{
+         		if (rc.getLocation().equals(allyArchons[archonNum]))
+         		{
+         			break;
+         		}
+         	}
+         	
+            if (BuildManager.isStuck()) {
+            	int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
+            	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[archonNum]));
+            	rc.setIndicatorDot(enemyArchons[symmetries[archonNum]], 255, 255, 255);
+            	Debug.debug_print("I am stuck!");
+            }
+            
+         	try {
+                BuildManager.decideBuild();
+    		} catch (Exception e1) {
+    			e1.printStackTrace();
+    		}
+         	
         }
-        
-        try {
-			Globals.setSuicide(0);
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-        
-        int archonNum = 0;
-     	for (archonNum = 0; archonNum < allyArchons.length; archonNum++)
-     	{
-     		if (rc.getLocation().equals(allyArchons[archonNum]))
-     		{
-     			break;
-     		}
-     	}
-     	
-        if (BuildManager.isStuck()) {
-        	int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
-        	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[archonNum]));
-        	rc.setIndicatorDot(enemyArchons[symmetries[archonNum]], 255, 255, 255);
-        	Debug.debug_print("I am stuck!");
-        }
-        
-     	try {
-            BuildManager.decideBuild();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-     	
 
-     	
      	float maxDist = 0;
 		float myDist = 1000;
 		for (int i = 0; i < enemyArchons.length; i++)
