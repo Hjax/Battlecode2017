@@ -116,7 +116,7 @@ public class BuildManager extends Bot{
 		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 1)) {
 			return 1.0f;
 		}
-		return (Math.min(((float) treeCount) / ((gcount  - Globals.getStuckGardeners()/2) * 5.0f), 1.0f));
+		return (Math.min(((float) treeCount) / ((gcount) * 5.0f), 1.0f));
 	}
 	
 	
