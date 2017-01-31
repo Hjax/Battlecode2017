@@ -634,4 +634,92 @@ public class Utilities extends Bot{
 		
 		
 	}
+	
+	public static int[] symmetrizeStarts(MapLocation[] ours, MapLocation[] theirs)
+	{
+		int[][] symmetryType = new int[ours.length][theirs.length];
+		// 0 = x symmetry
+		// 1 = y symmetry
+		// 2 = rotational symmetry
+		// -1 = no symmetry
+		int[] symmetryCounts = new int[3];
+		int decidedSymmetry = -1;
+		int[] results = new int[ours.length];
+		float[][] xMid = new float[ours.length][theirs.length];
+		float[][] yMid = new float[ours.length][theirs.length];
+		
+		for (int allyArchon = 0; allyArchon < ours.length; allyArchon++)
+		{
+			for (int enemyArchon = 0; enemyArchon < theirs.length; enemyArchon++)
+			{
+				xMid[allyArchon][enemyArchon] = (ours[allyArchon].x + theirs[enemyArchon].x)/2; 
+				yMid[allyArchon][enemyArchon] = (ours[allyArchon].y + theirs[enemyArchon].y)/2;
+				if (Math.abs(ours[allyArchon].x - theirs[enemyArchon].x) < 0.01f)
+				{
+					symmetryType[allyArchon][enemyArchon] = 1;
+					symmetryCounts[1]++;
+				}
+				else if (Math.abs(ours[allyArchon].y - theirs[enemyArchon].y) < 0.01f)
+				{
+					symmetryType[allyArchon][enemyArchon] = 0;
+					symmetryCounts[0]++;
+					
+				}
+				else symmetryType[allyArchon][enemyArchon] = -1;
+			}
+		}
+		if (symmetryCounts[0] >= ours.length)
+		{
+			decidedSymmetry = 0;
+		}
+		else if (symmetryCounts[1] >= ours.length)
+		{
+			decidedSymmetry = 1;
+
+		}
+		else
+		{
+			decidedSymmetry = 2;
+		}
+		Debug.debug_print("Symmetry type: " + decidedSymmetry);
+		float xMidCheck = 0;
+		float yMidCheck = 0;
+		for (int checkArchon = 0; checkArchon < ours.length; checkArchon++)
+		{
+			xMidCheck = xMid[0][checkArchon];
+			yMidCheck = yMid[0][checkArchon];
+			for (int allyArchon = 0; allyArchon < ours.length; allyArchon++)
+			{
+				for (int enemyArchon = 0; enemyArchon < theirs.length; enemyArchon++)
+				{
+					if (decidedSymmetry == 0)
+					{
+						if (Math.abs(ours[allyArchon].y - theirs[enemyArchon].y) < 0.01f && Math.abs(xMid[allyArchon][enemyArchon] - xMidCheck) < 0.01f)
+						{
+							results[enemyArchon] = allyArchon;
+							break;
+						}
+					}
+					if (decidedSymmetry == 1)
+					{
+						if (Math.abs(ours[allyArchon].x - theirs[enemyArchon].x) < 0.01f && Math.abs(yMid[allyArchon][enemyArchon] - yMidCheck) < 0.01f)
+						{
+							results[enemyArchon] = allyArchon;
+							break;
+						}
+					}
+					if (decidedSymmetry == 2)
+					{
+						if (Math.abs(xMid[allyArchon][enemyArchon] - xMidCheck) < 0.01f && Math.abs(yMid[allyArchon][enemyArchon] - yMidCheck) < 0.01f)
+						{
+							results[enemyArchon] = allyArchon;
+							break;
+						}
+					}
+				}
+			}
+		}
+		return results;
+		
+	}
 }
