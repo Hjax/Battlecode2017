@@ -220,10 +220,6 @@ public class BuildManager extends Bot{
 
 	public static void trainUnit(RobotType unit, MapLocation roost) throws Exception
 	{
-		if (roost == null)
-		{
-			roost = rc.getLocation();
-		}
 		Debug.debug_print("training unit");
 		Direction angle = new Direction((float) (Math.PI / 6));
 		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
@@ -236,32 +232,80 @@ public class BuildManager extends Bot{
 		int turnCount = 0;
 		Direction testAngle = angle;
 		float spacing = 2.2f;
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 36)
+		if (treesPlanted <= 1 && unit == RobotType.TANK)
 		{
-			rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
+			Debug.debug_print("SPECIAL CASE");
+			while ((rc.isCircleOccupiedExceptByThisRobot(rc.getLocation().add(testAngle, spacing + 1), 2.1f) || !rc.onTheMap(rc.getLocation().add(testAngle, spacing + 1), 2.1f)) && turnCount++ < 36)
+			{
+				rc.setIndicatorDot(rc.getLocation().add(testAngle, spacing), 155, 155, 155);
+				
+				testAngle = angle.rotateRightDegrees(5 * turnCount);
+				if ((rc.isCircleOccupiedExceptByThisRobot(rc.getLocation().add(testAngle, spacing + 1), 2.1f) || !rc.onTheMap(rc.getLocation().add(testAngle, spacing + 1), 2.1f)))
+				{
+					rc.setIndicatorDot(rc.getLocation().add(testAngle, spacing + 1), 155, 155, 155);
+					testAngle = angle.rotateLeftDegrees(5 * turnCount);
+				}
+			}
+
+			try {
+				Debug.debug_print("checking to build");
+				Debug.debug_print("roost: (" + rc.getLocation().x + ", " + rc.getLocation().y + ")");
+				Debug.debug_print("angle: " + testAngle.radians);
 			
-			testAngle = angle.rotateRightDegrees(5 * turnCount);
-			if ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)))
+				if (rc.canBuildRobot(unit,  rc.getLocation().directionTo(rc.getLocation().add(testAngle, spacing + 1))))
+				{
+					Debug.debug_print("building");
+					Globals.updateUnitCounts(UnitType.getType(unit));
+					Globals.setLastUnit(UnitType.getType(unit));
+					Globals.setLastUnitRound(rc.getRoundNum());
+					rc.buildRobot(unit, rc.getLocation().directionTo(rc.getLocation().add(testAngle, spacing + 1)));
+				}
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			if (unit == RobotType.TANK)
+			{
+				Debug.debug_print("roost: (" + roost.x + ", " + roost.y + ")");
+			}
+			if (roost == null)
+			{
+				roost = rc.getLocation();
+			}
+			while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 36)
 			{
 				rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
-				testAngle = angle.rotateLeftDegrees(5 * turnCount);
+				
+				testAngle = angle.rotateRightDegrees(5 * turnCount);
+				if ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)))
+				{
+					rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
+					testAngle = angle.rotateLeftDegrees(5 * turnCount);
+				}
 			}
-		}
-		if (unit == RobotType.TANK)
-		{
-			Utilities.moveTo(roost.add(testAngle, spacing - 1));
-		}
-
-		try {
-			if (rc.canBuildRobot(unit,  rc.getLocation().directionTo(roost.add(testAngle, spacing))))
+			if (unit == RobotType.TANK)
 			{
-				Globals.updateUnitCounts(UnitType.getType(unit));
-				Globals.setLastUnit(UnitType.getType(unit));
-				Globals.setLastUnitRound(rc.getRoundNum());
-				rc.buildRobot(unit, rc.getLocation().directionTo(roost.add(testAngle, spacing)));
+				Debug.debug_print("moving to build");
+				Utilities.moveTo(roost.add(testAngle, spacing - 1));
 			}
-		} catch (GameActionException e) {
-			e.printStackTrace();
+
+			try {
+				Debug.debug_print("checking to build");
+				Debug.debug_print("angle: " + testAngle.radians);
+			
+				if (rc.canBuildRobot(unit,  rc.getLocation().directionTo(roost.add(testAngle, spacing))))
+				{
+					Debug.debug_print("building");
+					Globals.updateUnitCounts(UnitType.getType(unit));
+					Globals.setLastUnit(UnitType.getType(unit));
+					Globals.setLastUnitRound(rc.getRoundNum());
+					rc.buildRobot(unit, rc.getLocation().directionTo(roost.add(testAngle, spacing)));
+				}
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
