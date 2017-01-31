@@ -34,15 +34,20 @@ public class Bot {
     
     protected static void startTurn() throws Exception 
     {
+    	
     	if (Globals.getRoundNumber() != rc.getRoundNum()){
     		Globals.setRoundNumber(rc.getRoundNum());
     		Globals.clearUnitCounts();
     		Globals.clearStuckGardeners();
+  
     		
-    		if (rc.getRoundNum() == 1) {
-    			// we went first on the first round, add enemy archon spawns as orders
-    			for (int i = 0; i < enemyArchons.length; i++){
-    				Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
+    		if (rc.getRoundNum() == 2) {
+    			// we went first on the second round, add enemy archon spawns as orders
+    			for (int i = 0; i < enemyArchons.length; i++) {
+    				// if the enemy archon isnt stuck, create an order
+    				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 0) {
+    					Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
+    				}
     			}
     		}
     	

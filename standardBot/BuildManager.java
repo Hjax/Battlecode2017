@@ -56,6 +56,9 @@ public class BuildManager extends Bot{
 		if (lastUnit == UnitType.LUMBERJACK && (roundsSinceLastUnit) < 21) {
 			 lcount++;
 		}
+		if (treeCount >= 15) {
+			return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * (0.40f * (1 + ((rc.getRoundNum() - rc.getRoundNum() % 200) / 200)));
+		}
 		return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * 0.20f;
 	}
 	

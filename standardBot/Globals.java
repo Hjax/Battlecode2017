@@ -132,4 +132,12 @@ public class Globals extends Bot{
 		Memory.writeGlobal(location, 0);
 	}
 	
+	public static void setArchonBits(int bits) throws Exception {
+		Memory.writeGlobal(25, bits);
+	}
+	
+	public static int getArchonBits() throws GameActionException {
+		return Memory.readGlobal(25);
+	}
+	
 }

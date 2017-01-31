@@ -21,7 +21,7 @@ public class OrderManager extends Bot{
 		for (int i = 0; i < num_orders; i++){
 			long current = Memory.getOrder(i);
 			if (checkDelete(current, i)){
-				if (((UnitType.isCombat() || rc.getType() == RobotType.ARCHON) && (Order.getType(current) == 0 || Order.getType(current) == 1)) && 
+				if (((UnitType.isCombat() || rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK) && (Order.getType(current) == 0 || (Order.getType(current) == 1 && rc.getLocation().distanceTo(Order.getLocation(current)) <= 15))) && 
 					(best == 0 || (Order.getLocation(best).distanceTo(rc.getLocation()) > Order.getLocation(current).distanceTo(rc.getLocation())))) {
 					best = current;
 					best_index = i;
@@ -63,7 +63,7 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 	
 	// optimized 1/25/2017
 	public static void checkCreateOrderCheap() throws Exception {
-		if (enemiesMaxRange.length == 0){
+		if (enemiesMaxRange.length == 0 || rc.getRoundNum()  < 3){
 			return;
 		}
 		int order_count = Globals.getOrderCount();
@@ -73,11 +73,22 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 			}
 		}
 		for (int i = 0; i < enemiesMaxRange.length; i++) {
-			if (enemiesMaxRange[i].getType() != RobotType.SCOUT) {
+			if (enemiesMaxRange[i].getType() != RobotType.SCOUT && (enemiesMaxRange[i].getType() != RobotType.ARCHON || (rc.getRoundNum() > 300 | !isStuckArchon(enemiesMaxRange[i].location)))) {
 				Memory.addOrder(new Order(0, enemiesMaxRange[i].location, 3000, -1));
 				return;
 			}
 		}
+	}
+	
+	public static boolean isStuckArchon(MapLocation loc) throws GameActionException {
+		for (int i = 0; i < enemyArchons.length; i++){
+			if (loc.distanceTo(enemyArchons[i]) < 3) {
+				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 1) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public static boolean shouldMove() {
