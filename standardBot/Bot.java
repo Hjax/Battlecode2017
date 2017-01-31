@@ -359,9 +359,10 @@ public class Bot {
     	
     	Debug.debug_print("EX: " + xPressure);
     	Debug.debug_print("EY: " + yPressure);
-    	TreeInfo[] bugTrees = rc.senseNearbyTrees(2 + rc.getType().bodyRadius);
+    	TreeInfo[] bugNeutralTrees = rc.senseNearbyTrees(rc.getLocation().add(new Direction ((float) xPressure, (float) yPressure), rc.getType().bodyRadius), 1f, Team.NEUTRAL);
+    	TreeInfo[] bugAllyTrees = rc.senseNearbyTrees(rc.getLocation().add(new Direction ((float) xPressure, (float) yPressure), rc.getType().bodyRadius), 1f, rc.getTeam());
     	//avoid previous location - AKA pressure bug
-    	if (bugTrees.length > 0)
+    	if (bugNeutralTrees.length > 0 || bugAllyTrees.length > 0)
     	{
     		rc.setIndicatorDot(lastPosition, 50, 150, 250);
     		if (lastPosition.equals(rc.getLocation()) == false)

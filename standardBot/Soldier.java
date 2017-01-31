@@ -48,33 +48,7 @@ public class Soldier extends Bot{
             	MapLocation moveDesire = rc.getLocation();
             	// dodge
             	MapLocation hug = rc.getLocation();
-            	if (enemiesMaxRange.length > 0)
-    			{
-            		Debug.debug_print("enemy in vision");
-    				for (int i = 0; i < enemiesMaxRange.length; i++)
-    				{
-    					if (enemiesMaxRange[i].getType() != RobotType.ARCHON)
-    					{
-    						if (enemiesMaxRange[i].getType() == RobotType.SOLDIER || enemiesMaxRange[i].getType() == RobotType.LUMBERJACK)
-    						{
-    							hug = Utilities.melee(enemiesMaxRange[i].getLocation(), 4f);
-    						}
-    						else
-    						{
-    							hug = Utilities.melee(enemiesMaxRange[i].getLocation(), 2);
-    						}
-    						break;
-    					}
-    				}
-    				if (hug.equals(rc.getLocation()))
-    				{
-    					hug = enemiesMaxRange[0].getLocation();
-    				}
-    			}
-            	else
-            	{
-            		hug = rc.getLocation().add(neo());
-            	}
+            	hug = rc.getLocation().add(neo());
             	BulletInfo[] bullets = rc.senseNearbyBullets(6);
             	if (bullets.length > 0 && rc.getType() != RobotType.TANK)
             	{
@@ -82,7 +56,7 @@ public class Soldier extends Bot{
             	}
             	else if (rc.getRoundNum() > 45 || Globals.getStrat() == BuildManager.STANDARD)
         		{
-            		moveDesire = hug;     		
+            		moveDesire = hug;
         		}
             	
             	float angleDiff = 0;
