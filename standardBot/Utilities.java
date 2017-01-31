@@ -83,6 +83,7 @@ public class Utilities extends Bot{
 
         // A move never happened, so return false.
         Debug.debug_bytecode_end("moving");
+        Bot.lastPosition = rc.getLocation();
         return false;
     }
 
