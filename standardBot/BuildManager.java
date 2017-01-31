@@ -151,6 +151,11 @@ public class BuildManager extends Bot{
 			
 			if (Math.abs(Math.max(max_score, soldier_score) - soldier_score) < 0.001f) {
 				System.out.println("I want to build a soldier");
+				if (rc.getTeamBullets() > RobotType.TANK.bulletCost + 5) {
+					Debug.debug_print("Trying to build SOLDIER, but building a tank instead");
+					trainUnit(RobotType.TANK, Gardener.roost);
+					return true;
+				}
 				if (rc.getTeamBullets() > RobotType.SOLDIER.bulletCost + 5){
 					Debug.debug_print("Trying to build SOLDIER");
 					trainUnit(RobotType.SOLDIER, Gardener.roost);
