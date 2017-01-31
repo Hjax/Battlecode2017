@@ -370,6 +370,7 @@ public class BuildManager extends Bot{
 		if (Globals.getLeftEdge() != -1)
 		{
 			edgeX += 1000 - rc.getLocation().x - Globals.getLeftEdge();
+			Debug.debug_print("left edge known");
 		}
 		else
 		{
@@ -378,6 +379,7 @@ public class BuildManager extends Bot{
 		if (Globals.getRightEdge() != -1)
 		{
 			edgeX += 1000 - rc.getLocation().x - Globals.getRightEdge();
+			Debug.debug_print("right edge known");
 		}
 		else
 		{
@@ -386,6 +388,7 @@ public class BuildManager extends Bot{
 		if (Globals.getBottomEdge() != -1)
 		{
 			edgeY +=  1000 - rc.getLocation().y - Globals.getBottomEdge();
+			Debug.debug_print("bottom edge known");
 		}
 		else
 		{
@@ -394,6 +397,7 @@ public class BuildManager extends Bot{
 		if (Globals.getTopEdge() != -1)
 		{
 			edgeY += 1000 - rc.getLocation().y - Globals.getTopEdge();
+			Debug.debug_print("top edge known");
 		}
 		else
 		{

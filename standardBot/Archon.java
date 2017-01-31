@@ -32,8 +32,6 @@ public class Archon extends Bot{
         
      	try {
             BuildManager.decideBuild();
-			Globals.initEdges();
-			Globals.updateEdges();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

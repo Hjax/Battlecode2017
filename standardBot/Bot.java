@@ -40,7 +40,11 @@ public class Bot {
     		Globals.clearUnitCounts();
     		Globals.clearStuckGardeners();
   
-    		
+    		if (rc.getRoundNum() == 1)
+    		{
+    			Globals.initEdges();
+    			Globals.updateEdges();
+    		}
     		if (rc.getRoundNum() == 2) {
     			// we went first on the second round, add enemy archon spawns as orders
     			TreeInfo[] trees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
@@ -170,9 +174,12 @@ public class Bot {
         		}	
         		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
-        			//be very attracted to enemy archons
-        			xPressure += relativeX * 20;
-            		yPressure += relativeY * 20;
+        			if (rc.getRoundNum() > 300 || !OrderManager.isStuckArchon(enemiesMaxRange[botCount].location))
+        			{
+        				//be very attracted to enemy archons
+        				xPressure += relativeX * 20;
+        				yPressure += relativeY * 20;
+        			}
         		}	
         		else
         		{
