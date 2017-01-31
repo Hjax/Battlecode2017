@@ -73,6 +73,10 @@ public class Soldier extends Bot{
             		
             	}
             	Debug.debug_print("angleDiff: " + angleDiff);
+            	
+            	if (angle != null && target != null) {
+            		Memory.addOrder(new Order(1, target, rc.getRoundNum() + 2, -1));
+            	}
             	if (angleDiff < 90)
             	{
             		Debug.debug_print("move before shoot");
@@ -86,19 +90,27 @@ public class Soldier extends Bot{
             		Utilities.moveTo(moveDesire);
                 		
             	}
+            	
+                if (!rc.hasAttacked() && OrderManager.shouldGroundFire() && rc.getLocation().distanceTo(OrderManager.getTarget()) < 15) {
+                	if (!Utilities.willHitAlly(rc.getLocation().add(rc.getLocation().directionTo(OrderManager.getTarget()), rc.getType().sensorRadius))) {
+                		shoot(OrderManager.getTarget(), rc.getLocation().directionTo(OrderManager.getTarget()));
+                	}
+                }
 
             } catch (Exception e) {
                 System.out.println("Soldier Exception");
                 e.printStackTrace();
             }
+
             endTurn();
         }
     }
 	
-	private static void shoot(MapLocation target, Direction angle) throws GameActionException
+	private static void shoot(MapLocation target, Direction angle) throws Exception
 	{
 		if (angle != null && target != null)
     	{
+			
     		if (rc.canFirePentadShot() && (rc.getType() == RobotType.TANK || rc.getTreeCount() > 4 || rc.getTeamBullets() > 50 || rc.getLocation().isWithinDistance(target, rc.getType().bodyRadius + 5.5f)))
 			{
 				if (rc.getTeamBullets() < 8)

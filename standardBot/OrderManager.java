@@ -15,16 +15,20 @@ public class OrderManager extends Bot{
 	// optimized 1/25/2017
 	public static void updateOrders() throws Exception {
 		int num_orders = Globals.getOrderCount();
+		long best = 0;
+		int best_index = -1;
+		currentOrder = null;
 		for (int i = 0; i < num_orders; i++){
 			long current = Memory.getOrder(i);
 			if (checkDelete(current, i)){
-				if (UnitType.isCombat() && Order.getType(current) == 0){
-					currentOrder = new Order(current, i);
-					return;
+				if ((UnitType.isCombat() && (Order.getType(current) == 0 || Order.getType(current) == 1)) && 
+					(best == 0 || (Order.getLocation(best).distanceTo(rc.getLocation()) > Order.getLocation(current).distanceTo(rc.getLocation())))) {
+					best = current;
+					best_index = i;
 				}
 			}
+			currentOrder = new Order(best, best_index);
 		}
-		currentOrder = null;
 	}
 	
 	// optimized 1/25/2017
@@ -40,17 +44,6 @@ public class OrderManager extends Bot{
 	
 	public static MapLocation getTarget() { 
 		return currentOrder.location;
-	}
-	
-	// optimized 1/25/2017
-	public static boolean hasCloseOrder() throws GameActionException {
-		int order_count = Globals.getOrderCount();
-		for (int i = 0; i < order_count; i++){
-			if (rc.getLocation().distanceTo(Order.getLocation(Memory.getOrder(i))) <= 10){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	public static void checkCreateOrder() throws Exception {
@@ -85,7 +78,11 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 	}
 	
 	public static boolean shouldMove() {
-		return hasOrder() && currentOrder.type == 0;
+		return hasOrder() && (currentOrder.type == 0 || currentOrder.type == 1);
+	}
+	
+	public static boolean shouldGroundFire() {
+		return hasOrder() && (currentOrder.type == 1);
 	}
 	
 }
