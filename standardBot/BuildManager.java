@@ -208,7 +208,7 @@ public class BuildManager extends Bot{
 			roost = rc.getLocation();
 		}
 		Debug.debug_print("training unit");
-		Direction angle = new Direction(0);
+		Direction angle = new Direction((float) (Math.PI / 6));
 		TreeInfo[] nearbyTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
 		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
 		{
@@ -218,7 +218,7 @@ public class BuildManager extends Bot{
 		}
 		int turnCount = 0;
 		Direction testAngle = angle;
-		float spacing = 2.1f;
+		float spacing = 2.2f;
 		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 60)
 		{
 			rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
@@ -232,16 +232,16 @@ public class BuildManager extends Bot{
 		}
 		if (unit == RobotType.TANK)
 		{
-			Utilities.moveTo(rc.getLocation().add(testAngle, spacing - 1));
+			Utilities.moveTo(roost.add(testAngle, spacing - 1));
 		}
 
 		try {
-			if (rc.canBuildRobot(unit,  testAngle))
+			if (rc.canBuildRobot(unit,  rc.getLocation().directionTo(roost.add(testAngle, spacing))))
 			{
 				Globals.updateUnitCounts(UnitType.getType(unit));
 				Globals.setLastUnit(UnitType.getType(unit));
 				Globals.setLastUnitRound(rc.getRoundNum());
-				rc.buildRobot(unit, testAngle);
+				rc.buildRobot(unit, rc.getLocation().directionTo(roost.add(testAngle, spacing)));
 			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
@@ -282,9 +282,9 @@ public class BuildManager extends Bot{
 	private static boolean plantSpacedTree(MapLocation roost) throws GameActionException
 	{
 		Debug.debug_bytecode_start();
-		Direction angle = new Direction(0);
+		Direction angle = new Direction((float) (Math.PI / 6));
 		int turnCount = 0;
-		float spacing = 2.1f;
+		float spacing = 2.2f;
 		Debug.debug_print("trying to plant");
 		roost = rc.getLocation();
 		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(angle, spacing), 1.05f) || !rc.onTheMap(roost.add(angle, spacing), 1.05f)) && turnCount++ < 6)

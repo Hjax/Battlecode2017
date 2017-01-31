@@ -78,6 +78,7 @@ public class Gardener extends Bot
     				
     			}
     			
+    			
     			if (true) {
     				BuildManager.executeBuild();
     			}
@@ -91,16 +92,17 @@ public class Gardener extends Bot
     				} catch (GameActionException e) {
     					e.printStackTrace();
     				}	
-    			}	
-    			
-
-    			if (!rc.hasMoved() && roost != null && rc.getLocation().distanceTo(roost) > 0.1f)
+    			}
+    			if (!rc.hasMoved() && roost != null && rc.getLocation().distanceTo(roost) > 0.05f)
     			{
     				//return to roost if scared away
     				Debug.debug_print("return to roost");
     				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
         		}
+    			
+
+    			
     			
     			
     			

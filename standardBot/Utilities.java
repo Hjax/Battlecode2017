@@ -449,13 +449,30 @@ public class Utilities extends Bot{
 	{
 		Debug.debug_bytecode_start();
 		TreeInfo[] trees = rc.senseNearbyTrees(2.0f, ally);
+		RobotInfo[] archons = null;
+		int unit = 0;
 		if (trees.length > 0)
 		{
 			TreeInfo bestTree = trees[0];
 			for (int treeCount = 1; treeCount < trees.length; treeCount++)
 			{
 				if (trees[treeCount].health < bestTree.health)
-				{bestTree = trees[treeCount];}
+				{
+					archons = rc.senseNearbyRobots(trees[treeCount].location, 2f, ally);
+					for (unit = 0; unit < archons.length; unit++)
+					{
+						if (archons[unit].getType() == RobotType.ARCHON)
+						{
+							Debug.debug_print("LETTING TREE DIE");
+							break;
+						}
+					}
+					if (unit >= archons.length)
+					{
+						bestTree = trees[treeCount];
+					}
+					
+				}
 			}
 			try {
 				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
@@ -465,7 +482,7 @@ public class Utilities extends Bot{
 			}
 		}
 			
-		if (!rc.hasMoved())
+		if (false && !rc.hasMoved())
 		{
 			trees = rc.senseNearbyTrees(roost, 3, ally);
 			if (trees.length > 0)
