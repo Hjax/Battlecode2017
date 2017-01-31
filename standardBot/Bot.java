@@ -55,9 +55,17 @@ public class Bot {
     					break;
     				}
     			}
+    			boolean allstuck = true;
+    			for (int i = 0; i < enemyArchons.length; i++) {
+    				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 0) {
+    					allstuck = false;
+    					break;
+    				}
+    			}
+    			
     			for (int i = 0; i < enemyArchons.length; i++) {
     				// if the enemy archon isnt stuck, create an order
-    				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 0) {
+    				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 0 || allstuck) {
     					Memory.addOrder(new Order(0, enemyArchons[i], rc.getRoundLimit(), -1));
     				}
     			}
