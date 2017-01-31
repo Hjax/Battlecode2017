@@ -462,7 +462,7 @@ public class Utilities extends Bot{
 					archons = rc.senseNearbyRobots(trees[treeCount].location, 2f, ally);
 					for (unit = 0; unit < archons.length; unit++)
 					{
-						if (archons[unit].getType() == RobotType.ARCHON)
+						if (archons[unit].getType() == RobotType.ARCHON || archons[unit].getType() == RobotType.TANK)
 						{
 							Debug.debug_print("LETTING TREE DIE");
 							break;

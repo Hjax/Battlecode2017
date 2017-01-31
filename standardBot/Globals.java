@@ -132,4 +132,12 @@ public class Globals extends Bot{
 		Memory.writeGlobal(location, 0);
 	}
 	
+	public static void setSuicide(int n) throws Exception {
+		Memory.writeGlobal(26, n);
+	}
+	
+	public static int getSuicide() throws GameActionException {
+		return Memory.readGlobal(26);
+	}
+	
 }

@@ -7,6 +7,12 @@ public class Archon extends Bot{
 		
         Debug.debug_print("Starting Archon Code");
         boolean tryBuild = false;
+        try {
+			Globals.setSuicide(0);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
      	
         if (BuildManager.isStuck()) {
         	Debug.debug_print("I am stuck!");
@@ -20,6 +26,41 @@ public class Archon extends Bot{
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+     	int archonNum = 0;
+     	for (int i = 0; i < allyArchons.length; i++)
+     	{
+     		if (rc.getLocation().equals(allyArchons[i]))
+     		{
+     			archonNum = i;
+     			break;
+     		}
+     	}
+     	
+     	float maxDist = 0;
+		float myDist = 1000;
+		for (int i = 0; i < enemyArchons.length; i++)
+		{
+			if (rc.getLocation().distanceTo(enemyArchons[i]) < myDist)
+			{
+				myDist = rc.getLocation().distanceTo(enemyArchons[i]);
+			}
+		}
+		for (int i = 0; i < allyArchons.length; i++)
+		{
+			float minDist = 1000;
+			for (int j = 0; j < enemyArchons.length; j++)
+			{
+				if (allyArchons[i].distanceTo(enemyArchons[j]) < minDist)
+				{
+					minDist = allyArchons[i].distanceTo(enemyArchons[j]);
+				}
+			}
+			if (minDist > maxDist)
+			{
+				maxDist = minDist;
+			}
+		}
+		
      	
      	int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
      	for (int i = 0; i < allyArchons.length; i ++)
@@ -61,6 +102,16 @@ public class Archon extends Bot{
             try 
             {
             	startTurn();
+            	
+            	if (rc.getRoundNum() < 500 && rc.getRoundNum() - Globals.getLastUnitRound() > 300 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0)
+            	{
+            		if (Math.abs(maxDist - myDist) < 0.01f)
+            		{
+            			Globals.setSuicide(1);
+            			rc.disintegrate();
+            		}
+            		
+            	}
             	
             	Debug.debug_bytecode_start();
             	OrderManager.checkCreateOrderCheap();
