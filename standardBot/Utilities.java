@@ -487,22 +487,6 @@ public class Utilities extends Bot{
 			}
 		}
 			
-		if (false && !rc.hasMoved())
-		{
-			trees = rc.senseNearbyTrees(roost, 3, ally);
-			if (trees.length > 0)
-			{
-				TreeInfo bestTree = trees[0];
-				for (int treeCount = 1; treeCount < trees.length; treeCount++)
-				{
-					if (trees[treeCount].health < bestTree.health)
-					{bestTree = trees[treeCount];}
-				}
-				rc.setIndicatorDot(bestTree.getLocation(), 0, 255, 0);
-				moveTo(melee(bestTree.getLocation(), 2.01f));
-			}
-				
-		}
 		Debug.debug_bytecode_end("watering");
 	}
 	

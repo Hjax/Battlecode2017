@@ -130,42 +130,7 @@ public class Bot {
     	
     	double relativeX = 0.0;
     	double relativeY = 0.0;
-    	
-    	//dodge bullets
-    	if (false && rc.getType() != RobotType.TANK)
-    	{
-    		BulletInfo[] bullets = rc.senseNearbyBullets();
-        	
-        	double pathDistance = 0.0f;
-        	double pathOffset = 0.0f;
-        	
-        	double bulletXVel = 0.0;
-        	double bulletYVel = 0.0;
-        	
-        	
-        	
-    		for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
-        	{
-        		bulletXVel = bullets[bulletCount].getSpeed() * Math.cos(bullets[bulletCount].getDir().radians);
-        		bulletYVel = bullets[bulletCount].getSpeed() * Math.sin(bullets[bulletCount].getDir().radians);
-        		
-        		relativeX = rc.getLocation().x - bullets[bulletCount].getLocation().x;
-        		relativeY = rc.getLocation().y - bullets[bulletCount].getLocation().y;
-        		
-        		pathOffset = (relativeY - relativeX * bulletYVel / bulletXVel) / (bulletXVel + (bulletYVel * bulletYVel)/bulletXVel);
-        		pathDistance = relativeX/bulletXVel + bulletYVel * pathOffset / bulletXVel;
-        		
-        		if (pathDistance > -0.2 && pathDistance < 4)
-        		{
-        			double timeToDodge = pathDistance/bullets[bulletCount].getSpeed();
-        			Debug.debug_print("PathOffset: " + pathOffset);
-        			Debug.debug_print("bulletXVel: " + bulletXVel);
-        			Debug.debug_print("relativeX: " + relativeX);
-        			xPressure += (bullets[bulletCount].damage * -500 * bulletYVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
-        			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
-        		}
-        	}
-    	}
+   
     	Debug.debug_print("AX: " + xPressure);
     	Debug.debug_print("AY: " + yPressure);
     	
@@ -220,14 +185,8 @@ public class Bot {
     		{
     			relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
-    			
-    			//gardeners should avoid archons and gardeners more FALSED OUT
-    			if (false && rc.getType() == RobotType.GARDENER && (avoidBots[botCount].getType() == RobotType.ARCHON || avoidBots[botCount].getType() == RobotType.GARDENER))
-    			{
-    				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
-        			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
-    			}
-    			else if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK) // archons and lumberjacks should avoid allies more
+
+    			if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK) // archons and lumberjacks should avoid allies more
     			{
     				xPressure += -100 * (relativeX + Math.copySign(1, relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
         			yPressure += -100 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
