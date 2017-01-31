@@ -46,6 +46,15 @@ public class Globals extends Bot{
 		return Memory.readGlobal(4 + (2 * type) + (1 - rc.getRoundNum() % 2));
 	}
 	
+	public static void updateCurrentUnitCount(int type) throws GameActionException, Exception {
+		int location = 4 + (2 * type) + (1 - (rc.getRoundNum() % 2));
+		Memory.writeGlobal(location, Memory.readGlobal(location) + 1);
+	}
+	
+	public static void updateCurrentUnitCount() throws Exception {
+		updateCurrentUnitCount(UnitType.getType());
+	}
+	
 	public static float getTopEdge() throws GameActionException {
 		return Memory.readGlobal(0);
 	}

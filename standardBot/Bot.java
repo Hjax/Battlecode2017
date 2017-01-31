@@ -26,6 +26,7 @@ public class Bot {
     	rand = new Random(rc.getID());
     	
     	try {
+    		Globals.updateCurrentUnitCount();
 			Globals.updateEdges();
 		} catch (Exception e) {
 			e.printStackTrace();

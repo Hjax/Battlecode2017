@@ -720,6 +720,35 @@ public class Utilities extends Bot{
 			}
 		}
 		return results;
-		
 	}
+	
+	public static MapLocation getAverageEnemyArchonLocation() {
+		int i;
+		float x = 0;
+		float y = 0;
+		for (i = 0; i < enemyArchons.length; i++) {
+			x += enemyArchons[i].x;
+			y += enemyArchons[i].y;
+		}
+		return new MapLocation(x / i, y / i);
+	}
+	
+	public static boolean isFarArchon() {
+		MapLocation far = getAverageEnemyArchonLocation();
+		MapLocation best = null;
+		for (int i = 0; i < allyArchons.length; i++) {
+			if (best == null || allyArchons[i].distanceTo(far) > best.distanceTo(far)) {
+				best = allyArchons[i];
+			}
+		}
+		System.out.println(far);
+		System.out.println(rc.getLocation());
+		System.out.println(best);
+		if (best.distanceTo(rc.getLocation()) <= 1) {
+			System.out.println("I am the farchon");
+			return true;
+		}
+		return false;
+	}
+	
 }

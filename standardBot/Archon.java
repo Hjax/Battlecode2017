@@ -93,7 +93,10 @@ public class Archon extends Bot{
             		Utilities.tryMove(neo());
             	}
             	
-            	BuildManager.executeBuild();
+            	if (rc.getRoundNum() > 1 || Utilities.isFarArchon()) {
+            		BuildManager.executeBuild();
+            	}
+            	
             	
 
             } catch (Exception e) {
