@@ -51,7 +51,7 @@ public class BuildManager extends Bot{
 		}
 	}
 	
-	public static float scoreLumberjack() throws GameActionException {
+	public static float scoreLumberjack() throws Exception {
 		int lcount = Globals.getUnitCount(UnitType.LUMBERJACK);
 		if (lastUnit == UnitType.LUMBERJACK && (roundsSinceLastUnit) < 21) {
 			 lcount++;
@@ -59,13 +59,16 @@ public class BuildManager extends Bot{
 		if (Globals.isUnitRich() && lcount == 0) {
 			return 1.1f;
 		}
+		if (rc.getRoundNum() < 250 && Globals.getWalledInArchons() == allyArchons.length && Globals.getStrat() != AGGRESSIVE) {
+			return 1.0f;
+		}
 		if (treeCount >= 20) {
 			return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * (0.40f * Math.max((1 + ((rc.getRoundNum() - rc.getRoundNum() % 500) / 500)), 3));
 		}
 		return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * 0.20f;
 	}
 	
-	public static float scoreSoldier() throws GameActionException {
+	public static float scoreSoldier() throws Exception {
 		int scount = Globals.getUnitCount(UnitType.SOLDIER);
 		if (lastUnit == UnitType.SOLDIER && (roundsSinceLastUnit) < 21) {
 			 scount++;
@@ -77,6 +80,11 @@ public class BuildManager extends Bot{
 				break;
 			}
 		}
+		
+		if (rc.getRoundNum() < 250 && Globals.getWalledInArchons()  == allyArchons.length && Globals.getStrat() != AGGRESSIVE) {
+			return 0.0f;
+		}
+		
 		if (scount == 0 || needsSoldiers) {
 			return 1.0f;
 		}
@@ -113,10 +121,10 @@ public class BuildManager extends Bot{
 		if (gcount > 14) {
 			return 0.0f;
 		}
-		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 1)) {
+		if (gcount - Globals.getStuckGardeners() <= 0) {
 			return 1.0f;
 		}
-		return (Math.min(((float) treeCount) / ((gcount) * 5.0f), 1.0f));
+		return 0.0f;
 	}
 	
 	
@@ -338,6 +346,35 @@ public class BuildManager extends Bot{
 		Debug.debug_bytecode_end("Tree density");
 		Debug.debug_print("density is: " + total);
 		return total;
+	}
+	
+	public static boolean isWalledInArchon() throws GameActionException{
+		Debug.debug_bytecode_start();
+outer:	for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
+			MapLocation clone = rc.getLocation().add(i, rc.getType().bodyRadius - 0.01f);
+			int j;
+			for (j = 1; j <= 20; j++) {
+				clone = clone.add(i, (rc.getType().sensorRadius - rc.getType().bodyRadius) / 30);
+				
+				boolean blocked;
+				try {
+					blocked = rc.isCircleOccupiedExceptByThisRobot(clone, 0.5f);
+				} catch (GameActionException e) {
+					return false;
+				}
+				
+				rc.setIndicatorDot(clone, 255, 255, 0);
+				if (!rc.onTheMap(clone) || (blocked)) 
+				{ 
+					continue outer;
+				}
+			}
+			if (j == 21) {
+				return false;
+			}
+		}
+		Debug.debug_bytecode_end("Archon density");
+		return true;
 	}
 
 	private static boolean plantSpacedTree(MapLocation roost) throws GameActionException

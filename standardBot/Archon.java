@@ -6,7 +6,11 @@ public class Archon extends Bot{
 	public static void Start(RobotController RobCon) throws Exception{
 		
         Debug.debug_print("Starting Archon Code");    
-        int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
+        
+        if (BuildManager.isWalledInArchon() && rc.getRoundNum() == 1) {
+        	Globals.setWalledInArchons(Globals.getWalledInArchons() + 1);
+        	Debug.debug_print("We are walled in on this map");
+        }
         
         try {
 			Globals.setSuicide(0);
@@ -25,6 +29,7 @@ public class Archon extends Bot{
      	}
      	
         if (BuildManager.isStuck()) {
+        	int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
         	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[archonNum]));
         	rc.setIndicatorDot(enemyArchons[symmetries[archonNum]], 255, 255, 255);
         	Debug.debug_print("I am stuck!");

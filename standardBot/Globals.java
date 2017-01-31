@@ -164,4 +164,13 @@ public class Globals extends Bot{
 	public static void setUnitRich(boolean value) throws Exception {
 		Memory.writeGlobal(27, value ? 1:0);
 	}
+	
+	public static void setWalledInArchons(int n) throws Exception {
+		Memory.writeGlobal(28, n);
+	}
+	
+	public static int getWalledInArchons() throws Exception {
+		return Memory.readGlobal(28);
+	}
 }
+
