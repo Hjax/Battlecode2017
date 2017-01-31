@@ -44,9 +44,13 @@ public class BuildManager extends Bot{
 			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
 				}
-			if (rc.getTeamBullets() >= 50 && rc.isBuildReady() && Gardener.roost != null && (rc.senseNearbyTrees(4.5f, ally).length == 0 || treesPlanted > 0) && rc.onTheMap(rc.getLocation(), 2)) {
+			if (rc.getTeamBullets() >= 50 && rc.isBuildReady() && (rc.senseNearbyTrees(4.5f, ally).length == 0 || treesPlanted > 0) && rc.onTheMap(rc.getLocation(), 2)) {
 				Debug.debug_print("Trying to plant a tree");
 				plantSpacedTree(Gardener.roost);
+			}
+			else if (!(rc.getTeamBullets() >= 50 || rc.isBuildReady()))
+			{
+				Gardener.isStuck = true;
 			}
 		}
 	}
@@ -104,7 +108,7 @@ public class BuildManager extends Bot{
 		if (lastUnit == UnitType.SCOUT && (roundsSinceLastUnit) < 21) {
 			 scount++;
 		}
-		return ((scount == 0) ? 1:0) * 0.2f + ((orderCount == 0 && scount < 6) ? 1:0) * 0.8f;
+		return ((scount == 0) ? 1:0) * 0.9f + ((orderCount == 0 && scount < 6) ? 1:0) * 0.8f;
 	}
 	
 	public static float scoreGardener() throws GameActionException {
@@ -379,6 +383,10 @@ outer:	for (float i = 0; i < 2 * Math.PI; i += Math.PI / 6) {
 
 	private static boolean plantSpacedTree(MapLocation roost) throws GameActionException
 	{
+		if (roost == null)
+		{
+			roost = rc.getLocation();
+		}
 		Debug.debug_bytecode_start();
 		Direction angle = new Direction((float) (Math.PI / 6));
 		int turnCount = 0;

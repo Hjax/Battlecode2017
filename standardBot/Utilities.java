@@ -583,15 +583,18 @@ public class Utilities extends Bot{
 				{
 					break;
 				}
-				//avoid trees
-				for (int countTrees = 0; countTrees < trees.length; countTrees++)
+				//avoid trees if not scout
+				if (rc.getType() != RobotType.SCOUT)
 				{
-					relativeX = currentLoc.x - trees[countTrees].location.x;
-					relativeX += Math.copySign(0.5, relativeX);
-					relativeY = currentLoc.y - trees[countTrees].location.y;
-					relativeY += Math.copySign(0.5, relativeY);
-					xPres += relativeX * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
-					yPres += relativeY * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
+					for (int countTrees = 0; countTrees < trees.length; countTrees++)
+					{
+						relativeX = currentLoc.x - trees[countTrees].location.x;
+						relativeX += Math.copySign(0.5, relativeX);
+						relativeY = currentLoc.y - trees[countTrees].location.y;
+						relativeY += Math.copySign(0.5, relativeY);
+						xPres += relativeX * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
+						yPres += relativeY * 2 / ((currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05) * (currentLoc.distanceTo(trees[countTrees].location) - trees[countTrees].radius + 0.05));
+					}
 				}
 			}
 			if (destination != null)

@@ -14,6 +14,8 @@ public class Bot {
 	public static Random rand;
 	public static MapLocation lastPosition;
 	public static RobotInfo[] enemiesMaxRange = new RobotInfo[0];
+	private static Direction goal;
+	private static int goalDate;
 	
     protected static void Init(RobotController RobCon) throws GameActionException{
     	rc = RobCon;
@@ -24,6 +26,8 @@ public class Bot {
     	lastPosition = rc.getLocation();
     	
     	rand = new Random(rc.getID());
+    	goal = new Direction((float) rand.nextDouble() - 0.5f,(float) rand.nextDouble() - 0.5f);
+    	goalDate = rc.getRoundNum();
     	
     	try {
     		Globals.updateCurrentUnitCount();
@@ -115,6 +119,12 @@ public class Bot {
     {
     	Debug.debug_bytecode_start();
     	
+    	if (rc.getRoundNum() - goalDate >= 25)
+    	{
+    		goalDate = rc.getRoundNum();
+    		goal = new Direction((float) rand.nextDouble() - 0.5f,(float) rand.nextDouble() - 0.5f);
+    	}
+    	
     	double xPressure = (float) (rand.nextDouble() - 0.5) * 20;
     	double yPressure = (float) (rand.nextDouble() - 0.5) * 20;
     	
@@ -122,7 +132,7 @@ public class Bot {
     	double relativeY = 0.0;
     	
     	//dodge bullets
-    	if (rc.getType() != RobotType.TANK)
+    	if (false && rc.getType() != RobotType.TANK)
     	{
     		BulletInfo[] bullets = rc.senseNearbyBullets();
         	
@@ -155,10 +165,9 @@ public class Bot {
         			yPressure += (bullets[bulletCount].damage * 500 * bulletXVel / (pathOffset + Math.copySign(10,  pathOffset)) / (timeToDodge+10));
         		}
         	}
-        	Debug.debug_print("AX: " + xPressure);
-        	Debug.debug_print("AY: " + yPressure);
     	}
-    	
+    	Debug.debug_print("AX: " + xPressure);
+    	Debug.debug_print("AY: " + yPressure);
     	
     	
     	//if not gardener or archon stay near enemy bots
@@ -177,17 +186,17 @@ public class Bot {
             		yPressure += relativeY * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
             		if (rc.getType() == RobotType.SCOUT) // especially if a scout
             		{
-            			xPressure += relativeX * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
-                		yPressure += relativeY * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+            			xPressure += relativeX * 45 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location)  / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+                		yPressure += relativeY * 45 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location)  / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
             		}
         		}	
-        		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
+        		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() > 250)
         		{
         			if (rc.getRoundNum() > 500 || !OrderManager.isStuckArchon(enemiesMaxRange[botCount].location))
         			{
         				//be very attracted to enemy archons
-        				xPressure += relativeX * 20 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
-        				yPressure += relativeY * 20 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+        				xPressure += relativeX * 40 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+        				yPressure += relativeY * 40 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
         			}
         		}	
         		else
@@ -225,8 +234,12 @@ public class Bot {
     			}
     			else
     			{
-    				xPressure += -50 * (relativeX + Math.copySign(1,  relativeX))/ rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
-        			yPressure += -50 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+    				if ((avoidBots[botCount].getType() != RobotType.GARDENER && avoidBots[botCount].getType() != RobotType.ARCHON) || avoidBots[botCount].getTeam() == rc.getTeam())
+    				{
+    					xPressure += -50 * (relativeX + Math.copySign(1,  relativeX))/ rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+            			yPressure += -50 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+    				}
+    				
     			}
     			//archons and scouts should avoid enemies more except for archons and gardeners
     			if (avoidBots[botCount].getTeam() != rc.getTeam() && avoidBots[botCount].getType() != RobotType.ARCHON && avoidBots[botCount].getType() != RobotType.GARDENER && (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.SCOUT))
@@ -251,8 +264,8 @@ public class Bot {
         			
         		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
         		{
-        			xPressure += -1400 * (relativeX + Math.copySign(10,  relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
-        			yPressure += -1400 * (relativeY + Math.copySign(10, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			xPressure += -700 * (relativeX + Math.copySign(10,  relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			yPressure += -700 * (relativeY + Math.copySign(10, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
         		}
         	}
         	Debug.debug_print("DX: " + xPressure);
@@ -356,26 +369,26 @@ public class Bot {
     		if (Globals.getTopEdge() != -1)
     		{
     			relativeY = Globals.getTopEdge() - rc.getLocation().y;
-    			yPressure += -4000/(relativeY * relativeY);
+    			yPressure += -3000/(relativeY * relativeY);
     			Debug.debug_print("D1Y: " + yPressure);
     		}
     		if (Globals.getBottomEdge() != -1)
     		{
     			relativeY = rc.getLocation().y - Globals.getBottomEdge();
-    			yPressure += 4000/(relativeY * relativeY);
+    			yPressure += 3000/(relativeY * relativeY);
     			Debug.debug_print("D2Y: " + yPressure);
     		}
     		
     		if (Globals.getRightEdge() != -1)
     		{
     			relativeX = Globals.getRightEdge() - rc.getLocation().x;
-    			xPressure += -4000/(relativeX * relativeX);	
+    			xPressure += -3000/(relativeX * relativeX);	
     			Debug.debug_print("D1X: " + xPressure);
     		}
     		if (Globals.getLeftEdge() != -1)
     		{
     			relativeX = rc.getLocation().x - Globals.getLeftEdge();
-    			xPressure += 4000/(relativeX * relativeX);
+    			xPressure += 3000/(relativeX * relativeX);
     			Debug.debug_print("D2X: " + xPressure);
     		}
     	}
@@ -388,17 +401,27 @@ public class Bot {
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
     		if (rc.getType() == RobotType.ARCHON) {
-        		xPressure -= 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
-        		yPressure -= 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());    			
+        		xPressure -= 40 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
+        		yPressure -= 40 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());    			
     		} else {
-        		xPressure += 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
-        		yPressure += 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
+        		xPressure += 40 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
+        		yPressure += 40 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
     		}
 
     	}
     	
     	Debug.debug_print("EX: " + xPressure);
     	Debug.debug_print("EY: " + yPressure);
+    	
+    	//if scout, gardener, or archon, follow goal according to goal age
+    	if (rc.getType() == RobotType.SCOUT || rc.getType() == RobotType.GARDENER || rc.getType() == RobotType.ARCHON)
+    	{
+    		xPressure += Math.cos(goal.radians) * 2 * (rc.getRoundNum() - goalDate);
+    		yPressure += Math.sin(goal.radians) * 2 * (rc.getRoundNum() - goalDate);
+    		Debug.debug_print("GoalX: " + xPressure);
+        	Debug.debug_print("GoalY: " + yPressure);
+    	}
+    	
     	TreeInfo[] bugNeutralTrees = rc.senseNearbyTrees(rc.getLocation().add(new Direction ((float) xPressure, (float) yPressure), rc.getType().bodyRadius), 1f, Team.NEUTRAL);
     	TreeInfo[] bugAllyTrees = rc.senseNearbyTrees(rc.getLocation().add(new Direction ((float) xPressure, (float) yPressure), rc.getType().bodyRadius), 1f, rc.getTeam());
     	//avoid previous location - AKA pressure bug

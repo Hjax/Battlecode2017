@@ -19,6 +19,7 @@ public class Scout extends Bot{
             {
             	startTurn();
             	
+            	MapLocation moveDesire = rc.getLocation();
             	Debug.debug_bytecode_start();
             	OrderManager.checkCreateOrderCheap();
             	Debug.debug_bytecode_end("create order");
@@ -27,7 +28,7 @@ public class Scout extends Bot{
             	if (trees.length > 0){
             		for (TreeInfo tree: trees){
             			if (tree.getContainedBullets() >= 10){
-            				Utilities.moveTo(tree.location);
+            				moveDesire = tree.location;
             				break;
             			}
             		}
@@ -48,23 +49,20 @@ public class Scout extends Bot{
             	if (bullets.length > 0)
             	{
             		Utilities.moveTo(Utilities.naivePressureDodge(bullets, rc.getLocation().add(neo())));
-            	}        	
+            	}
+            	else if (moveDesire.equals(rc.getLocation()) == false)
+            	{
+            		Utilities.moveTo(moveDesire);
+            	}
             	else if (gardener.getType() == RobotType.GARDENER)
             	{
             		Utilities.moveTo(rc.getLocation().add(neo()));
             	}
             	else 
             	{
-            		if (! rc.hasMoved()){
-                		if (rc.getRoundNum() < 3000)
-                		{
-                			
-                			Utilities.tryMove(goal);
-                		}
-                		else
-                		{
-                			Utilities.tryMove(neo());
-                		}
+            		if (! rc.hasMoved())
+            		{
+            			Utilities.tryMove(neo());
             		}
             	}
             	rc.setIndicatorDot(rc.getLocation().add(goal, 4.0f), 0, 0, 255);

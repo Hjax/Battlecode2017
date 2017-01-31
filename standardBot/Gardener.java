@@ -6,7 +6,7 @@ public class Gardener extends Bot
 {
 	static int buildIndex = 0;
 	public static MapLocation roost = null;
-	static boolean isStuck = true;
+	static boolean isStuck = false;
 	public static void Start(RobotController RobCon) throws Exception{
 		
 		Debug.debug_print("I'm a gardener!");
@@ -44,18 +44,13 @@ public class Gardener extends Bot
             		}
     			}
 
-    			if (roost == null || BuildManager.treesPlanted == 0)
-    			{
-    				TreeInfo[] alliedTrees = rc.senseNearbyTrees(4.5f, ally);
-    				if (alliedTrees.length == 0 && rc.onTheMap(rc.getLocation(), 3))
-    				{
-    					roost = rc.getLocation();
-    					isStuck = false;
-    				}
-    				
-    			}
     			
     			BuildManager.executeBuild();
+    			if (roost == null && BuildManager.treesPlanted == 1)
+    			{
+    				roost = rc.getLocation();
+    				isStuck = false;			
+    			}
     			
     			//find a place to settle
     			if (!rc.hasMoved() && (roost == null || BuildManager.treesPlanted == 0))
