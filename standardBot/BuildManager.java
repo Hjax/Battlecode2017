@@ -9,6 +9,9 @@ public class BuildManager extends Bot{
 	private static int treeCount = 0;
 	private static float density = 0;
 	public static int treesPlanted = 0;
+	private static int roundsSinceLastUnit = 0;
+	private static int lastUnit = 0;
+	private static int orderCount = 0;
 
 	public static boolean isStuck() {
 		Direction angle = new Direction(0);
@@ -34,6 +37,9 @@ public class BuildManager extends Bot{
 	public static void executeBuild() throws Exception {
 		treeCount = rc.getTreeCount();
 		density = getDensity();
+		lastUnit = Globals.getLastUnit();
+		roundsSinceLastUnit = rc.getRoundNum() - Globals.getLastUnitRound();
+		orderCount = Globals.getOrderCount();
 		if (!buildNextUnit()) {
 			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
@@ -47,7 +53,7 @@ public class BuildManager extends Bot{
 	
 	public static float scoreLumberjack() throws GameActionException {
 		int lcount = Globals.getUnitCount(UnitType.LUMBERJACK);
-		if (Globals.getLastUnit() == UnitType.LUMBERJACK && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+		if (lastUnit == UnitType.LUMBERJACK && (roundsSinceLastUnit) < 21) {
 			 lcount++;
 		}
 		return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * 0.20f;
@@ -55,7 +61,7 @@ public class BuildManager extends Bot{
 	
 	public static float scoreSoldier() throws GameActionException {
 		int scount = Globals.getUnitCount(UnitType.SOLDIER);
-		if (Globals.getLastUnit() == UnitType.SOLDIER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+		if (lastUnit == UnitType.SOLDIER && (roundsSinceLastUnit) < 21) {
 			 scount++;
 		}
 		boolean needsSoldiers = false;
@@ -81,10 +87,10 @@ public class BuildManager extends Bot{
 	
 	public static float scoreScout() throws GameActionException {
 		int scount = Globals.getUnitCount(UnitType.SCOUT);
-		if (Globals.getLastUnit() == UnitType.SCOUT && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+		if (lastUnit == UnitType.SCOUT && (roundsSinceLastUnit) < 21) {
 			 scount++;
 		}
-		return ((scount == 0) ? 1:0) * 0.2f + ((Globals.getOrderCount() == 0 && scount < 6) ? 1:0) * 0.8f;
+		return ((scount == 0) ? 1:0) * 0.2f + ((orderCount == 0 && scount < 6) ? 1:0) * 0.8f;
 	}
 	
 	public static float scoreGardener() throws GameActionException {
@@ -218,21 +224,21 @@ public class BuildManager extends Bot{
 		if (unit == RobotType.LUMBERJACK && nearbyTrees.length > 0)
 		{
 			angle = rc.getLocation().directionTo(nearbyTrees[0].getLocation()); 
-		} else if (unit == RobotType.SOLDIER && Globals.getOrderCount() > 0) {
+		} else if (unit == RobotType.SOLDIER && orderCount > 0) {
 			angle = rc.getLocation().directionTo(Order.getLocation(Memory.getOrder(0)));
 		}
 		int turnCount = 0;
 		Direction testAngle = angle;
 		float spacing = 2.2f;
-		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 60)
+		while ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)) && turnCount++ < 36)
 		{
 			rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
 			
-			testAngle = angle.rotateRightDegrees(3 * turnCount);
+			testAngle = angle.rotateRightDegrees(5 * turnCount);
 			if ((rc.isCircleOccupiedExceptByThisRobot(roost.add(testAngle, spacing), 1.05f) || !rc.onTheMap(roost.add(testAngle, spacing), 1.05f)))
 			{
 				rc.setIndicatorDot(roost.add(testAngle, spacing), 155, 155, 155);
-				testAngle = angle.rotateLeftDegrees(3 * turnCount);
+				testAngle = angle.rotateLeftDegrees(5 * turnCount);
 			}
 		}
 		if (unit == RobotType.TANK)

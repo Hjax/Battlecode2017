@@ -11,14 +11,9 @@ public class Gardener extends Bot
 		
 		Debug.debug_print("I'm a gardener!");
 		
-		//for age purposes
-		int builtOn = rc.getRoundNum();
-		
-
         // The code you want your robot to perform every round should be in this loop
         while (true) 
         {
-        	
         	
         	startTurn();
         	if (roost != null)
@@ -34,20 +29,8 @@ public class Gardener extends Bot
     		try 
     		{
     			
-        	
-    			//dodge bullets if needed
-    			BulletInfo bullets[] = rc.senseNearbyBullets(4);
+
     			MapLocation dodgeTo = rc.getLocation();
-    			for (int bulletCount = 0; bulletCount < bullets.length; bulletCount++)
-    			{
-    				dodgeTo = Utilities.dodgeBullet(bullets[bulletCount]);
-    				if (!dodgeTo.equals(rc.getLocation()) && !rc.hasMoved())
-    				{
-    					Debug.debug_print("dodge bullet");
-    					Utilities.moveTo(dodgeTo);
-    				}
-    			}
-        	
     			if (!rc.hasMoved())
     			{
     				//run from enemies if near
@@ -60,13 +43,7 @@ public class Gardener extends Bot
             			Utilities.moveTo(dodgeTo);
             		}
     			}
-        	
-        	
-    			
-    			
-    			
-    			
-    			
+
     			if (roost == null || BuildManager.treesPlanted == 0)
     			{
     				TreeInfo[] alliedTrees = rc.senseNearbyTrees(6, ally);
@@ -78,10 +55,7 @@ public class Gardener extends Bot
     				
     			}
     			
-    			
-    			if (true) {
-    				BuildManager.executeBuild();
-    			}
+    			BuildManager.executeBuild();
     			
     			//find a place to settle
     			if (!rc.hasMoved() && (roost == null || BuildManager.treesPlanted == 0))
@@ -100,20 +74,13 @@ public class Gardener extends Bot
     				Debug.debug_print("(" + roost.x + ", " + roost.y + ")");
     				Utilities.moveTo(roost);
         		}
-    			
 
-    			
-    			
-    			
-    			
     			
     		}
         	catch (Exception e) {
         		Debug.debug_print("Gardener Exception");
         		e.printStackTrace();
         	}
-    		
-    		
     		
     		Debug.debug_print("end turn");
     		

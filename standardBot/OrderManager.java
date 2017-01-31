@@ -27,7 +27,10 @@ public class OrderManager extends Bot{
 					best_index = i;
 				}
 			}
-			currentOrder = new Order(best, best_index);
+			if (best != 0) {
+				currentOrder = new Order(best, best_index);
+			}
+			
 		}
 	}
 	

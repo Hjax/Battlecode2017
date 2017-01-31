@@ -35,7 +35,15 @@ public class LumberJack extends Bot {
 	        	
 	        	if (neutralTrees.length > 0 && !rc.hasMoved())
 	        	{
-	        		Utilities.moveTo(Utilities.melee(neutralTrees[0].getLocation(), 1 + neutralTrees[0].radius));
+	        		TreeInfo best = neutralTrees[0];
+	        		for (int i = 0; i < neutralTrees.length; i++){
+	        			if (neutralTrees[i].containedRobot != null) {
+	        				best = neutralTrees[i];
+	        				break;
+	        			}
+	        		}
+	        		
+	        		Utilities.moveTo(Utilities.melee(best.getLocation(), 1 + neutralTrees[0].radius));
 	        		neutralTrees = rc.senseNearbyTrees(2, Team.NEUTRAL);
 	        		Debug.debug_print("try to chop neutral tree");
 	        		if (neutralTrees.length != 0) {

@@ -185,7 +185,7 @@ public class Bot {
     				xPressure += -700 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -700 / (relativeY + Math.copySign(1, relativeY));
     			}
-    			else if (rc.getType() == RobotType.ARCHON) // archons should avoid allies more
+    			else if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK) // archons and lumberjacks should avoid allies more
     			{
     				xPressure += -100 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -100 / (relativeY + Math.copySign(1, relativeY));
@@ -318,7 +318,7 @@ public class Bot {
     	}
     	
     	//if archon or lumberjack, avoid edges
-    	if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK)
+    	if (rc.getType() == RobotType.ARCHON)
     	{
     		if (Globals.getTopEdge() != -1)
     		{
@@ -349,7 +349,8 @@ public class Bot {
     	
     	// move towards a target if we have one 
     	if (OrderManager.shouldMove()){
-    			
+    		
+    		Debug.debug_print("Moving towards target");
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
