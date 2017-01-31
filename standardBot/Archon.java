@@ -72,7 +72,7 @@ public class Archon extends Bot{
             {
             	startTurn();
             	
-            	if (rc.getRoundNum() < 500 && rc.getRoundNum() - Globals.getLastUnitRound() > 300 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0 && rc.getTeamBullets() > 175 && rc.senseNearbyRobots(3, ally).length > 0)
+            	if (rc.getRoundNum() == 100 && Globals.getUnitCount(UnitType.LUMBERJACK) == 0 && rc.getRoundNum() - Globals.getLastUnitRound() > 70 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0 && rc.getTeamBullets() > 175 && rc.senseNearbyRobots(4, ally).length > 0)
             	{
             		if (Math.abs(maxDist - myDist) < 0.01f)
             		{
@@ -93,7 +93,7 @@ public class Archon extends Bot{
             		Utilities.tryMove(neo());
             	}
             	
-            	if (rc.getRoundNum() > 1 || Utilities.isFarArchon()) {
+            	if (rc.getRoundNum() > 1 || Math.abs(myDist - maxDist) < 0.01f) {
             		BuildManager.executeBuild();
             	}
             	

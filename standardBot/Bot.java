@@ -173,12 +173,12 @@ public class Bot {
         		if (enemiesMaxRange[botCount].getType() == RobotType.GARDENER)
         		{
         			//be very attracted to enemy gardeners
-        			xPressure += relativeX * 30;
-            		yPressure += relativeY * 30;
+        			xPressure += relativeX * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+            		yPressure += relativeY * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
             		if (rc.getType() == RobotType.SCOUT) // especially if a scout
             		{
-            			xPressure += relativeX * 30;
-                		yPressure += relativeY * 30;
+            			xPressure += relativeX * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+                		yPressure += relativeY * 30 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
             		}
         		}	
         		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
@@ -186,14 +186,14 @@ public class Bot {
         			if (rc.getRoundNum() > 300 || !OrderManager.isStuckArchon(enemiesMaxRange[botCount].location))
         			{
         				//be very attracted to enemy archons
-        				xPressure += relativeX * 20;
-        				yPressure += relativeY * 20;
+        				xPressure += relativeX * 20 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+        				yPressure += relativeY * 20 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
         			}
         		}	
         		else
         		{
-        			xPressure += relativeX / 1;
-            		yPressure += relativeY / 1;
+        			xPressure += relativeX / 1 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
+            		yPressure += relativeY / 1 / rc.getLocation().distanceTo(enemiesMaxRange[botCount].location);
         		}
         		
         	}
@@ -207,7 +207,7 @@ public class Bot {
     	RobotInfo[] avoidBots = rc.senseNearbyRobots(5);
     	for (int botCount = 0; botCount < avoidBots.length; botCount++)
     	{
-    		if (avoidBots[botCount].getType() != RobotType.LUMBERJACK)
+    		if (avoidBots[botCount].getType() != RobotType.LUMBERJACK || avoidBots[botCount].getTeam() != rc.getTeam())
     		{
     			relativeX = avoidBots[botCount].getLocation().x - rc.getLocation().x;
     			relativeY = avoidBots[botCount].getLocation().y - rc.getLocation().y;
@@ -220,19 +220,19 @@ public class Bot {
     			}
     			else if (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.LUMBERJACK) // archons and lumberjacks should avoid allies more
     			{
-    				xPressure += -100 / (relativeX + Math.copySign(1,  relativeX));
-        			yPressure += -100 / (relativeY + Math.copySign(1, relativeY));
+    				xPressure += -100 * (relativeX + Math.copySign(1, relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			yPressure += -100 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
     			}
     			else
     			{
-    				xPressure += -50 / (relativeX + Math.copySign(1,  relativeX));
-        			yPressure += -50 / (relativeY + Math.copySign(1, relativeY));
+    				xPressure += -50 * (relativeX + Math.copySign(1,  relativeX))/ rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			yPressure += -50 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
     			}
     			//archons and scouts should avoid enemies more except for archons and gardeners
     			if (avoidBots[botCount].getTeam() != rc.getTeam() && avoidBots[botCount].getType() != RobotType.ARCHON && avoidBots[botCount].getType() != RobotType.GARDENER && (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.SCOUT))
     			{
-    				xPressure += -250 / (relativeX + Math.copySign(1,  relativeX));
-        			yPressure += -250 / (relativeY + Math.copySign(1, relativeY));
+    				xPressure += -250 * (relativeX + Math.copySign(1,  relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			yPressure += -250 * (relativeY + Math.copySign(1, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
     			}
 	
     		}
@@ -251,8 +251,8 @@ public class Bot {
         			
         		if (avoidBots[botCount].type == RobotType.GARDENER && avoidBots[botCount].team == rc.getTeam())
         		{
-        			xPressure += -1400 / (relativeX + Math.copySign(10,  relativeX));
-        			yPressure += -1400 / (relativeY + Math.copySign(10, relativeY));
+        			xPressure += -1400 * (relativeX + Math.copySign(10,  relativeX)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
+        			yPressure += -1400 * (relativeY + Math.copySign(10, relativeY)) / rc.getLocation().distanceTo(avoidBots[botCount].location) / rc.getLocation().distanceTo(avoidBots[botCount].location);
         		}
         	}
         	Debug.debug_print("DX: " + xPressure);
@@ -308,7 +308,7 @@ public class Bot {
     		if (distFromHighBound != 1000 && distFromHighBound < distFromLowBound)
     		{
     			if (distFromHighBound < 10)
-    				{yPressure += -10;}
+    				{yPressure += -30;}
     			else if (distFromHighBound > 11)
     				{yPressure += 10;}	
     			Debug.debug_print("D1Y: " + yPressure);
@@ -316,7 +316,7 @@ public class Bot {
     		if (distFromLowBound != 1000 && distFromLowBound < distFromHighBound)
     		{
     			if (distFromLowBound < 10)
-    				{yPressure += 10;}
+    				{yPressure += 30;}
     			else if (distFromLowBound > 11)
     				{yPressure += -10;}	
     			Debug.debug_print("D2Y: " + yPressure);
@@ -333,7 +333,7 @@ public class Bot {
     		{
     			Debug.debug_print("right edge at " + Globals.getRightEdge());
     			if (distFromHighBound < 10)
-    				{xPressure += -10;}
+    				{xPressure += -30;}
     			else if (distFromHighBound > 11)
     				{xPressure += 10;}	
     			Debug.debug_print("D1X: " + xPressure);
@@ -343,7 +343,7 @@ public class Bot {
     			Debug.debug_print("left edge at " + Globals.getLeftEdge());
     			Debug.debug_print("D2startX: " + xPressure);
     			if (distFromLowBound < 10)
-    				{xPressure += 10;}
+    				{xPressure += 30;}
     			else if (distFromLowBound > 11)
     				{xPressure += -10;}	
     			Debug.debug_print("D2X: " + xPressure);

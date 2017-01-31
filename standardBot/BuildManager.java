@@ -44,7 +44,7 @@ public class BuildManager extends Bot{
 			if (UnitType.getType() == UnitType.TRAINER || UnitType.getType() == UnitType.ARCHON){
 				return;
 				}
-			if (rc.getTeamBullets() >= 50 && rc.isBuildReady() && Gardener.roost != null) {
+			if (rc.getTeamBullets() >= 50 && rc.isBuildReady() && Gardener.roost != null && (rc.senseNearbyTrees(4.5f, ally).length == 0 || treesPlanted > 0) && rc.onTheMap(rc.getLocation(), 2)) {
 				Debug.debug_print("Trying to plant a tree");
 				plantSpacedTree(Gardener.roost);
 			}
@@ -323,7 +323,7 @@ public class BuildManager extends Bot{
 				{ 
 					if (!rc.onTheMap(clone))
 					{
-						total += (16 - j)/360f;
+						total += (16 - j)/270f;
 					}
 					else
 					{

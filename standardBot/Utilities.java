@@ -454,10 +454,10 @@ public class Utilities extends Bot{
 		int unit = 0;
 		if (trees.length > 0)
 		{
-			TreeInfo bestTree = trees[0];
-			for (int treeCount = 1; treeCount < trees.length; treeCount++)
+			TreeInfo bestTree = null;
+			for (int treeCount = 0; treeCount < trees.length; treeCount++)
 			{
-				if (trees[treeCount].health < bestTree.health)
+				if (bestTree == null || trees[treeCount].health < bestTree.health)
 				{
 					archons = rc.senseNearbyRobots(trees[treeCount].location, 2f, ally);
 					for (unit = 0; unit < archons.length; unit++)
@@ -476,8 +476,12 @@ public class Utilities extends Bot{
 				}
 			}
 			try {
-				rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
-				rc.water(bestTree.ID);
+				if (bestTree != null)
+				{
+					rc.setIndicatorDot(bestTree.getLocation(), 255, 0, 0);
+					rc.water(bestTree.ID);
+				}
+				
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
@@ -731,24 +735,6 @@ public class Utilities extends Bot{
 			y += enemyArchons[i].y;
 		}
 		return new MapLocation(x / i, y / i);
-	}
-	
-	public static boolean isFarArchon() {
-		MapLocation far = getAverageEnemyArchonLocation();
-		MapLocation best = null;
-		for (int i = 0; i < allyArchons.length; i++) {
-			if (best == null || allyArchons[i].distanceTo(far) > best.distanceTo(far)) {
-				best = allyArchons[i];
-			}
-		}
-		System.out.println(far);
-		System.out.println(rc.getLocation());
-		System.out.println(best);
-		if (best.distanceTo(rc.getLocation()) <= 1) {
-			System.out.println("I am the farchon");
-			return true;
-		}
-		return false;
 	}
 	
 }
