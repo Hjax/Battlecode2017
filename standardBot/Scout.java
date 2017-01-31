@@ -43,54 +43,15 @@ public class Scout extends Bot{
             		}
             	}
             	
-            	BulletInfo bullets[] = rc.senseNearbyBullets(4);
+            	BulletInfo bullets[] = rc.senseNearbyBullets(8);
             	
             	if (bullets.length > 0)
             	{
-            		if (enemiesMaxRange.length > 0)
-            		{
-            			RobotInfo defense =  rc.senseRobot(rc.getID());
-    	            	for (int countBot = 0; countBot < enemiesMaxRange.length; countBot++)
-    	            	{
-    	            		if (enemiesMaxRange[countBot].getType() == RobotType.SOLDIER || enemiesMaxRange[countBot].getType() == RobotType.SCOUT || enemiesMaxRange[countBot].getType() == RobotType.TANK || enemiesMaxRange[countBot].getType() == RobotType.LUMBERJACK)
-    	            		{
-    	            			defense = enemiesMaxRange[countBot];
-    	            			break;
-    	            		}
-    	            	}
-            			System.out.println("PRESSURE DODGE");
-            			MapLocation dodgeTo = Utilities.magnitudePressureDodge(bullets, defense.getLocation().add(defense.location.directionTo(rc.getLocation()), 12.01f));
-            			Utilities.moveTo(dodgeTo);
-            			System.out.println("PRESSURE DODGE DONE");
-            		}
-            		
-                	
-            	}
-
-            	
+            		Utilities.moveTo(Utilities.naivePressureDodge(bullets, rc.getLocation().add(neo())));
+            	}        	
             	else if (gardener.getType() == RobotType.GARDENER)
             	{
-            		if (enemiesMaxRange.length > 0){
-            			// we are already in melee range, find the closest enemy, and move to the side of the gardener
-            			System.out.println("Being annoying");
-            			RobotInfo defense =  rc.senseRobot(rc.getID());
-    	            	for (int countBot = 0; countBot < enemiesMaxRange.length; countBot++)
-    	            	{
-    	            		if (enemiesMaxRange[countBot].getType() == RobotType.SOLDIER || enemiesMaxRange[countBot].getType() == RobotType.SCOUT || enemiesMaxRange[countBot].getType() == RobotType.TANK || enemiesMaxRange[countBot].getType() == RobotType.LUMBERJACK)
-    	            		{
-    	            			defense = enemiesMaxRange[countBot];
-    	            			break;
-    	            		}
-    	            	}
-    	            	MapLocation target = defense.getLocation().add(defense.location.directionTo(rc.getLocation()), 12.01f);
-    	            	rc.setIndicatorDot(target, 255, 255, 255);
-    	            	Utilities.moveTo(target);
-
-    	            	
-            		} else {
-                		System.out.println("MELEE");
-                		Utilities.moveTo((Utilities.melee(gardener.getLocation(), 2)));
-            		}
+            		Utilities.moveTo(rc.getLocation().add(neo()));
             	}
             	else 
             	{

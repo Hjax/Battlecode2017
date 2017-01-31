@@ -150,6 +150,11 @@ public class Bot {
         			//be very attracted to enemy gardeners
         			xPressure += relativeX * 30;
             		yPressure += relativeY * 30;
+            		if (rc.getType() == RobotType.SCOUT) // especially if a scout
+            		{
+            			xPressure += relativeX * 30;
+                		yPressure += relativeY * 30;
+            		}
         		}	
         		else if (enemiesMaxRange[botCount].getType() == RobotType.ARCHON && rc.getRoundNum() < 250)
         		{
@@ -195,8 +200,8 @@ public class Bot {
     				xPressure += -50 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -50 / (relativeY + Math.copySign(1, relativeY));
     			}
-    			//archons should avoid enemies more
-    			if (avoidBots[botCount].getTeam() != rc.getTeam() && rc.getType() == RobotType.ARCHON)
+    			//archons and scouts should avoid enemies more except for archons and gardeners
+    			if (avoidBots[botCount].getTeam() != rc.getTeam() && avoidBots[botCount].getType() != RobotType.ARCHON && avoidBots[botCount].getType() != RobotType.GARDENER && (rc.getType() == RobotType.ARCHON || rc.getType() == RobotType.SCOUT))
     			{
     				xPressure += -250 / (relativeX + Math.copySign(1,  relativeX));
         			yPressure += -250 / (relativeY + Math.copySign(1, relativeY));
