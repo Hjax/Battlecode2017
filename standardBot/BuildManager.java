@@ -140,7 +140,7 @@ public class BuildManager extends Bot{
 			
 			if (rc.getType() == RobotType.ARCHON) 
 			{
-				RobotInfo[] allies = rc.senseNearbyRobots(6, ally);
+				RobotInfo[] allies = rc.senseNearbyRobots(5, ally);
 				int countAlly = 0;
 				for (countAlly = 0; countAlly < allies.length; countAlly++)
 				{

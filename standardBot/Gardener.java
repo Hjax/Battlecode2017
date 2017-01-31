@@ -46,7 +46,7 @@ public class Gardener extends Bot
 
     			if (roost == null || BuildManager.treesPlanted == 0)
     			{
-    				TreeInfo[] alliedTrees = rc.senseNearbyTrees(6, ally);
+    				TreeInfo[] alliedTrees = rc.senseNearbyTrees(4.5f, ally);
     				if (alliedTrees.length == 0)
     				{
     					roost = rc.getLocation();

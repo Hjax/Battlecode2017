@@ -5,18 +5,27 @@ import battlecode.common.*;
 public class Archon extends Bot{
 	public static void Start(RobotController RobCon) throws Exception{
 		
-        Debug.debug_print("Starting Archon Code");
-        
+        Debug.debug_print("Starting Archon Code");    
         int[] symmetries = Utilities.symmetrizeStarts(allyArchons, enemyArchons);
+        
+        try {
+			Globals.setSuicide(0);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+        
+        int archonNum = 0;
+     	for (archonNum = 0; archonNum < allyArchons.length; archonNum++)
+     	{
+     		if (rc.getLocation().equals(allyArchons[archonNum]))
+     		{
+     			break;
+     		}
+     	}
      	
         if (BuildManager.isStuck()) {
-        	int i;
-        	for (i = 0; i < allyArchons.length; i++){
-        		if (allyArchons[i].equals(rc.getLocation())) {
-        			break;
-        		}
-        	}
-        	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[i]));
+        	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[archonNum]));
         	Debug.debug_print("I am stuck!");
         }
         
@@ -28,6 +37,34 @@ public class Archon extends Bot{
 			e1.printStackTrace();
 		}
      	
+
+     	
+     	float maxDist = 0;
+		float myDist = 1000;
+		for (int i = 0; i < enemyArchons.length; i++)
+		{
+			if (rc.getLocation().distanceTo(enemyArchons[i]) < myDist)
+			{
+				myDist = rc.getLocation().distanceTo(enemyArchons[i]);
+			}
+		}
+		for (int i = 0; i < allyArchons.length; i++)
+		{
+			float minDist = 1000;
+			for (int j = 0; j < enemyArchons.length; j++)
+			{
+				if (allyArchons[i].distanceTo(enemyArchons[j]) < minDist)
+				{
+					minDist = allyArchons[i].distanceTo(enemyArchons[j]);
+				}
+			}
+			if (minDist > maxDist)
+			{
+				maxDist = minDist;
+			}
+		}
+		
+     	
         // The code you want your robot to perform every round should be in this loop
         while (true) {
 
@@ -35,6 +72,16 @@ public class Archon extends Bot{
             try 
             {
             	startTurn();
+            	
+            	if (rc.getRoundNum() < 500 && rc.getRoundNum() - Globals.getLastUnitRound() > 300 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0)
+            	{
+            		if (Math.abs(maxDist - myDist) < 0.01f)
+            		{
+            			Globals.setSuicide(1);
+            			rc.disintegrate();
+            		}
+            		
+            	}
             	
             	Debug.debug_bytecode_start();
             	OrderManager.checkCreateOrderCheap();

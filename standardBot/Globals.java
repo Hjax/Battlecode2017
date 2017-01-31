@@ -131,13 +131,21 @@ public class Globals extends Bot{
 		int location = 23 + (rc.getRoundNum() % 2);
 		Memory.writeGlobal(location, 0);
 	}
-	
+
 	public static void setArchonBits(int bits) throws Exception {
 		Memory.writeGlobal(25, bits);
 	}
 	
 	public static int getArchonBits() throws GameActionException {
 		return Memory.readGlobal(25);
+	}
+
+	public static void setSuicide(int n) throws Exception {
+		Memory.writeGlobal(26, n);
+	}
+	
+	public static int getSuicide() throws GameActionException {
+		return Memory.readGlobal(26);
 	}
 	
 }
