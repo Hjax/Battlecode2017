@@ -5,7 +5,7 @@ import battlecode.common.*;
 public class Memory extends Bot{
 	
 	private static int min_global = 0;
-	private static int min_order = 50;
+	private static int min_order = 500;
 	private static long bits_zero = (long) Math.pow(2, 31);
 	
 	public static int readValue(int index) throws GameActionException {

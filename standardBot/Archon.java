@@ -26,6 +26,7 @@ public class Archon extends Bot{
      	
         if (BuildManager.isStuck()) {
         	Globals.setArchonBits(Globals.getArchonBits() | (int) Math.pow(2, symmetries[archonNum]));
+        	rc.setIndicatorDot(enemyArchons[symmetries[archonNum]], 255, 255, 255);
         	Debug.debug_print("I am stuck!");
         }
         
@@ -73,7 +74,7 @@ public class Archon extends Bot{
             {
             	startTurn();
             	
-            	if (rc.getRoundNum() < 500 && rc.getRoundNum() - Globals.getLastUnitRound() > 300 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0)
+            	if (rc.getRoundNum() < 500 && rc.getRoundNum() - Globals.getLastUnitRound() > 300 && (Globals.getUnitCount(UnitType.ARCHON) > 1 || Globals.getUnitCount(UnitType.GARDENER) > 0) && Globals.getSuicide() == 0 && rc.getTeamBullets() > 175 && rc.senseNearbyRobots(3, ally).length > 0)
             	{
             		if (Math.abs(maxDist - myDist) < 0.01f)
             		{

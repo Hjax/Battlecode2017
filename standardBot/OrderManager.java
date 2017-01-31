@@ -73,7 +73,7 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 			}
 		}
 		for (int i = 0; i < enemiesMaxRange.length; i++) {
-			if (enemiesMaxRange[i].getType() != RobotType.SCOUT && (enemiesMaxRange[i].getType() != RobotType.ARCHON || (rc.getRoundNum() > 300 | !isStuckArchon(enemiesMaxRange[i].location)))) {
+			if (enemiesMaxRange[i].getType() != RobotType.SCOUT && (enemiesMaxRange[i].getType() != RobotType.ARCHON || (rc.getRoundNum() > 300 || !isStuckArchon(enemiesMaxRange[i].location)))) {
 				Memory.addOrder(new Order(0, enemiesMaxRange[i].location, 3000, -1));
 				return;
 			}
@@ -83,7 +83,7 @@ robot:	for (RobotInfo enemy: enemiesMaxRange){
 	public static boolean isStuckArchon(MapLocation loc) throws GameActionException {
 		for (int i = 0; i < enemyArchons.length; i++){
 			if (loc.distanceTo(enemyArchons[i]) < 3) {
-				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 1) {
+				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) != 0) {
 					return true;
 				}
 			}

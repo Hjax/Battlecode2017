@@ -43,6 +43,13 @@ public class Bot {
     		
     		if (rc.getRoundNum() == 2) {
     			// we went first on the second round, add enemy archon spawns as orders
+    			TreeInfo[] trees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+    			for (int i = 0; i < trees.length; i++) {
+    				if (trees[i].containedRobot != null) {
+    					Globals.setUnitRich(true);
+    					break;
+    				}
+    			}
     			for (int i = 0; i < enemyArchons.length; i++) {
     				// if the enemy archon isnt stuck, create an order
     				if ((Globals.getArchonBits() & (int) Math.pow(2, i)) == 0) {

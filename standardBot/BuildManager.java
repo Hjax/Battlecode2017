@@ -56,8 +56,11 @@ public class BuildManager extends Bot{
 		if (lastUnit == UnitType.LUMBERJACK && (roundsSinceLastUnit) < 21) {
 			 lcount++;
 		}
-		if (treeCount >= 15) {
-			return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * (0.40f * (1 + ((rc.getRoundNum() - rc.getRoundNum() % 200) / 200)));
+		if (Globals.isUnitRich() && lcount == 0) {
+			return 1.1f;
+		}
+		if (treeCount >= 20) {
+			return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * (0.40f * Math.max((1 + ((rc.getRoundNum() - rc.getRoundNum() % 500) / 500)), 3));
 		}
 		return Math.min((rc.senseNearbyTrees(7, Team.NEUTRAL).length / 40.0f), 1.0f) * 0.40f + density * 0.5f + (20.0f - lcount) / 20.0f * 0.20f;
 	}
@@ -104,13 +107,13 @@ public class BuildManager extends Bot{
 		{
 			return 0;
 		}
-		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) < 21) {
+		if (Globals.getLastUnit() == UnitType.GARDENER && (rc.getRoundNum() - Globals.getLastUnitRound()) <= 1) {
 			 gcount++;
 		}
 		if (gcount > 14) {
 			return 0.0f;
 		}
-		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 21)) {
+		if (gcount - Globals.getStuckGardeners() <= 0 && (Globals.getLastUnit() != UnitType.GARDENER || (rc.getRoundNum() - Globals.getLastUnitRound()) > 1)) {
 			return 1.0f;
 		}
 		return (Math.min(((float) treeCount) / ((gcount  - Globals.getStuckGardeners()/2) * 5.0f), 1.0f));

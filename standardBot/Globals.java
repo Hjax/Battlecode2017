@@ -148,4 +148,11 @@ public class Globals extends Bot{
 		return Memory.readGlobal(26);
 	}
 	
+	public static boolean isUnitRich() throws GameActionException {
+		return Memory.readGlobal(27) == 1;
+	}
+	
+	public static void setUnitRich(boolean value) throws Exception {
+		Memory.writeGlobal(27, value ? 1:0);
+	}
 }
