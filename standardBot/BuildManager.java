@@ -351,78 +351,45 @@ public class BuildManager extends Bot{
 
 	private static void trainGardener() throws Exception
 	{
-		Direction angle = new Direction(0);
-		float leftDist, rightDist, topDist, bottomDist;
-		leftDist = 1000;
-		rightDist = 1000;
-		topDist = 1000;
-		bottomDist = 1000;
 		
-		
+		float edgeX = 0;
+		float edgeY = 0;
 		
 		if (Globals.getLeftEdge() != -1)
 		{
-			leftDist = rc.getLocation().x - Globals.getLeftEdge();
-		}
-		if (Globals.getRightEdge() != -1)
-		{
-			rightDist = Globals.getRightEdge() - rc.getLocation().x;
-		}
-		if (Globals.getBottomEdge() != -1)
-		{
-			bottomDist =  rc.getLocation().y - Globals.getBottomEdge();
-		}
-		if (Globals.getTopEdge() != -1)
-		{
-			topDist = Globals.getTopEdge() - rc.getLocation().y;
-		}
-		
-		
-		if (leftDist < rightDist)
-		{
-			if (bottomDist < topDist)
-				{
-					if (leftDist < bottomDist)
-					{
-						angle = new Direction((float)Math.PI);
-					}
-					else
-						{
-	
-							angle = new Direction((float)Math.PI * 3 / 2);
-						}
-				}
-			else if (leftDist < topDist)
-			{
-				angle = new Direction((float)Math.PI);
-			}
-			else
-				{
-					angle = new Direction((float)Math.PI * 1 / 2);
-				}
+			edgeX += 1000 - rc.getLocation().x - Globals.getLeftEdge();
 		}
 		else
 		{
-			if (bottomDist < topDist)
-				{
-					if (rightDist < bottomDist)
-					{
-						angle = new Direction(0);
-					}
-					else
-						{
-							angle = new Direction((float)Math.PI * 3 / 2);
-						}
-				}
-			else if (rightDist < topDist)
-			{
-				angle = new Direction(0);
-			}
-			else
-				{
-					angle = new Direction((float)Math.PI * 1 / 2);
-				}
+			edgeX += 1000;
 		}
+		if (Globals.getRightEdge() != -1)
+		{
+			edgeX += 1000 - rc.getLocation().x - Globals.getRightEdge();
+		}
+		else
+		{
+			edgeX += -1000;
+		}
+		if (Globals.getBottomEdge() != -1)
+		{
+			edgeY +=  1000 - rc.getLocation().y - Globals.getBottomEdge();
+		}
+		else
+		{
+			edgeY += 1000;
+		}
+		if (Globals.getTopEdge() != -1)
+		{
+			edgeY += 1000 - rc.getLocation().y - Globals.getTopEdge();
+		}
+		else
+		{
+			edgeY += -1000;
+		}
+		Debug.debug_print("edgeX: " + edgeX);
+		Debug.debug_print("edgeY: " + edgeY);
+		Direction angle = new Direction(Math.copySign(edgeY, edgeX), Math.copySign(edgeX, edgeY));
 		
 		Debug.debug_print("building at angle " + angle.getAngleDegrees());
 		
