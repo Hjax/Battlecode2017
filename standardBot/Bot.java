@@ -348,13 +348,19 @@ public class Bot {
     	}
     	
     	// move towards a target if we have one 
-    	if (OrderManager.hasOrder() && OrderManager.shouldMove()){
+    	if (OrderManager.shouldMove()){
     			
         	relativeX = OrderManager.getTarget().x - rc.getLocation().x;
     		relativeY = OrderManager.getTarget().y - rc.getLocation().y;
     			
-    		xPressure += 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
-    		yPressure += 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
+    		if (rc.getType() == RobotType.ARCHON) {
+        		xPressure -= 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
+        		yPressure -= 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());    			
+    		} else {
+        		xPressure += 50 * relativeX/rc.getLocation().distanceTo(OrderManager.getTarget());
+        		yPressure += 50 * relativeY/rc.getLocation().distanceTo(OrderManager.getTarget());
+    		}
+
     	}
     	
     	Debug.debug_print("EX: " + xPressure);
@@ -415,21 +421,11 @@ public class Bot {
 	        	
 	        	Debug.debug_print("repelX: " + xPressure);
 	        	Debug.debug_print("repelY: " + yPressure);
-	        	
-	        	
-	        	
-
-	        	
     		}
-    		
-        		
-        	
     	}
     	
     	Debug.debug_bytecode_end("neo");
-    			
-
-    	
+	
     	return new Direction((float)xPressure, (float) yPressure);  
     }
 }

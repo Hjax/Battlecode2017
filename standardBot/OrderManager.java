@@ -21,7 +21,7 @@ public class OrderManager extends Bot{
 		for (int i = 0; i < num_orders; i++){
 			long current = Memory.getOrder(i);
 			if (checkDelete(current, i)){
-				if ((UnitType.isCombat() && (Order.getType(current) == 0 || Order.getType(current) == 1)) && 
+				if (((UnitType.isCombat() || rc.getType() == RobotType.ARCHON) && (Order.getType(current) == 0 || Order.getType(current) == 1)) && 
 					(best == 0 || (Order.getLocation(best).distanceTo(rc.getLocation()) > Order.getLocation(current).distanceTo(rc.getLocation())))) {
 					best = current;
 					best_index = i;
