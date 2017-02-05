@@ -33,7 +33,7 @@ public class Soldier extends Bot{
                 		if (!Utilities.willHitAlly(target)) 
                 		{
                 			angle = rc.getLocation().directionTo(target);
-                			angle = angle.rotateRightRads((float) (Math.asin(0.2 / rc.getLocation().distanceTo(target))));
+                			angle = angle.rotateRightRads((float) ((rand.nextDouble() - 0.5) * (Math.asin(2 / rc.getLocation().distanceTo(target)))));
                 			target = rc.getLocation().add(angle, rc.getLocation().distanceTo(target));
                 			rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
                 			break;
